@@ -1,0 +1,458 @@
+# vim: set filetype=sh : " treat this file as a shell script
+
+
+    ### COMPILE ###
+
+qtbuild() {
+    if [[ ! -f "main.cpp" ]]
+    then
+    cat > main.cpp << EOF
+#include <QApplication>
+#include <QWidget>
+
+int main(int argc, char* argv[]) {
+    QApplication app(argc, argv);
+    QWidget mainWidget{};
+    mainWidget.show();
+    return QApplication::exec();
+}
+EOF
+    fi
+
+    qmake -project
+    echo 'QT += widgets' >> *.pro
+    qmake
+    sed -i -E 's@^(TARGET[ ]+=.+)@\1.out@' Makefile
+    make && ./*.out
+}
+
+
+# edit c file in vi
+vc() {
+    vi "$1".c
+}
+
+
+# compile c file
+ccc()  {
+    # Note: output path:
+    #       - can be replaced with the argument "-o <output path>"
+    #       - should provide the name of the resulting file (extension included, if wanted) or the path to <name>.out
+    #       - example:
+    #           ccc -o out/main.out
+    #               or 
+    #           ccc -o main.elf
+    #               or
+    #           ccc -o /tmp/main.out
+    #               or
+    #           ccc -o ../dir1/dir2/<...>/dirn/main.elf
+    #               or
+    #           ccc -o ./out/main.elf
+
+
+    # set default compile-time arguments
+    COMPILE_ARGS="-Wall -pedantic -g"
+    unset OUTPUT_PATH    
+
+    # parse the provided arguments for compiler arguments (they start with a "-" (dash))
+    while [[ "$1" = -* ]]; do
+        [[ "$1" = -o ]] && { # replaces -o <name>.out with a custom path
+            shift
+            OUTPUT_PATH="$1"
+            shift
+            continue
+        }
+        COMPILE_ARGS="$COMPILE_ARGS $1"
+        shift
+    done
+
+    # make sure a filename is provided
+    [[ $# -lt 1 ]] && { echo "usage: $FUNCNAME [-<gcc arg>...] <name of c source WITHOUT extension> [<runtime arg>...]"; false; return; } 
+
+    # final set for the output path
+    FILENAME="$1"
+    [ -z $OUTPUT_PATH ] && OUTPUT_PATH="${FILENAME}.out" # set default output option -o is not given
+    [ -d "$OUTPUT_PATH" ] && { [[ "$OUTPUT_PATH" =~ /$ ]] && OUTPUT_PATH="${OUTPUT_PATH}${FILENAME}.out" || OUTPUT_PATH="${OUTPUT_PATH}/${FILENAME}.out"; }  # set default output file for directory given to -o option
+
+
+    # generate default c source file if none exists
+    [[ ! -f "${FILENAME}.c" ]] && 
+cat << end_str >> "${FILENAME}.c"
+#include <stdio.h>
+
+int main(int argc, char **argv) {
+    
+
+    return 0;
+}
+end_str
+
+    # make a backup of the output file
+    [[ -f "${OUTPUT_PATH}" ]] && cp "${OUTPUT_PATH}" "${OUTPUT_PATH}".old
+
+    # print the compiler arguments
+    echo "\$COMPILE_ARGS=$COMPILE_ARGS -o ${OUTPUT_PATH}"
+
+    # compile the file
+    gcc $COMPILE_ARGS -o "${OUTPUT_PATH}" "${FILENAME}.c" || return $?
+
+    # run the program
+    shift # get rid of the filename in the function arguments
+    echo "--> Compilation done, now starting ${OUTPUT_PATH} <--" # print a message to know where program run starts
+    # if OUTPUT_PATH is not a path (by path, i mean: contains at least 1 '/' (forward slash)), prepend './' to it in order to run it
+    grep -q "/" <<< "$OUTPUT_PATH" && "$OUTPUT_PATH" $@ || ./"${OUTPUT_PATH}" $@
+    
+}
+
+
+# added at 16.11.2021 22;49
+# compile java file or create
+jr() {
+    [ $# -lt 1 ] && { echo "Please proide just the name of the .java file and the program args"; false; return; }
+    JAVA_FILE_NAME="$1"
+    FULL_NAME="${1}".java
+    [ ! -f "${FULL_NAME}" ] &&
+cat << end_str >> "${FULL_NAME}"
+
+public class ${JAVA_FILE_NAME} {
+    public static void main(String[] args) {
+        
+    }
+}
+
+end_str
+    javac -Xlint:all "${FULL_NAME}"
+    [ $? -eq 0 ] && { shift; echo "--> Compilation done, now starting ${JAVA_FILE_NAME}.class <--"; java "${JAVA_FILE_NAME}" $@; }
+
+}
+
+
+# used for creating C programs to use with THREADS
+runc() {
+if test $# -eq 0
+then
+    echo -e "ERROR: Must provide at least a name to the C program"
+    false; return
+else
+    #if cat test.c | grep -Eqc "int main()"; then echo "found main"; else echo "not found"; fi
+    if [ ! -f "$1.c" ]
+    then
+        echo '#include <stdio.h>' > "$1.c"
+	    echo "" >> "$1.c"
+	    echo "" >> "$1.c"
+	    echo 'int main(int argc, char *argv[]) {' >> "$1.c"
+	    echo '    printf("Hello, world!\n");' >> "$1.c"
+	    echo "" >> "$1.c"
+	    echo "    return 0;" >> "$1.c"
+	    echo "}" >> "$1.c"
+	    echo "" >> "$1.c"
+    fi
+    gcc -Wall -pedantic -g "$1.c" -o "$1.out" -pthread 
+    NAME="$1"
+    shift
+    #echo "$@"
+    ./"$NAME.out" $@ 
+fi
+
+}
+
+
+#############################
+####### FS Management #######
+#############################
+
+
+# make file backups with timestamp inside the name
+
+# be careful not to include the tralining / (slash) for directories
+#   unless you want to copy inside the given directory
+backup() {
+    [ $# -lt 1 ] && { echo "Please provide at least 1 file name/path"; false; return; }
+        
+    # %/ used to avoid creating an additional directory
+    # see rsync manual usage nr 4
+    [ $# -eq 1 ] && { rsync -avP "$1" "${1%/}$(fdate)"; return; } 
+
+    [ $# -gt 1 ] && {
+        while [ $# -ne 0 ]; do
+            rsync -avP "$1" "$1$(fdate)"
+            shift
+        done
+        return
+
+    }
+}
+
+
+# abandoned
+backup2() {
+    [ $# -lt 2 ] && { echo "usage: $FUNCNAME CASE SRC... [DEST]"; echo "CASE=1..4"; false; return; }
+
+    # case 1: SRC DEST
+    [ "$1" -eq 1 ] && rsync -avP "$2" "$3$(fdate)"
+
+    # case 2: SRC
+    [ "$1" -eq 2 ] && rsync -avP "$1" "$(basename "$1")$(fdate)"
+
+    # case 3: SRC... DEST
+    [ "$1" -eq 3 ] && rsync -avP 
+
+    # case 4: SRC...
+    [ "$1" -eq 4 ] && rsync -avP 
+
+    [ "$1" -lt 1 -o "$1" -gt 4 ] && echo "CASE must be in range 1..4" && false
+}
+
+
+
+big() {
+    # usage: big
+    #   or
+    #  big <dir_followed_by_slash>
+    #
+    # !!! add / (slash) after directory
+    du -sch ${1}{.[^.],}* | sort -h
+}
+
+
+sbig() {
+    # usage: same as for big()
+    sudo du -sch ${1}{.[^.],}* | sort -h
+}
+
+# example:
+#   ./changeName.sh foo bar
+#   results in:
+#       foo.class -> bar.class
+#       foo.java -> bar.java
+changeName() {
+       
+    [ $# -eq 2 ] || { echo "usage: $FUNCNAME <path/to/file/with/out/extension> <new/name/without/extension>"; false; return; }
+    
+    for FILE in ${1}.*; do
+        [ -e "$FILE" ] || continue
+    
+        EXT=$(echo $FILE | awk -F. '{print $2}')
+        echo "${FILE%.*}.$EXT -> ${2}.$EXT" 
+        #echo "${FILE} -> ${2}.$EXT" 
+                                                                                    
+        mv -- "$FILE" "${2}.$EXT"
+    done
+}
+
+
+findSkipDirs() {
+    USAGE="usage: findSkipDirs -p|n <file_with_dirs|dirs...>"
+
+    # check and set the mode
+    unset MODE
+    [ "$1" = "-p" ] && MODE="-path"
+    [ "$1" = "-n" ] && MODE="-name"
+    [ -z "$MODE" ] && { echo $USAGE; return 1; }
+
+    # set the mode for receving the directory names/paths
+    [ -f "$2" ] && DIRS=$(cat "$2") || { shift; DIRS=$@; }
+
+
+    COUNT=0
+    echo -n " -type d \( "
+    for DIR in $DIRS; do
+        [ $COUNT -eq 0 ] || echo -n "-o "
+        echo -n $MODE "$DIR"" "  
+        COUNT=$((COUNT+1))
+    done
+    echo "\) -prune -o"
+    echo "!!! paste it while the cursor is on the first space after the search location"
+    echo 'sudo find / -type d -type d \( -name Google -o -name timeshift \) -prune -o -iname "*jetbrains*" -print'
+    #sudo find . -type d \( -path ./.cache/Google -o -path ./.mozilla/firefox \) -prune -o -iname "*jetbrains*" -print
+
+}
+
+
+sprune() {
+    echo -n "find . -iname \"*\""
+    for ARG in $DIR_LINES
+    do
+        # [ -d "$ARG" ] && # test whether it's a directory
+        echo -n " -path \"$ARG\" -prune" # note the space at the end of the string
+    done
+    echo
+}
+
+
+    ### SYSTEM ANALYSIS ###
+
+
+# memory watcher
+mw() {
+    while :; do date; free -h; sleep 1; clear; done
+}
+
+
+# deprecated: $1 = foo/a/a.txt must be changed to ./foo/a/.txt
+sln() {
+    # sln OLD NEW
+    # sln OLD # it is done in the current folder
+    # TODO test if OLD exists and that NEW doesn't exists
+    ERR_MSG="$(cat <<'EOS'
+usage: sln OLD NEW\n
+or\n
+usage: sln OLD
+EOS
+)"
+    [ $# -ge 1 -a $# -le 2 ] || { echo "$ERR_MSG"; return 1; }
+
+    [ -e "$1" ] || { echo "sln() fail: $1 is NOT file"; return 1; }
+    OLD_FILE="$1"
+    NEW_LOC="."
+
+    [ $# -eq 2 ] && [ -d "$2" ] || { echo "sln() faild: $2 is NOT a directory"; return 1; }
+    NEW_LOC="$2"
+    FILE_NAME="$(basename "$OLD_FILE")"
+    [ -e "$NEW_LOC/$FILE_NAME" ] && { echo "sln() fail: $NEW_LOC/$FILE_NAME already exists"; return 1; }
+    ln -s "$OLD_FILE" "$NEW_LOC"  && echo "$NEW_LOC -> $OLD_FILE"
+}
+
+
+#####################
+####### UTILS #######
+#####################
+
+#calculator awk
+cawk() {
+    # Note: * has to be escaped
+    echo | awk "{print $*}"
+}
+
+
+cleanup() {
+    echo "Chrome "
+    #rm -r /home/kamui/.cache/google-chrome/Default/Cache/* /home/kamui/.cache/google-chrome/Default/Code\ Cache/js/*
+    echo -ne "Default/Service Worker/CacheStorage\t" && [ -d /e/LL5.6/home/kamui/.config/google-chrome/Default/Service\ Worker/CacheStorage ] && rm -r /e/LL5.6/home/kamui/.config/google-chrome/Default/Service\ Worker/CacheStorage | wc -l || echo "Empty"
+
+    echo
+    echo "Firefox " 
+        #find /home/kamui/.mozilla/firefox/*/storage/default -path "*/morgue/*" -type d -exec rm -r {} + # delete ocasionally
+
+        find /home/kamui/.mozilla/firefox/*/ -path "*/datareporting/archived/*" -type d -exec rm -r {} +
+        # this above can be tested with
+            # mkdir ~kamui/.mozilla/firefox/icpoa0ej.ForTesting/datareporting/archived/test_dir$(fdate)
+            # ls ~kamui/.mozilla/firefox/icpoa0ej.ForTesting/datareporting/archived/
+            # src && cleanup
+            # ls ~kamui/.mozilla/firefox/icpoa0ej.ForTesting/datareporting/archived/
+
+        for PROFILE_DIR in $(find /home/kamui/.cache/mozilla/firefox/ -mindepth 1 -maxdepth 1 -type d); do 
+            echo -ne "$(basename "$PROFILE_DIR")\t" && [ -d "$PROFILE_DIR/cache2" ] && rm -r "$PROFILE_DIR/cache2" | wc -l || echo "Empty"
+        done
+        #[ -d /home/kamui/.cache/mozilla/firefox/*/cache2 ] && rm -r /home/kamui/.cache/mozilla/firefox/*/cache2 | wc -l || echo -e "\tEmpty" # OLD - used with 1 single profile
+
+    echo
+    echo "Teams "
+    echo -ne "Cache\t" && [ -d '/home/kamui/.config/Microsoft/Microsoft Teams/Cache'/ ] && rm -r '/home/kamui/.config/Microsoft/Microsoft Teams/Cache'/ | wc -l || echo "Empty"
+    echo -ne "Code Cache\t" && [ -d '/home/kamui/.config/Microsoft/Microsoft Teams/Code Cache'/ ] && rm -r '/home/kamui/.config/Microsoft/Microsoft Teams/Code Cache'/ | wc -l || echo "Empty"
+}
+
+
+# TODO use or discard
+check_errors() {
+    # Function.
+    # Parameter 1 is the return code.
+    # Parameter 2 is the text to display on failure.
+    if [ "${1}" -ne "0" ];
+    then
+        echo "ERROR # ${1} : ${2}" 
+        return ${1}
+    fi
+}
+
+# date time date
+dtd() {
+    date
+    time "$@"
+    RET_VAL=$?
+    date
+    return $RET_VAL
+}
+
+hostfiles() {
+    #echo "usage: $FUNCNAME [PORT=8080]"
+    echo "IP is $(ifconfig | grep -A1 -E "^wlp3s0:" | tail -n 1 | awk '{print $2}')"
+#    (cd /; python3 -m http.server 8080)
+    
+    cd /; python3 -m http.server ${1:-8080}
+
+#    PREV_DIR="$PWD"
+#    trap 'cd "$PREV_DIR"; exit' SIGINT
+#    cd /
+#    python3 -m http.server ${1:-8080}
+}
+
+
+perm_to_script() {
+    # usage: $FUNCNAME FILE|DIR
+    # descr: gives to user read and execute permissions for a given file
+    #   or to all .sh files in a given folder
+    # ex:
+    # $FUNCNAME /tmp
+    # $FUNCNAME a.txt
+
+    _LOC="${1}"
+    [ -d "$1" ] && _LOC="${1%/}/*.sh"
+    chmod u+rx $_LOC && [ -d "$1" ] && echo "All .sh files in this directory where given user read and user execute permissions."
+    # testing: LOC=/tmp; chmod u-x $LOC/*.sh; clear; ls $LOC/*.sh; src > /dev/null && echo Sourced ~/.bashrc; perm_to_script $LOC; ls $LOC/*.sh;
+}
+
+
+# used to open programs like text editors in subshells and not have
+# the output printed in the terminal
+sp() {
+    [[ $# -eq 0 ]] && { echo "Please provide a program to open (ex:
+    mousepad a.txt)"; false; return; }
+    WHERE_TO_SPAWN=$(pwd)
+    WHAT_TO_DO="$@"
+    #COMMAND_NAME="$1"
+    #shift
+    #OTHER_ARGS="$@"
+    #( cd "$WHERE_TO_SPAWN"; pwd; "$COMMAND_NAME" "$OTHER_ARGS" &)
+    ($WHAT_TO_DO &)
+    # if I used the variable in double quotes, it would treat it as a
+    # single command (aka including the arugments) and it would fail
+}
+
+
+    ### VISUAL ###
+
+
+# change xfce terminal background darkness
+terminal_darkness() {
+    sed -Ei "s@(BackgroundDarkness=).*@\10,$1@" ~/.config/xfce4/terminal/terminalrc
+}
+
+
+# set the xfce tab title to pwd
+title() {
+    [ $# -eq 0 ] && {
+        TITLE="$PWD"       
+        
+    }
+    [ $# -eq 1 ] && {
+        TITLE="$1"
+    }
+    [ $# -gt 1 ] && echo "usage: $FUNCNAME [<title>]" && return 1
+    TITLE="${TITLE/\/home\/kamui\//\~/}" # replace /home/kamui/ with ~/ literal
+    TITLE="${TITLE/\/mnt\/e\/Scratch/Scratch}"
+    TITLE="${TITLE/\/e\/Scratch/Scratch}"
+    xtitle "${TITLE/\/home\/kamui/\~}" # replace /home/kamui with ~
+}
+
+
+#### TESTING
+
+testtrap () 
+{ 
+    trap 'echo I refuse to quit' SIGINT;
+    while :; do
+        echo running;
+    done
+}
+

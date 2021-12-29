@@ -1,0 +1,11 @@
+[init]
+	defaultBranch = main
+[color]
+	ui = true
+	status = auto
+	branch = auto
+[user]
+	name = sandrinopatrulescu
+	email = sandryno_sandryno@yahoo.com
+[credential]
+	helper = cache

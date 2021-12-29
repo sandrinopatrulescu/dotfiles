@@ -1,0 +1,96 @@
+# vim: set filetype=sh : " treat this file as a shell script
+
+
+# Alias - Temporary (for APM A{2..6})
+alias rmlog='rm log/log*.txt'
+alias lclog="wc -l log/log*.txt"
+
+
+# Alias - Command options
+alias ls='ls --color=always'
+alias dir='dir --color=always'
+alias vdir='vdir --color=always'
+alias fgrep='fgrep --color=always'
+alias egrep='egrep --color=always'
+
+alias grep="grep -E --color"
+
+alias sed="sed -E"
+alias tree="tree -C"
+alias espeak="espeak -v ro"
+#alias rm="rm -i"
+alias rm="rm -v"
+alias rmr="rm -rv"
+alias mkdir="mkdir -v"
+alias rmdir="rmdir -v"
+
+alias dd="dd status=progress"
+alias split="split --verbose"
+
+alias rs="rsync -avP"
+
+alias _="sudo"
+alias g="git"
+
+# Alias - Navigation
+#title() { xtitle $PWD; } # set the xfce tab title to pwd
+
+# obsolete
+#alias efb="bash_include; title; vi for_bashrc.sh"
+#alias efn="bash_include; title; vi functions.sh"
+#alias befb="bash_include; title; backup for_bashrc.sh; vi for_bashrc.sh"
+#alias befn="bash_include; title; backup functions.sh; vi functions.sh"
+
+alias shutdown1="slay firefox && cleanup && shutdown now"
+
+
+alias uni="cd /mnt/e/Uni" # added on 03 iul 2021, 16:57
+alias unical='sp shotwell /mnt/e/Uni/uni-cal4.0.png'
+alias studying="cd /mnt/e/Studying"
+alias scratch="cd /mnt/e/Scratch"
+alias bash_include="cd /mnt/e/Scratch/bash_include"
+alias videos="cd /mnt/e/Videos"
+alias trash="cd /mnt/e/trash"
+alias reading="cd /mnt/e/Reading"
+
+alias OS="cd /mnt/e/Uni/S2.OS"
+alias OOP="cd /mnt/e/Uni/S2.OOP"
+alias DS="cd /mnt/e/Uni/S2.DS"
+alias GA="cd /mnt/e/Uni/S2.GA"
+alias GM="cd /mnt/e/Uni/S2.GM"
+alias DSA="cd /mnt/e/Uni/S2.DSA"
+alias MARPMI="cd /mnt/e/Uni/S2.MARPMI"
+
+alias APM="cd /mnt/e/Uni/S3.APM"
+alias CN="cd /mnt/e/Uni/S3.CN"
+alias CP="cd /mnt/e/Uni/S3.CP"
+alias DBS="cd /mnt/e/Uni/S3.DBS"
+alias FLP="cd /mnt/e/Uni/S3.FLP"
+alias PS="cd /mnt/e/Uni/S3.PS"
+alias EN="cd /mnt/e/Uni/S3.EN"
+
+alias andrei="cd /mnt/e/Others/Andrei"
+
+
+# Alias - Shortcuts
+alias uniserver="ssh -p 8937 prie2985@www.scs.ubbcluj.ro"
+#alias rmfx="rm /home/kamui/.cache/mozilla/firefox/ntrc3s4e.default/cache2/entries/*"
+#alias rmcr="rm -r /home/kamui/.cache/google-chrome/Default/Cache/* /home/kamui/.cache/google-chrome/Default/Code\ Cache/js/*"
+alias oslp="sudo pm-suspend"
+#alias perm_to_script="chmod u+rx *.sh; echo \"All .sh files in this directory where given user read and user execute permissions.\" "
+
+# Alias - Tools
+alias fdate="date +%Y-%m-%d_%H-%M-%S"
+alias slay="pkill -15 -f " # https://askubuntu.com/questions/1368579/how-to-kill-firefox-from-command-line
+alias slowprint="echo ' | awk '\'{if \(system\('\"sleep 0.05 && exit 2\"'\) != 2\) exit\; print}\'''"
+#alias slowprint="echo ' | awk '\'{if \(system\(\"sleep 0.05 && exit 2\"\) != 2\) exit\; print}\'''"
+alias src="source ~/.bashrc"
+alias errno="cpp -dM /usr/include/errno.h | grep 'define E' | sort -n -k 3"
+
+alias log-trash='echo \"\$(fdate)||\" >> /e/trash/0.info'
+
+alias check-sftp-logins="cat /var/log/auth.log | grep \"Accepted password for sftp\""
+
+# Alias - Visual
+alias cal="ncal -wbM"
+
