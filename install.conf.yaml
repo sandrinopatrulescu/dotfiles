@@ -1,3 +1,6 @@
+# commit message
+# add ~/dotfiles/bin directory for scripts
+
 - defaults:
     link:
       relink: true
@@ -12,6 +15,9 @@
     ~/.gitconfig: gitconfig
     ~/.functions: functions
     ~/.vimrc: vimrc
+
+- create:
+    - ~/dotfiles/bin
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]

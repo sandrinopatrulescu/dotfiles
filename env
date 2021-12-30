@@ -32,6 +32,7 @@ grep -q "/home/kamui/.jdks/corretto-11.0.13/bin" <<<"$PATH" || export PATH="$PAT
 export HISTFILESIZE=10000        # increase history file size (default is 500)
 export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)
 
+export PATH="${PATH}:~/dotfiles/bin" # https://www.anishathalye.com/2014/08/03/managing-your-dotfiles/
 
 #Variables
 
