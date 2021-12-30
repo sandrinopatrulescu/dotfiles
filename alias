@@ -98,6 +98,7 @@ alias .....="cd ../../../.." # [1]
 alias -- -="cd -" # [1] Go to previous dir
 alias cd.='cd $(readlink -f .)' # [1] Go to real dir (i.e. if current dir is linked)
 
+alias dots='cd $(readlink -f ~/dotfiles)'
 
 # Alias - Shortcuts
 alias uniserver="ssh -p 8937 prie2985@www.scs.ubbcluj.ro"
