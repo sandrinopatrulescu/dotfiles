@@ -1,6 +1,32 @@
 # vim: set filetype=sh : " treat this file as a shell script
 
 
+# commit message
+# added aliases from https://github.com/webpro/dotfiles/blob/master/system/.alias
+# added srcs (aka src slient)
+
+
+# uncategorized YET
+
+# Default options
+alias rsync="rsync -vh" # [1]
+
+# Miscellaneous
+alias speedtest="wget -O /dev/null http://speed.transip.nl/100mb.bin"
+
+
+# List declared aliases, functions, paths [1]
+alias aliases="alias | sed 's@=.*@@'" 
+alias functions="cat ~/.functions | \sed 's@ {@@' | grep '^[a-z].*\(\)'"
+alias paths='echo -e ${PATH//:/\\n}'
+
+# Shortcuts
+alias _="sudo " # [1]
+alias g="git" # [1]
+
+
+##############################################
+
 # Alias - Temporary (for APM A{2..6})
 alias rmlog='rm log/log*.txt'
 alias lclog="wc -l log/log*.txt"
@@ -27,10 +53,8 @@ alias rmdir="rmdir -v"
 alias dd="dd status=progress"
 alias split="split --verbose"
 
-alias rs="rsync -avP"
+alias rs="rsync -aPvh"
 
-alias _="sudo"
-alias g="git"
 
 # Alias - Navigation
 #title() { xtitle $PWD; } # set the xfce tab title to pwd
@@ -71,6 +95,13 @@ alias EN="cd /mnt/e/Uni/S3.EN"
 
 alias andrei="cd /mnt/e/Others/Andrei"
 
+alias ..="cd .." # [1]
+alias ...="cd ../.." # [1]
+alias ....="cd ../../.." # [1]
+alias .....="cd ../../../.." # [1]
+alias -- -="cd -" # [1] Go to previous dir
+alias cd.='cd $(readlink -f .)' # [1] Go to real dir (i.e. if current dir is linked)
+
 
 # Alias - Shortcuts
 alias uniserver="ssh -p 8937 prie2985@www.scs.ubbcluj.ro"
@@ -85,6 +116,7 @@ alias slay="pkill -15 -f " # https://askubuntu.com/questions/1368579/how-to-kill
 alias slowprint="echo ' | awk '\'{if \(system\('\"sleep 0.05 && exit 2\"'\) != 2\) exit\; print}\'''"
 #alias slowprint="echo ' | awk '\'{if \(system\(\"sleep 0.05 && exit 2\"\) != 2\) exit\; print}\'''"
 alias src="source ~/.bashrc"
+alias srcs="source ~/.bashrc > /dev/null"
 alias errno="cpp -dM /usr/include/errno.h | grep 'define E' | sort -n -k 3"
 
 alias log-trash='echo \"\$(fdate)||\" >> /e/trash/0.info'
@@ -93,4 +125,8 @@ alias check-sftp-logins="cat /var/log/auth.log | grep \"Accepted password for sf
 
 # Alias - Visual
 alias cal="ncal -wbM"
+
+
+# Refences:
+# [1] https://github.com/webpro/dotfiles/blob/master/system/.alias
 
