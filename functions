@@ -284,7 +284,7 @@ findSkipDirs() {
     echo -n " -type d \( "
     for DIR in $DIRS; do
         [ $COUNT -eq 0 ] || echo -n "-o "
-        echo -n $MODE "$DIR"" "  
+        echo -n $MODE "${DIR%/} "  
         COUNT=$((COUNT+1))
     done
     echo "\) -prune -o"
@@ -292,6 +292,11 @@ findSkipDirs() {
     echo 'sudo find / -type d -type d \( -name Google -o -name timeshift \) -prune -o -iname "*jetbrains*" -print'
     #sudo find . -type d \( -path ./.cache/Google -o -path ./.mozilla/firefox \) -prune -o -iname "*jetbrains*" -print
 
+    # Notes: name + -print doesn't work
+    # testable with
+    # rm /tmp/find-w-print.txt; date; time sudo find / -type d -type d \( -name Google -o -name timeshift \) -prune -o -iname "*jetbrains*" -print | tee --append /tmp/find-w-print.txt; date
+    # rm /tmp/find-wo-print.txt; date; time sudo find / -type d -type d \( -name Google -o -name timeshift \) -prune -o -iname "*jetbrains*" | tee --append /tmp/find-wo-print.txt; date
+    # diff /tmp/find-w-print.txt /tmp/find-wo-print.txt
 }
 
 
