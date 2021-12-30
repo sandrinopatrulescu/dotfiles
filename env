@@ -1,8 +1,5 @@
 # vim: set filetype=sh : " treat this file as a shell script
 
-# commit message
-# fix readd ~kamui/.jdks/corretto-11.0.13/bin to PATH
-# add expansion of history size
 
 
 
