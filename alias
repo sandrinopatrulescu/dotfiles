@@ -70,6 +70,7 @@ alias studying="cd /mnt/e/Studying"
 alias scratch="cd /mnt/e/Scratch"
 alias bash_include="cd /mnt/e/Scratch/bash_include"
 alias videos="cd /mnt/e/Videos"
+alias captures="cd /mnt/e/Captures"
 alias trash="cd /mnt/e/trash"
 alias reading="cd /mnt/e/Reading"
 

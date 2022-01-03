@@ -462,6 +462,8 @@ terminal_darkness() {
 
 # set the xfce tab title to pwd
 title() {
+    xtitle --version &> /dev/null || { echo "$FUNCNAME: ERROR - xtitle is not installed"; return 1; }
+
     [ $# -eq 0 ] && {
         TITLE="$PWD"       
         
@@ -472,6 +474,7 @@ title() {
     [ $# -gt 1 ] && echo "usage: $FUNCNAME [<title>]" && return 1
     TITLE="${TITLE/\/home\/kamui\//\~/}" # replace /home/kamui/ with ~/ literal
     TITLE="${TITLE/\/mnt\/e\/Scratch/Scratch}"
+    TITLE="${TITLE/\/mnt\/e/\/e}"
     TITLE="${TITLE/\/e\/Scratch/Scratch}"
     xtitle "${TITLE/\/home\/kamui/\~}" # replace /home/kamui with ~
 }
