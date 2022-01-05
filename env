@@ -24,12 +24,12 @@ shopt -s histappend # [1] Append to the Bash history file, rather than overwriti
 # Shell variables
 
 ## Semi-Permanent
-grep -q "/home/kamui/.jdks/corretto-11.0.13/bin" <<<"$PATH" || export PATH="$PATH:/home/kamui/.jdks/corretto-11.0.13/bin" # use javac and java everywhere; java installed by IntelliJ
+append-path "/home/kamui/.jdks/corretto-11.0.13/bin"  # use javac and java everywhere; java installed by IntelliJ
 
 export HISTFILESIZE=10000        # increase history file size (default is 500)
 export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)
 
-grep -q "~/dotfiles/bin" <<<"$PATH" || export PATH="${PATH}:~/dotfiles/bin" # https://www.anishathalye.com/2014/08/03/managing-your-dotfiles/
+append-path "~/dotfiles/bin" # https://www.anishathalye.com/2014/08/03/managing-your-dotfiles/
 
 
 # Software Related
@@ -39,6 +39,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
+append-path "~/.local/bin" # for lvim
 
 
 # Variables

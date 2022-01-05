@@ -10,8 +10,10 @@ get() {
 
 
 # [1] add a new directory to the PATH variable
+# Note: I use this inside the env file, it doesn't seem to be working
+# in terminal
 append-path() {
-    [ -d "$1" ] && export PATH="$PATH:$1"
+    [ -d "$1" ] && ! grep -q "$1" <<<"$PATH" && export PATH="$PATH:$1"
 }
 
 

@@ -1,7 +1,28 @@
+Notes:
+-leave 3 lines between dates
 
 
 
 ### 2022-01-05
+
+#### 21:28
+#### functions 
+* modify `apppend-path` to test if directory exists and use it in `env`
+
+
+
+#### 21:05
+#### env
+* add lvim to `PATH`
+
+
+
+#### 20:44
+#### install.conf.yaml
+* remove the comment for commit message related to adding the bin folder
+
+
+
 #### 20:26
 #### general
 * add `updates.md`
