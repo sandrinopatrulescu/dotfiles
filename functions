@@ -11,7 +11,7 @@ get() {
 
 # [1] add a new directory to the PATH variable
 append-path() {
-    [ -d "$1" ] && PATH="$PATH:$1"
+    [ -d "$1" ] && export PATH="$PATH:$1"
 }
 
 

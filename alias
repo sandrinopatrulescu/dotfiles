@@ -105,7 +105,7 @@ alias dots='cd $(readlink -f ~/dotfiles)'
 alias uniserver="ssh -p 8937 prie2985@www.scs.ubbcluj.ro"
 #alias rmfx="rm /home/kamui/.cache/mozilla/firefox/ntrc3s4e.default/cache2/entries/*"
 #alias rmcr="rm -r /home/kamui/.cache/google-chrome/Default/Cache/* /home/kamui/.cache/google-chrome/Default/Code\ Cache/js/*"
-alias oslp="sudo pm-suspend"
+alias oslp="sudo pm-suspend-hybrid"
 #alias perm_to_script="chmod u+rx *.sh; echo \"All .sh files in this directory where given user read and user execute permissions.\" "
 
 # Alias - Tools
