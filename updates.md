@@ -5,6 +5,11 @@ Notes:
 
 ### 2022-01-05
 
+### 21:57
+#### functions
+* fix `append-path` interpreting argument literally because of double quotes
+
+
 #### 21:28
 #### functions 
 * modify `apppend-path` to test if directory exists and use it in `env`

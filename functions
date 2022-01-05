@@ -13,7 +13,7 @@ get() {
 # Note: I use this inside the env file, it doesn't seem to be working
 # in terminal
 append-path() {
-    [ -d "$1" ] && ! grep -q "$1" <<<"$PATH" && export PATH="$PATH:$1"
+    [ -d $1 ] && ! grep -q $1 <<< "$PATH" && export PATH=$PATH:$1
 }
 
 
