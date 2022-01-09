@@ -3,6 +3,31 @@ Notes:
 
 
 
+### 2022-01-09
+
+### 00:31
+#### functions
+* add cd functions that wraps the builtin cd and changes xfce tab title
+
+### 03:41
+#### alias
+* add `untar` to extract .tar.gz files
+
+###  17:23
+#### env
+* add `shopt -s glostar` to find files and dirs recursively using ls ./\*\*/
+\*.ext
+
+
+
+### 2022-01-08
+
+### 22:26
+#### alias
+* add javafxc and javafx
+
+
+
 ### 2022-01-05
 
 ### 21:57

@@ -101,12 +101,20 @@ alias cd.='cd $(readlink -f .)' # [1] Go to real dir (i.e. if current dir is lin
 
 alias dots='cd $(readlink -f ~/dotfiles)'
 
+
+# Software
+alias javac="/home/kamui/Programs/jdk-17.0.1/bin/javac"
+alias java="/home/kamui/Programs/jdk-17.0.1/bin/java"
+alias javafxc="javac --module-path /home/kamui/Programs/javafx-sdk-17.0.1/lib --add-modules javafx.controls,javafx.fxml"
+alias javafx="java --module-path /home/kamui/Programs/javafx-sdk-17.0.1/lib --add-modules javafx.controls,javafx.fxml"
+
 # Alias - Shortcuts
 alias uniserver="ssh -p 8937 prie2985@www.scs.ubbcluj.ro"
 #alias rmfx="rm /home/kamui/.cache/mozilla/firefox/ntrc3s4e.default/cache2/entries/*"
 #alias rmcr="rm -r /home/kamui/.cache/google-chrome/Default/Cache/* /home/kamui/.cache/google-chrome/Default/Code\ Cache/js/*"
 alias oslp="sudo pm-suspend-hybrid"
 #alias perm_to_script="chmod u+rx *.sh; echo \"All .sh files in this directory where given user read and user execute permissions.\" "
+
 
 # Alias - Tools
 alias fdate="date +%Y-%m-%d_%H-%M-%S"
@@ -120,6 +128,8 @@ alias errno="cpp -dM /usr/include/errno.h | grep 'define E' | sort -n -k 3"
 alias log-trash='echo \"\$(fdate)||\" >> /e/trash/0.info'
 
 alias check-sftp-logins="cat /var/log/auth.log | grep \"Accepted password for sftp\""
+
+alias untar="tar -xvzf "
 
 # Alias - Visual
 alias cal="ncal -wbM"

@@ -20,11 +20,15 @@ set -o noclobber # disable overwritting using > and replce with >|
 
 
 shopt -s histappend # [1] Append to the Bash history file, rather than overwriting it 
+shopt -s globstar # to use ls ./**/*.java for recursive matching
+
 
 # Shell variables
 
 ## Semi-Permanent
-append-path /home/kamui/.jdks/corretto-11.0.13/bin  # use javac and java everywhere; java installed by IntelliJ
+#append-path /home/kamui/.jdks/corretto-11.0.13/bin  # use javac and java everywhere; java installed by IntelliJ
+export JAVA_HOME=/home/kamui/Programs/jdk-17.0.1
+##
 
 export HISTFILESIZE=10000        # increase history file size (default is 500)
 export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)

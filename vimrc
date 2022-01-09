@@ -98,7 +98,7 @@ nnoremap k gk " move vertically by visual line [5]
 "zellner
 
 
-"### Part 5: To test
+"### Part n: To test
 
 "set sm " show matching () or {}
 "set ai " auto identention during text entry

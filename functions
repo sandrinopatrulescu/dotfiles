@@ -461,7 +461,6 @@ terminal_darkness() {
     sed -Ei "s@(BackgroundDarkness=).*@\10,$1@" ~/.config/xfce4/terminal/terminalrc
 }
 
-
 # set the xfce tab title to pwd
 title() {
     xtitle --version &> /dev/null || { echo "$FUNCNAME: ERROR - xtitle is not installed"; return 1; }
@@ -478,7 +477,13 @@ title() {
     TITLE="${TITLE/\/mnt\/e\/Scratch/Scratch}"
     TITLE="${TITLE/\/mnt\/e/\/e}"
     TITLE="${TITLE/\/e\/Scratch/Scratch}"
-    xtitle "${TITLE/\/home\/kamui/\~}" # replace /home/kamui with ~
+    xtitle "${TITLE/\/home\/kamui/\~}" #&& echo title was set # replace /home/kamui with ~
+}
+
+cd() {
+    builtin cd "$@" # found the solution @ https://askubuntu.com/questions/1238467/xfce-terminal-run-script-on-session-restore
+    xtitle --version &> /dev/null && title
+    #title &> /dev/null # TODO: why it doesn't work?
 }
 
 
