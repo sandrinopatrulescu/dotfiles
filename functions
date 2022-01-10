@@ -155,6 +155,11 @@ end_str
 }
 
 
+jfxr() {
+   echo > /dev/null 
+}
+
+
 # used for creating C programs to use with THREADS
 runc() {
 if test $# -eq 0
@@ -185,9 +190,7 @@ fi
 }
 
 
-#############################
-####### FS Management #######
-#############################
+    ### FS Management ###
 
 
 # make file backups with timestamp inside the name
@@ -313,6 +316,45 @@ sprune() {
 }
 
 
+tot() {
+# aka to trash
+    # usage: $FUNCNAME <FILE_TO_TRASH> [-l <LOCATION>] <REASON>
+
+    # parameters parsing
+    FILE_TO_TRASH="$1"
+    if [ ! -e "$FILE_TO_TRASH" ]; then check_errors 1 "FILE_TO_TRASH=$FILE_TO_TRASH does not exist"; return; fi
+
+    shift # now $@ = [-l <location>] reason
+
+    # handle -l parameter
+    if [ ! "$1" = "-l" ]; then LOCATION="$TRASH" # assuming env TRASH is set
+    else
+        LOCATION="$2"
+        if ! readlink -f "${LOCATION}" | grep -q "^$TRASH"; then check_errors 1 "LOCATION=${LOCATION} is not TRASH"; return; fi # more info on negation and pipelines at man bash -> SHELL GRAMMAR -> Pipelines
+        if [ ! -d "${LOCATION}" ]; then check_errors 1 "LOCATION=${LOCATION} is not a valid directory inside TRASH"; return; fi
+        shift 2 # now $@ = reason
+    fi 
+
+    # now $@ = reason
+    if [ ! $# -ge "1" ]; then check_errors 1 "REASON is not given"; return; fi  # check that a reason is given
+    
+
+    mv "$FILE_TO_TRASH" "$LOCATION" && echo "$(fdate)|$FILE_TO_TRASH|$@" >> $TRASH/0.info
+
+    unset FILE_TO_TRASH LOCATION
+
+}
+
+
+    ### NAVIGATION ###
+
+getpwd() {
+    echo "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+}
+
+
+
+
     ### SYSTEM ANALYSIS ###
 
 
@@ -347,9 +389,7 @@ EOS
 }
 
 
-#####################
-####### UTILS #######
-#####################
+    ### UTILS ###
 
 #calculator awk
 cawk() {
@@ -386,15 +426,19 @@ cleanup() {
 }
 
 
-# TODO use or discard
 check_errors() {
+    # usage: $FUNCNAME <return code> <message...>...
     # Function.
     # Parameter 1 is the return code.
     # Parameter 2 is the text to display on failure.
-    if [ "${1}" -ne "0" ];
+    if [ "$#" -ge "1" ];
     then
-        echo "ERROR # ${1} : ${2}" 
-        return ${1}
+        RET_CODE=${1}
+        shift
+        echo "ERROR # ${RET_CODE} : ${@}" 
+        return ${RET_CODE}
+    else 
+        echo "usage: $FUNCNAME <return code> <message...>..." # note that all arguments after the return value get turned into the printed message
     fi
 }
 
@@ -487,7 +531,7 @@ cd() {
 }
 
 
-#### TESTING
+    ### TESTING ###
 
 testtrap () 
 { 

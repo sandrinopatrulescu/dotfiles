@@ -3,6 +3,46 @@ Notes:
 
 
 
+### 2022-01-10
+
+### 02:28
+#### alias
+* add `gs` and `gl` for `git status` and `git log`
+
+
+### 20:18
+#### functions
+* chose a way to have them categorized: `### category name ###`
+
+### 20:22
+### alias
+* add `fcats` to show function categories
+
+### 20:24
+#### alias
+* add line numbers for `fcats`
+
+### 20:44
+#### alias
+* add `lrt` and `lrth`
+* very small organization
+
+### 20:56
+#### alias
+* add `-T` option to grep for `fcats`
+* add `acats` for listing categories in the `alias` file
+
+### 21:41
+#### env
+* add `TRASH=/mnt/e/trash`
+
+### 23:10
+#### functions
+* add `tot` aka totrash, used for moving files to trash
+* make use of `check_errors`
+
+
+
 ### 2022-01-09
 
 ### 00:31
