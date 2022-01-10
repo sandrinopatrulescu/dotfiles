@@ -14,7 +14,8 @@ alias speedtest="wget -O /dev/null http://speed.transip.nl/100mb.bin"
 # List declared aliases, functions, paths [1]
 alias aliases="alias | sed 's@=.*@@'" 
 alias acats="grep -nT \"### \" ~/.alias"
-alias functions="cat ~/.functions | \sed 's@ {@@' | grep '^[a-z].*\(\)'"
+alias functions="grep -nT '^[a-z].*\(\)' ~/.functions"
+alias functionsa="functions | sort -k 2 | sed 's@ \{@@'"
 alias fcats="grep -nT \"###\" ~/.functions"
 alias paths='echo -e ${PATH//:/\\n}'
 

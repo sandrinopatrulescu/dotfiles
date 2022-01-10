@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# compile c file
+    # Note: output path:
+    #       - can be replaced with the argument "-o <output path>"
+    #       - should provide the name of the resulting file (extension included, if wanted) or the path to <name>.out
+    #       - example:
+    #           ccc -o out/main.out
+    #               or 
+    #           ccc -o main.elf
+    #               or
+    #           ccc -o /tmp/main.out
+    #               or
+    #           ccc -o ../dir1/dir2/<...>/dirn/main.elf
+    #               or
+    #           ccc -o ./out/main.elf
+
+
+    # set default compile-time arguments
+    COMPILE_ARGS="-Wall -pedantic -g"
+    unset OUTPUT_PATH    
+
+    # parse the provided arguments for compiler arguments (they start with a "-" (dash))
+    while [[ "$1" = -* ]]; do
+        [[ "$1" = -o ]] && { # replaces -o <name>.out with a custom path
+            shift
+            OUTPUT_PATH="$1"
+            shift
+            continue
+        }
+        COMPILE_ARGS="$COMPILE_ARGS $1"
+        shift
+    done
+
+    # make sure a filename is provided
+    [[ $# -lt 1 ]] && { echo "usage: $FUNCNAME [-<gcc arg>...] <name of c source WITHOUT extension> [<runtime arg>...]"; false; exit; } 
+
+    # final set for the output path
+    FILENAME="$1"
+    [ -z $OUTPUT_PATH ] && OUTPUT_PATH="${FILENAME}.out" # set default output option -o is not given
+    [ -d "$OUTPUT_PATH" ] && { [[ "$OUTPUT_PATH" =~ /$ ]] && OUTPUT_PATH="${OUTPUT_PATH}${FILENAME}.out" || OUTPUT_PATH="${OUTPUT_PATH}/${FILENAME}.out"; }  # set default output file for directory given to -o option
+
+
+    # generate default c source file if none exists
+    [[ ! -f "${FILENAME}.c" ]] && 
+cat << end_str >> "${FILENAME}.c"
+#include <stdio.h>
+
+int main(int argc, char **argv) {
+    
+
+    return 0;
+}
+end_str
+
+    # make a backup of the output file
+    [[ -f "${OUTPUT_PATH}" ]] && cp "${OUTPUT_PATH}" "${OUTPUT_PATH}".old
+
+    # print the compiler arguments
+    echo "COMPILE_ARGS=$COMPILE_ARGS -o ${OUTPUT_PATH}"
+
+    # compile the file
+    gcc $COMPILE_ARGS -o "${OUTPUT_PATH}" "${FILENAME}.c" || exit $?
+
+    # run the program
+    shift # get rid of the filename in the function arguments
+    echo "--> Compilation done, now starting ${OUTPUT_PATH} <--" # print a message to know where program run starts
+    # if OUTPUT_PATH is not a path (by path, i mean: contains at least 1 '/' (forward slash)), prepend './' to it in order to run it
+    grep -q "/" <<< "$OUTPUT_PATH" && "$OUTPUT_PATH" $@ || ./"${OUTPUT_PATH}" $@
+    
+

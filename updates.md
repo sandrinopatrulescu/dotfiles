@@ -3,6 +3,27 @@ Notes:
 
 
 
+### 2022-01-11
+
+### 00:01
+#### alias
+* add `functionsa` to sort alphabetically
+
+### 00:03
+#### functions
+* rename `get()` to `getvar()`
+
+
+### 00:05
+#### functions
+* add Notes
+
+### 01:20
+#### functions
+* add skeletion for `jfxr` to compile & run JavaFX programs in 1 command
+
+
+
 ### 2022-01-10
 
 ### 02:28
@@ -15,7 +36,7 @@ Notes:
 * chose a way to have them categorized: `### category name ###`
 
 ### 20:22
-### alias
+#### alias
 * add `fcats` to show function categories
 
 ### 20:24
@@ -40,6 +61,16 @@ Notes:
 #### functions
 * add `tot` aka totrash, used for moving files to trash
 * make use of `check_errors`
+
+
+### 23:43
+#### alias
+* modify `functions` to show line numbers with alignment 
+
+
+### 23:55
+#### functions & bin/ccc
+* copied function `ccc()` to `bin/ccc` and commented it out
 
 
 
@@ -90,6 +121,8 @@ Notes:
 #### 20:44
 #### install.conf.yaml
 * remove the comment for commit message related to adding the bin folder
+
+
 
 
 
