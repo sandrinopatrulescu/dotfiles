@@ -10,9 +10,11 @@ all_in_1="2lazy2dealwith Torrents Downloaded_Music_To_move_to_Phone_and_Mega_and
 
 
 # Exports
+export DOTS="/mnt/e/dotfiles"
 
 ## Semi-Permanent
 export UNIPATH="/mnt/e/Uni"
+
 
 
 # Options
@@ -28,6 +30,7 @@ shopt -s globstar # to use ls ./**/*.java for recursive matching
 ## Semi-Permanent
 #append-path /home/kamui/.jdks/corretto-11.0.13/bin  # use javac and java everywhere; java installed by IntelliJ
 export JAVA_HOME=/home/kamui/Programs/jdk-17.0.1
+export JAVAFX_ARGS="--module-path /home/kamui/Programs/javafx-sdk-17.0.1/lib --add-modules javafx.controls,javafx.fxml"
 ##
 
 export HISTFILESIZE=10000        # increase history file size (default is 500)

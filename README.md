@@ -2,6 +2,20 @@
 
 # TO DO
 
+## `templ` script to generate a runnable example in various programming languages
+
+Written @ 2022-01-11 16:46
+
+
+## function err() https://google.github.io/styleguide/shellguide.html#s3.1-stdout-vs-stderr
+- learn about bash redirection
+- learn about the difference between $@ and $\*
+
+Written @ 2022-01-11 13:31
+
+
+
+
 ## Fix assumings:
 1. env TRASH in functions tot()
 

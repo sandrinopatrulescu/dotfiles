@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# provide basic runnable code in various programming languages
+
+# idea, move declarations to a hidden file
+# idea, replace .ext with ext and add javafx
+
+declare -A extension_to_template
+
+extension_to_template["c"]="c.c"
+
+extension_to_template["cpp"]="cpp.cpp"
+
+extension_to_template["java"]="Main.java" # sed "s@Main@$1@"
+
+extension_to_template["javafx"]="MainFX.java" # sed "s@MainFX@$1@"
+
+
+# case $1 in c) $1 in cpp $1 in javafx 

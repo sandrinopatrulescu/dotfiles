@@ -3,6 +3,10 @@
 
 # Notes:
 #   1. add comments inside the function, for easier portability
+#   2. functions specifications:
+#       1. specifications should have 39 starting and ending #'s followed immediately by newline character (if you change this, then make sure to update how() accordingly)
+#       2. 
+#   3. use returns codes in the range 64 - 113 (https://tldp.org/LDP/abs/html/exitcodes.html)
 # 
 
 
@@ -159,21 +163,106 @@ end_str
     javac -Xlint:all "${FULL_NAME}"
     [ $? -eq 0 ] && { shift; echo "--> Compilation done, now starting ${JAVA_FILE_NAME}.class <--"; java "${JAVA_FILE_NAME}" $@; }
 
+    # javafxc -d out/production/A7/ $(find src/ -name "*.java") &&
+    # javafx -classpath out/production/A7/ view.Main
 }
 
-
+# 39 hash characters below
+#######################################
+# Compile and run JavaFX programs
+#
+# Globals:
+#   JAVA_HOME
+#   ?
+#
+# Arguments 1:
+#   optional: -d Directory to place the class files, a path
+#   Directory where .java files are located, an EXISTENT path
+#   Starter class's full name, ex: [package1.][package2.]...[packageN.]MyClass
+#   optional - Arguments for the JavaFX program
+#   
+# Arugments 2:
+#   optional: -d Directory to place the class files, a path
+#   Source file, path to an EXISTENT .java file
+#   optional - Arguments for the JavaFX program
+# 
+# Outputs:
+#  -> the output of the JavaFX program
+#    
+# Returns:
+#   0, on success
+#   64, JAVAFX_ARGS is unset
+#   65, Source file/directory not found
+#   66, Source file doesn't end in .java
+# Purpose:
+#   Replace javafxc -d out/production/A7/ \ 
+#   $(find src/ -name "*.java") && javafx \
+#   -classpath out/production/A7 view.Main
+#   with 
+#   jfxr out/production/A7 src/ view.Main
+#
+#######################################
 jfxr() {
-    # purpose: to replace
-    # javafxc -d out/production/A7/ $(find src/ -name "*.java") && javafx -classpath out/production/A7 view.Main
-    # with something easier
 
     # usage:
-    #    $FUNCNAME [-d <DIR_FOR_CLASS_FILES>] <DIR_OF_SOURCE_FILES>  <STARTER_CLASS_FULLNAME> 
-    #    $FUNCNAME [-d <DIR_FOR_CLASS_FILE>] <SOURCE_FILE>
+    local usage
+    usage="\nusage:"
+    usage+="\n$FUNCNAME [-d <DIR_FOR_CLASS_FILES>] <DIR_OF_SOURCE_FILES> <STARTER_CLASS_FULLNAME>"
+    usage+="\n$FUNCNAME [-d <DIR_FOR_CLASS_FILE>] <SOURCE_FILE>"
+    usage=$(echo -e $usage)
 
+    # echo -e "$USAGE" # without quotes, it would convert the whitespaces into a single one, since it would be giving different arguments to echo
+     
+    # test if JAVAFX_ARGS is set
+    if [ -z ${JAVAFX_ARGS+x} ]; then err 64 "JAVAFX_ARGS is unset$usage"; return; fi # check if a variable is set https://stackoverflow.com/a/13864829/17299754 
     
-    # test if SOURCE_FILE is a regular file
-    # test if DIR_OF_SOURCE_FILES is a directory
+    local compile_args
+    local run_args
+    local starter_name
+
+    # arguments parsing
+    
+    # test if output directory option is given
+    if [ "$1" = "-d" ];
+    then
+        # set the output directory / classpath
+        compile_args+=" -d $2"
+        run_args+=" -classpath $2"
+
+        shift 2 # move to next arugments
+    fi
+
+    # source file vs source directory
+    # if it is a file
+    if [ -f "$1" ];
+    then
+        # make sure it  ends in .java
+        if [[ ! "$1" = *.java ]]; then err 66 "Source file: $1 doesn't end in .java$usage"; return; fi
+        compile_args+=" $1"
+        run_args+=" $1"
+        starter_name=$(basename $1)
+        shift; # move to next arguments
+    elif [ -d "$1" ];
+    then
+        compile_args+=" $(find $1 -name "*.java")"
+        run_args+=" $2" 
+        starter_name=$2
+        shift 2 # move to next arguments
+    else
+        err 65 "Source file/directory: $1 not found$usage"; return
+    fi
+    
+
+
+    # compile
+    #echo compile_args=$compile_args
+    $JAVA_HOME/bin/javac $JAVAFX_ARGS $compile_args || return $? # compile successfully or return the error code of javac 
+
+    echo "--> Compilation done, now starting ${starter_name/.java/} <--"
+    # run
+    #echo run_args=$run_args
+    $JAVA_HOME/bin/java $JAVAFX_ARGS $run_args "$@"  
+
 
 }
 
@@ -338,28 +427,29 @@ tot() {
 # aka to trash
     # usage: $FUNCNAME <FILE_TO_TRASH> [-l <LOCATION>] <REASON>
 
-    # parameters parsing
-    FILE_TO_TRASH="$1"
-    if [ ! -e "$FILE_TO_TRASH" ]; then check_errors 1 "FILE_TO_TRASH=$FILE_TO_TRASH does not exist"; return; fi
+    # arguments parsing
+    local FILE_TO_TRASH="$1"
+    local LOCATION
+    if [ ! -e "$FILE_TO_TRASH" ]; then err 1 "FILE_TO_TRASH=$FILE_TO_TRASH does not exist"; return; fi
 
     shift # now $@ = [-l <location>] reason
 
-    # handle -l parameter
-    if [ ! "$1" = "-l" ]; then LOCATION="$TRASH" # assuming env TRASH is set
-    else
+    # handle the -l parameter
+    if [ "$1" = "-l" ];
+    then
         LOCATION="$2"
-        if ! readlink -f "${LOCATION}" | grep -q "^$TRASH"; then check_errors 1 "LOCATION=${LOCATION} is not TRASH"; return; fi # more info on negation and pipelines at man bash -> SHELL GRAMMAR -> Pipelines
-        if [ ! -d "${LOCATION}" ]; then check_errors 1 "LOCATION=${LOCATION} is not a valid directory inside TRASH"; return; fi
+        if ! readlink -f "${LOCATION}" | grep -q "^$TRASH"; then err 1 "LOCATION=${LOCATION} is not TRASH"; return; fi # more info on negation and pipelines at man bash -> SHELL GRAMMAR -> Pipelines
+        if [ ! -d "${LOCATION}" ]; then err 1 "LOCATION=${LOCATION} is not a valid directory inside TRASH"; return; fi
         shift 2 # now $@ = reason
     fi 
+    # set LOCATION to env TRASH if not set, assuming env TRASH is set
+    : ${LOCATION=$TRASH} # source: https://stackoverflow.com/a/12405621/17299754
 
     # now $@ = reason
-    if [ ! $# -ge "1" ]; then check_errors 1 "REASON is not given"; return; fi  # check that a reason is given
+    if [ ! $# -ge "1" ]; then err 1 "REASON is not given"; return; fi  # check that a reason is given
     
 
     mv "$FILE_TO_TRASH" "$LOCATION" && echo "$(fdate)|$FILE_TO_TRASH|$@" >> $TRASH/0.info
-
-    unset FILE_TO_TRASH LOCATION
 
 }
 
@@ -444,7 +534,8 @@ cleanup() {
 }
 
 
-check_errors() {
+
+err() {
     # usage: $FUNCNAME <return code> <message...>...
     # Function.
     # Parameter 1 is the return code.
@@ -453,10 +544,10 @@ check_errors() {
     then
         RET_CODE=${1}
         shift
-        echo "ERROR # ${RET_CODE} : ${@}" 
+        echo "ERROR # ${RET_CODE} : $@" >&2
         return ${RET_CODE}
     else 
-        echo "usage: $FUNCNAME <return code> <message...>..." # note that all arguments after the return value get turned into the printed message
+        echo "usage: $FUNCNAME <return code> <message...>..." >&2 # note that all arguments after the return value get turned into the printed message
     fi
 }
 
@@ -514,6 +605,33 @@ sp() {
     # single command (aka including the arugments) and it would fail
 }
 
+
+#######################################
+# Provide information about user-defined functions
+# Globals:
+#   none
+# Arguments:
+#   name of an user-defiend function
+# Outputs:
+#   Writes the information written in ~/.functions about the function to STDOUT
+# Returns:
+#   0, on success - the function exists
+#   1, invalid usage
+#   2, function doesn't exist
+#######################################
+how() {
+    # arguments parsing
+    if [ $# -ne 1 ]; then err 1 "usage: $FUNCNAME <function name>"; return; fi
+
+    # check if functions is defined
+    if ! grep -q "^$1\(\) {" ~/.functions; then err 2 "$1() is not defined"; return; fi
+
+
+    \grep -Pzo "(#{39}\n)(#.*\n)*"$1"\(\)" ~/.functions # inspired from: https://stackoverflow.com/a/7167115/17299754
+
+    # method 2: find the line number of the function name then go upwards to the second 39 #'s
+
+}
 
     ### VISUAL ###
 

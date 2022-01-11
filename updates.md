@@ -13,6 +13,29 @@ Notes:
 #### functions
 * rename `get()` to `getvar()`
 
+### 13:34
+#### functions
+* rename `check_errors` to `err`
+* `err()`: redirect message to STDOUT
+
+### 13:58
+#### functions
+* `tot()` made variables local
+
+### 15:49
+#### functions
+* add `how()`
+
+### 17:50
+#### env
+* add `JAVAFX_ARGS` to compile JavaFX applications
+
+
+### 18:34
+#### functions
+* add `jfxr()` to rcompile and run JavaFX applications
+
+
 
 ### 00:05
 #### functions
