@@ -338,7 +338,7 @@ backup2() {
     # case 4: SRC...
     [ "$1" -eq 4 ] && rsync -avP 
 
-    [ "$1" -lt 1 -o "$1" -gt 4 ] && echo "CASE must be in range 1..4" && false
+    [ "$1" -lt 1 ] || [ "$1" -gt 4 ] && echo "CASE must be in range 1..4" && false
 }
 
 
@@ -401,7 +401,11 @@ findSkipDirs() {
     done
     echo "\) -prune -o"
     echo "!!! paste it while the cursor is on the first space after the search location"
+    echo
+    echo "example 1: "
     echo 'sudo find / -type d -type d \( -name Google -o -name timeshift \) -prune -o -iname "*jetbrains*" -print'
+    echo "example 2: "
+    echo '_ find / -type d \( -path /mnt -o -path /home/timeshift -o -path /proc \) -prune -o -iname "*cxoffice*" | tee --append find-output_$(fdate).txt'
     #sudo find . -type d \( -path ./.cache/Google -o -path ./.mozilla/firefox \) -prune -o -iname "*jetbrains*" -print
 
     # Notes: name + -print doesn't work
@@ -425,39 +429,53 @@ sprune() {
 
 tot() {
 # aka to trash
-    # usage: $FUNCNAME <FILE_TO_TRASH> [-l <LOCATION>] <REASON>
+    # usage: $FUNCNAME <file_to_trash> [-l <location>] <REASON>
 
     # arguments parsing
-    local FILE_TO_TRASH="$1"
-    local LOCATION
-    if [ ! -e "$FILE_TO_TRASH" ]; then err 1 "FILE_TO_TRASH=$FILE_TO_TRASH does not exist"; return; fi
+    local file_to_trash="$1"
+    local location
+    if [ ! -e "$file_to_trash" ]; then err 1 "file_to_trash=$file_to_trash does not exist"; return; fi
 
     shift # now $@ = [-l <location>] reason
 
     # handle the -l parameter
     if [ "$1" = "-l" ];
     then
-        LOCATION="$2"
-        if ! readlink -f "${LOCATION}" | grep -q "^$TRASH"; then err 1 "LOCATION=${LOCATION} is not TRASH"; return; fi # more info on negation and pipelines at man bash -> SHELL GRAMMAR -> Pipelines
-        if [ ! -d "${LOCATION}" ]; then err 1 "LOCATION=${LOCATION} is not a valid directory inside TRASH"; return; fi
+        location="$2"
+        if ! readlink -f "${location}" | grep -q "^$TRASH"; then err 1 "location=${location} is not TRASH"; return; fi # more info on negation and pipelines at man bash -> SHELL GRAMMAR -> Pipelines
+        if [ ! -d "${location}" ]; then err 1 "location=${location} is not a valid directory inside TRASH"; return; fi
         shift 2 # now $@ = reason
     fi 
-    # set LOCATION to env TRASH if not set, assuming env TRASH is set
-    : ${LOCATION=$TRASH} # source: https://stackoverflow.com/a/12405621/17299754
+    # set location to env TRASH if not set, assuming env TRASH is set
+    : ${location=$TRASH} # source: https://stackoverflow.com/a/12405621/17299754
 
     # now $@ = reason
     if [ ! $# -ge "1" ]; then err 1 "REASON is not given"; return; fi  # check that a reason is given
     
+    local full_path_to_file_to_trash="$(readlink -f "$file_to_trash")"
+    mv "$full_path_to_file_to_trash" "$location" && echo "$(fdate)|$full_path_to_file_to_trash|$@" >> $TRASH/0.info
 
-    mv "$FILE_TO_TRASH" "$LOCATION" && echo "$(fdate)|$FILE_TO_TRASH|$@" >> $TRASH/0.info
+}
 
+
+#######################################
+# tail trash: tt or tt <nr of lines> 
+#######################################
+tt() 
+{ 
+    if [ $# -ne 1 ];
+    then
+        tail "$TRASH"/0.info;
+    else
+        tail -n "$1" "$TRASH"/0.info;
+    fi
 }
 
 
     ### NAVIGATION ###
 
 getpwd() {
-    echo "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    (cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 }
 
 
@@ -603,6 +621,16 @@ sp() {
     ($WHAT_TO_DO &)
     # if I used the variable in double quotes, it would treat it as a
     # single command (aka including the arugments) and it would fail
+}
+
+
+sp2() {
+    if [ $# -eq 0 ]; then err 1 "Please provide a program to open (ex: mousepad a.txt"; return; fi
+
+    local command=$1
+    shift
+    ( $command "$@" &)
+
 }
 
 

@@ -17,3 +17,19 @@ extension_to_template["javafx"]="MainFX.java" # sed "s@MainFX@$1@"
 
 
 # case $1 in c) $1 in cpp $1 in javafx 
+
+main() {
+    local templates_dirname="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../language_templates"
+
+    
+    case $1 in 
+            "c") cat $templates_dirname/${extension_to_template[$1]};;
+            "cpp") cat $templates_dirname/${extension_to_template[$1]};;
+            "java") cat $templates_dirname/${extension_to_template[$1]};;
+            "javafx") cat $templates_dirname/${extension_to_template[$1]};;
+    esac
+}
+
+
+
+main "$@"

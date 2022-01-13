@@ -1,9 +1,15 @@
 # dotfiles
 
 # TO DO
+**Other To DOs @** ```Evernote/Tree/Useful```
+
+
+Written @ 2022-01-13 21:13
+## Add folding in all the files https://www.freecodecamp.org/news/vimrc-configuration-guide-customize-your-vim-editor/
+
+
 
 ## `templ` script to generate a runnable example in various programming languages
-
 Written @ 2022-01-11 16:46
 
 

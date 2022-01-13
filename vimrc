@@ -1,4 +1,23 @@
+
+" Folding -------------------------------------------------------------- {{{
+" zo - unfold under the cursor
+" zc - fold under the cursor
+" zR - unfold all
+" zM - fold all
+
+" This will enable code folding.
+" Use the marker method of folding.
+augroup filetype_vim
+    autocmd!
+    autocmd FileType vim setlocal foldmethod=marker
+augroup END
+
+" }}}
+
+
+
 "### Part 1: keybinds and others
+
 
 nnoremap confe :e $MYVIMRC<CR> " Edit vimr configuration file [1]
 nnoremap confr :source $MYVIMRC<CR> " Reload vims configuration file [1]
@@ -64,6 +83,8 @@ set autoindent " Enter => same indentation on the next line [3]
 nnoremap j gj " move vertically by visual line [5]
 nnoremap k gk " move vertically by visual line [5]
 
+" Others
+set history=1000
 
 
 "### Part 3: Sources List

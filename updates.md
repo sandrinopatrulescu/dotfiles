@@ -2,6 +2,23 @@ Notes:
 -leave 3 lines between dates
 
 
+### 2022-01-13
+
+### 12:25
+#### functions
+* modify `tot()` to display full path in `0.info`
+
+
+### 16:59
+#### functions
+* add `sp2()` because arguments with spaces would not work using sp()
+
+
+### 20:56
+#### functions
+* add `tt() [<nr of lines>]` to show trash log's tail
+
+
 
 ### 2022-01-11
 
