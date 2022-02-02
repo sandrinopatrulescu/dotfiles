@@ -453,7 +453,7 @@ tot() {
     if [ ! $# -ge "1" ]; then err 1 "REASON is not given"; return; fi  # check that a reason is given
     
     local full_path_to_file_to_trash="$(readlink -f "$file_to_trash")"
-    mv "$full_path_to_file_to_trash" "$location" && echo "$(fdate)|$full_path_to_file_to_trash|$@" >> $TRASH/0.info
+    mv -v "$full_path_to_file_to_trash" "$location" && echo "$(fdate)|$full_path_to_file_to_trash|$@" >> $TRASH/0.info
 
 }
 
@@ -697,8 +697,7 @@ cd() {
 
     ### TESTING ###
 
-testtrap () 
-{ 
+testtrap () { 
     trap 'echo I refuse to quit' SIGINT;
     while :; do
         echo running;

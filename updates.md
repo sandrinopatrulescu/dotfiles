@@ -2,6 +2,12 @@ Notes:
 -leave 3 lines between dates
 
 
+### 2022-02-02
+
+### 15:44
+#### alias
+* add `restart1`
+
 ### 2022-01-13
 
 ### 12:25

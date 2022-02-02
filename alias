@@ -9,6 +9,7 @@ alias rsync="rsync -vh" # [1]
 
 # Miscellaneous
 alias speedtest="wget -O /dev/null http://speed.transip.nl/100mb.bin"
+alias task="echo 'date; time <task> | tee --append \$SCRATCH/outputs/output\$(fdate).txt; date'"
 
 
 # List declared aliases, functions, paths [1]
@@ -32,6 +33,7 @@ alias gl="git log"
 alias rmlog='rm log/log*.txt'
 alias lclog="wc -l log/log*.txt"
 
+alias anbox="EGL_PLATFORM=x11 anbox.appmgr"
 
 ### Command options
 
@@ -70,6 +72,7 @@ alias rm="rm -v"
 alias rmr="rm -rv"
 alias mkdir="mkdir -v"
 alias rmdir="rmdir -v"
+alias mv="mv -v"
 
 alias dd="dd status=progress"
 alias split="split --verbose"
@@ -83,7 +86,8 @@ alias cal="ncal -wbM"
 
 ### Navigation
 
-alias shutdown1="slay firefox && cleanup && shutdown now"
+alias shutdown1="slay firefox && cleanup; shutdown now"
+alias restart1='slay firefox && cleanup; shutdown -r now'
 
 
 alias uni="cd /mnt/e/Uni" # added on 03 iul 2021, 16:57
