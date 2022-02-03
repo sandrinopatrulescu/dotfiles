@@ -13,6 +13,17 @@
 
 ### uncategorized
 
+beep() {
+    # usage: $FUNCNAME [<count>]
+    [ $# -eq 0 ] && count="1" || count="$1"
+
+    for a in $(seq "$count"); 
+    do
+        paplay /usr/share/sounds/Lite/stereo/phone-incoming-call.oga
+    done
+    # source: https://www.newbiescorner.com/2017/12/06/beep-command-alert-when-the-task-is-finished/ 
+}
+
 # [1] get named variabled (usage: get <VAR_NAME>)
 getvar() {
     echo "${!1}"

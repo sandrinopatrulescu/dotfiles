@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Note: running just one single step doesn't work
+#   TODO: fix it
 
 
 step_choser() {
@@ -18,57 +20,76 @@ step_choser() {
 
             dtd unzip -t "${object_zip}" | tee --append "${object_zip}"_unzip-test_output.txt &&
 
-            echo &&
+            echo && 
             grep "No errors detected" "${object_zip}"_unzip-test_output.txt ||
-                { echo "Step 2: FAIL: unzip -t detected errors"; return 1 }
+                { echo "Step 2: FAIL: unzip -t detected errors"; return 1; }
 
             ;;
         "3")
-            echo "3 no implemented"
             echo; echo ---\> Step 03. split the zip file &&
 
             mkdir "${object_zip}"_splits &&
-                dtd split --verbose --bytes=512M "${object_zip}" "${object_zip}"_splits/"${object_zip}"_split_
+                dtd split --verbose --bytes="$split_size" "${object_zip}" "${object_zip}"_splits/"${object_zip}"_split_
 
             ;;
         "4")
-            echo "4 no implemented"
-    
-            echo; echo ---\> Step 04. reassemble the splits of the zip and test the reassembled zip &&
+            echo; echo ---\> Step 04. reassemble the splits and test the result &&
 
-            date; time cat "${object_zip}_splits/${object_zip}"_split_* > "${object_and_date}"_reassembled.zip; date
+            [ -e "${object_and_date}"_reassembled.zip ] && { echo "Step 04: FAIL - ${object_and_date}_reassembled.zip already exists" && return 1; }
+            date; time cat "${object_zip}_splits/${object_zip}"_split_* >> "${object_and_date}"_reassembled.zip; date
 
-            echo; echo "Reassembling done. Now testing the reassembled zip file"
+
+            echo; echo "Reassembling done. Now testing the reassembled zip file"; echo
 
 
             dtd unzip -t "${object_and_date}"_reassembled.zip | tee --append "${object_and_date}"_reassembled.zip_unzip-test_output.txt &&
 
-            echo &&
+            echo
 
             grep "No errors detected" "${object_and_date}"_reassembled.zip_unzip-test_output.txt ||
-                { echo "Step 4: FAIL: unzip -t detected errors"; return 1 }
+                { echo "Step 4: FAIL: unzip -t detected errors"; return 1; }
 
             ;;
         "5")
-            echo "5 no implemented"
-            echo; echo ---\> Step 05. compute original\'s checksum and verify it&&
+            echo; echo ---\> Step 05. compute original zip\'s checksum and verify it &&
 
-            date; time sha256sum "${object_zip}" > "${object_zip}".sha256; date &&
-
-
-            echo && echo "Computing checksums is done. Now verifying it" &&
-            dtd sha256sum -c "${object_zip}".sha256
+            date; time sha256sum "${object_zip}" >| "${object_zip}".sha256; date &&
 
 
+            echo && echo "Computing checksum is done. Now verifying it"; echo &&
+
+            { dtd sha256sum -c "${object_zip}".sha256 ||
+                { echo "Step 05: FAIL - checksum verification failed"; return 1; } }
 
             ;;
          "6")
-            echo "5 no implemented"
-            echo; echo ---\> Step 04. compute original\'s and splits\' checksums &&
+            echo; echo ---\> Step 06. compute splits\' checksums and verify them &&
 
-            date; time sha256sum "${object_zip}" > "${object_zip}".sha256; date &&
+            date; time sha256sum "${object_zip}_splits/${object_zip}"_split_* > "${object_zip}"_splits.sha256; date &&
 
-            echo &&
+
+            echo && echo "Computing splits' checksums is done. Now verifying them"; echo &&
+
+            { dtd sha256sum -c "${object_zip}"_splits.sha256 || 
+                { echo "Step 06: FAIL - splits' checksum verification failed"; return 1; } }
+
+            ;;
+        "7")
+            echo; echo ---\> Step 07. UPLOAD
+            echo "${object_zip}".sha256
+            echo "${object_zip}"_splits.sha256
+            echo "${object_zip}"_splits
+            echo "    and continue with part 2"
+
+
+            ;;
+        "8")
+            echo; echo ---\> Step 08. DOWNLOAD
+            echo "${object_zip}".sha256
+            echo "${object_zip}"_splits.sha256
+            echo "${object_zip}"_splits
+            echo "    and continue with part 2"
+
             ;;
         *)
             echo "Error: No such step exists" && return 1
@@ -81,7 +102,8 @@ step_choser() {
 
 # Pre-Run Phase
 unset step
-no_of_steps="5"
+no_of_steps="8"
+split_size="128M"
 
 ## check command line arguments
 [ -e "$1" ] && object="$1" || { echo "usage: $0 <file/dir> [step]" && exit 1; }

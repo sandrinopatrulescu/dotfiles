@@ -8,6 +8,11 @@ Notes:
 #### alias
 * add `restart1`
 
+
+### 21:16
+#### functions
+* add `beep()`
+
 ### 2022-01-13
 
 ### 12:25
