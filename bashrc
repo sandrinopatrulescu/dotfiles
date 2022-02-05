@@ -29,6 +29,11 @@ echo " "
 
 # kamui
 
+## Initial
+source ~/dotfiles/"alias" && source ~/dotfiles/functions
+source ~/dotfiles/env
+##
+
 ## Navigation
 
 [ -d /e ] || sudo ln -sT /mnt/e /e # ln -s NEW OLD
@@ -36,6 +41,12 @@ echo " "
 
 ##
 
+## System
+
+## use aliases and functions in sudo
+[ -e /usr/local/bin/custom_sudo.sh ] || echo "Run: sudo n -s \$DOTS/bin/custom_sudo.sh /usr/local/bin # to use the \"__\" alias"
+
+##
 
 ## Tools
 
@@ -58,8 +69,8 @@ grep -q "LS_COLORS" ~/.env || { dircolors -b >> ~/.env && echo 'export LS_COLORS
 
 ## Sourcing and printing
 
-source ~/dotfiles/alias && source ~/dotfiles/functions
-source ~/dotfiles/env
+#source ~/dotfiles/"alias" && source ~/dotfiles/functions
+#source ~/dotfiles/env
 
 ### for printing Uni Week
 

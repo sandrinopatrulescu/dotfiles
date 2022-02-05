@@ -10,6 +10,7 @@ alias rsync="rsync -vh" # [1]
 # Miscellaneous
 alias speedtest="wget -O /dev/null http://speed.transip.nl/100mb.bin"
 alias task="echo 'date; time <task> | tee --append \$SCRATCH/outputs/output\$(fdate).txt; date'"
+alias __='sudo custom_sudo.sh '
 
 
 # List declared aliases, functions, paths [1]
@@ -52,8 +53,11 @@ alias tree="tree -C"
 ######
 
 ###### File System Information
+alias l="ls -l"
+alias lh='ls -lh'
 alias lrt="ls -lrt"
 alias lrth="lrt -h"
+
 ######
 
 
