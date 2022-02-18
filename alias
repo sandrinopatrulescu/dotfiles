@@ -3,6 +3,15 @@
 
 
 # uncategorized YET
+# TODO rnm & rnmu
+alias rnm='cat << EOF
+for $file in *;
+do
+    $new_file=$(echo "$file" | sed "s@@@")
+    echo "$file -> $new_file"
+done
+EOF' # from rename (dry-run)
+alias rnmu="echo not implemented" # from rename (real, destructive)
 
 # Default options
 alias rsync="rsync -vh" # [1]
@@ -50,6 +59,7 @@ alias vdir='vdir --color=always'
 alias fgrep='fgrep --color=always'
 alias egrep='egrep --color=always'
 alias tree="tree -C"
+alias diff='diff --color=auto'
 ######
 
 ###### File System Information

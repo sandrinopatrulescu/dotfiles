@@ -677,6 +677,7 @@ how() {
 
 # change xfce terminal background darkness
 terminal_darkness() {
+    [ $# -eq 0 ] && grep "BackgroundDarkness=" ~/.config/xfce4/terminal/terminalrc && return
     sed -Ei "s@(BackgroundDarkness=).*@\10,$1@" ~/.config/xfce4/terminal/terminalrc
 }
 

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Note: running just one single step doesn't work
+# Note: command; beep - vanishes the return value of command
 #   TODO: fix it
 
 
@@ -65,7 +66,7 @@ step_choser() {
          "6")
             echo; echo ---\> Step 06. compute splits\' checksums and verify them &&
 
-            date; time sha256sum "${object_zip}_splits/${object_zip}"_split_* > "${object_zip}"_splits.sha256; date &&
+            date; time sha256sum "${object_zip}_splits/${object_zip}"_split_* >> "${object_zip}"_splits.sha256; date &&
 
 
             echo && echo "Computing splits' checksums is done. Now verifying them"; echo &&
