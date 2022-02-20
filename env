@@ -15,7 +15,7 @@ export TRASH="/mnt/e/trash"
 export SCRATCH="/mnt/e/Scratch"
 
 ## Semi-Permanent
-export UNIPATH="/mnt/e/Uni"
+export UNIPATH='/mnt/e/UBB_IE_2020-2023'
 
 
 

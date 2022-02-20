@@ -697,6 +697,7 @@ title() {
     TITLE="${TITLE/\/mnt\/e\/Scratch/Scratch}"
     TITLE="${TITLE/\/mnt\/e/\/e}"
     TITLE="${TITLE/\/e\/Scratch/Scratch}"
+    TITLE="${TITLE/\/e\/UBB_IE_2020-2023/UBBIE2020-2023}"
     xtitle "${TITLE/\/home\/kamui/\~}" #&& echo title was set # replace /home/kamui with ~
 }
 

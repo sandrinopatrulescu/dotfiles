@@ -104,8 +104,8 @@ alias shutdown1="slay firefox && cleanup; shutdown now"
 alias restart1='slay firefox && cleanup; shutdown -r now'
 
 
-alias uni="cd /mnt/e/Uni" # added on 03 iul 2021, 16:57
-alias unical='sp shotwell /mnt/e/Uni/uni-cal4.0.png'
+alias uni="cd /mnt/e/UBB_IE_2020-2023" # added on 03 iul 2021, 16:57
+alias unical='sp shotwell /mnt/e/UBB_IE_2020-2023/uni-cal4.0.png'
 alias studying="cd /mnt/e/Studying"
 alias scratch="cd /mnt/e/Scratch"
 alias bash_include="cd /mnt/e/Scratch/bash_include"
@@ -114,21 +114,21 @@ alias captures="cd /mnt/e/Captures"
 alias trash="cd /mnt/e/trash"
 alias reading="cd /mnt/e/Reading"
 
-alias OS="cd /mnt/e/Uni/S2.OS"
-alias OOP="cd /mnt/e/Uni/S2.OOP"
-alias DS="cd /mnt/e/Uni/S2.DS"
-alias GA="cd /mnt/e/Uni/S2.GA"
-alias GM="cd /mnt/e/Uni/S2.GM"
-alias DSA="cd /mnt/e/Uni/S2.DSA"
-alias MARPMI="cd /mnt/e/Uni/S2.MARPMI"
+alias OS="cd /mnt/e/UBB_IE_2020-2023/S2.OS"
+alias OOP="cd /mnt/e/UBB_IE_2020-2023/S2.OOP"
+alias DS="cd /mnt/e/UBB_IE_2020-2023/S2.DS"
+alias GA="cd /mnt/e/UBB_IE_2020-2023/S2.GA"
+alias GM="cd /mnt/e/UBB_IE_2020-2023/S2.GM"
+alias DSA="cd /mnt/e/UBB_IE_2020-2023/S2.DSA"
+alias MARPMI="cd /mnt/e/UBB_IE_2020-2023/S2.MARPMI"
 
-alias APM="cd /mnt/e/Uni/S3.APM"
-alias CN="cd /mnt/e/Uni/S3.CN"
-alias CP="cd /mnt/e/Uni/S3.CP"
-alias DBS="cd /mnt/e/Uni/S3.DBS"
-alias FLP="cd /mnt/e/Uni/S3.FLP"
-alias PS="cd /mnt/e/Uni/S3.PS"
-alias EN="cd /mnt/e/Uni/S3.EN"
+alias APM="cd /mnt/e/UBB_IE_2020-2023/S3.APM"
+alias CN="cd /mnt/e/UBB_IE_2020-2023/S3.CN"
+alias CP="cd /mnt/e/UBB_IE_2020-2023/S3.CP"
+alias DBS="cd /mnt/e/UBB_IE_2020-2023/S3.DBS"
+alias FLP="cd /mnt/e/UBB_IE_2020-2023/S3.FLP"
+alias PS="cd /mnt/e/UBB_IE_2020-2023/S3.PS"
+alias EN="cd /mnt/e/UBB_IE_2020-2023/S3.EN"
 
 alias andrei="cd /mnt/e/Others/Andrei"
 
