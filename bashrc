@@ -44,7 +44,7 @@ source ~/dotfiles/env
 ## System
 
 ## use aliases and functions in sudo
-[ -e /usr/local/bin/custom_sudo.sh ] || echo "Run: sudo n -s \$DOTS/bin/custom_sudo.sh /usr/local/bin # to use the \"__\" alias"
+[ -e /usr/local/bin/custom_sudo.sh ] || echo "Run: sudo ln -s \$DOTS/bin/custom_sudo.sh /usr/local/bin # to use the \"__\" alias"
 
 ##
 
