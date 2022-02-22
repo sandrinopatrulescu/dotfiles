@@ -7,12 +7,18 @@
 
 " This will enable code folding.
 " Use the marker method of folding.
-augroup filetype_vim
+"augroup filetype_vim
+"    autocmd!
+"    autocmd FileType vim setlocal foldmethod=marker
+"augroup END
+augroup folding
     autocmd!
-    autocmd FileType vim setlocal foldmethod=marker
+    autocmd FileType * setlocal foldmethod=marker " note: '*' replaced 'vim'
 augroup END
 
 " }}}
+
+
 
 
 

@@ -11,7 +11,7 @@
 
 
 
-### uncategorized
+    ### Uncategorized ### {{{
 
 beep() {
     # usage: $FUNCNAME [<count>]
@@ -51,7 +51,11 @@ mk() {
     mkdir -p "$@" && cd "$@"
 }
 
-    ### COMPILE ###
+# }}}
+
+
+
+    ### COMPILE ### ------------------------------ {{{
 
 qtbuild() {
     if [[ ! -f "main.cpp" ]]
@@ -306,9 +310,11 @@ else
 fi
 
 }
+# }}}
 
 
-    ### FS Management ###
+
+    ### FS Management ### {{{
 
 
 # make file backups with timestamp inside the name
@@ -441,6 +447,8 @@ sprune() {
 tot() {
 # aka to trash
     # usage: $FUNCNAME <file_to_trash> [-l <location>] <REASON>
+    #   ex: tot script.sh -l $TRASH/removed_scripts "used to show directory size, no longer needed"
+
 
     # arguments parsing
     local file_to_trash="$1"
@@ -457,14 +465,27 @@ tot() {
         if [ ! -d "${location}" ]; then err 1 "location=${location} is not a valid directory inside TRASH"; return; fi
         shift 2 # now $@ = reason
     fi 
-    # set location to env TRASH if not set, assuming env TRASH is set
+
+
+        # -z means length 0 (aka not set or the empty string, i.e. '')
+    [ -z "$TRASH" ] && { err 1 "$TRASH is not set"; return; } # test if TRASH is set
+    [ -d "$TRASH" ] || { err 1 "$TRASH is not a valid dir"; return; } # test if TRASH is a valid dir
+
+
+    # set location to env TRASH if not set
+    
     : ${location=$TRASH} # source: https://stackoverflow.com/a/12405621/17299754
 
     # now $@ = reason
     if [ ! $# -ge "1" ]; then err 1 "REASON is not given"; return; fi  # check that a reason is given
     
     local full_path_to_file_to_trash="$(readlink -f "$file_to_trash")"
-    mv -v "$full_path_to_file_to_trash" "$location" && echo "$(fdate)|$full_path_to_file_to_trash|$@" >> $TRASH/0.info
+
+
+    local trash_log_file="$TRASH/A0_trash-log.txt"
+    [ -e "$trash_log_file" ] || echo 'DATE|FILE|REASON' >> "$trash_log_file"
+
+    mv -v "$full_path_to_file_to_trash" "$location" && echo "$(fdate)|$full_path_to_file_to_trash|$@" >> "$trash_log_file"
 
 }
 
@@ -482,17 +503,21 @@ tt()
     fi
 }
 
+# }}}
 
-    ### NAVIGATION ###
+
+
+    ### NAVIGATION ### {{{
 
 getpwd() {
     (cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 }
 
+# }}} 
 
 
 
-    ### SYSTEM ANALYSIS ###
+    ### SYSTEM ANALYSIS ### {{{
 
 
 # memory watcher
@@ -525,8 +550,11 @@ EOS
     ln -s "$OLD_FILE" "$NEW_LOC"  && echo "$NEW_LOC -> $OLD_FILE"
 }
 
+# }}}
 
-    ### UTILS ###
+
+
+    ### UTILS ### {{{
 
 #calculator awk
 cawk() {
@@ -672,7 +700,28 @@ how() {
 
 }
 
-    ### VISUAL ###
+    ### Code Generating ### {{{
+    
+    ffor() {
+        # usage: $FUNCNAME <dir/other iterable thing>
+        cat <<EOF
+for file in "$1";
+do
+    # start writing below
+    
+done
+
+EOF
+    }
+
+
+    # }}}
+
+# }}}
+
+
+
+    ### VISUAL ### {{{
 
 
 # change xfce terminal background darkness
@@ -708,7 +757,11 @@ cd() {
 }
 
 
-    ### TESTING ###
+# }}}
+
+
+
+    ### TESTING ### {{{
 
 testtrap () { 
     trap 'echo I refuse to quit' SIGINT;
