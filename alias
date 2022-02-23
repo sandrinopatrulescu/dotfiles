@@ -19,7 +19,10 @@ alias rsync="rsync -vh" # [1]
 # Miscellaneous
 alias speedtest="wget -O /dev/null http://speed.transip.nl/100mb.bin"
 alias task="echo 'date; time <task> | tee --append \$SCRATCH/outputs/output\$(fdate).txt; date'"
+# file_var="$SCRATCH/outputs/output$(fdate).txt"; date >> "$file_var"; time <task> | tee --append "$file_var"; date >> "$file_var"
+#   note that output of time still isn't inside the text file; TODO: find a better method
 alias __='sudo custom_sudo.sh '
+alias findroot='sudo find / -type d \( -path /dev -o -path /home/timeshift -o -path /proc -o -path /media -o -path /mnt -o -path /run -o -path /sys -o -path /usr/src -o -path /root \) -prune -o -print' # used to check files added by new software
 
 
 # List declared aliases, functions, paths [1]

@@ -432,6 +432,25 @@ findSkipDirs() {
     # diff /tmp/find-w-print.txt /tmp/find-wo-print.txt
 }
 
+# not used
+multiinf() {
+    # before: >sudo echo; clear # + Ctrl + L
+    echo "multiinf() at $(fdate):"
+    echo -n " kamui  ~  "; date; sudo fdisk -l
+    echo -n " kamui  ~  "; date; df -h | grep -v tmpfs
+    echo -n " kamui  ~  "; date; df | grep -v tmpfs
+    echo -n " kamui  ~  "; date; blkid
+    echo -n " kamui  ~  "; date; sudo du -sch /{.[^.],}* --exclude=/home --exclude=/mnt --exclude=/proc --exclude=/usr | sort -h # <=> sbig /
+    echo -n " kamui  ~  "; date; sudo du -sc /{.[^.],}* --exclude=/home --exclude=/mnt --exclude=/proc --exclude=/usr | sort -h
+    echo -n " kamui  ~  "; date; sudo du -sch ~/.cache/{.[^.],}* | sort -h
+    echo -n " kamui  ~  "; date; ls -1 ~/.cache
+    echo -n " kamui  ~  "; date; sudo du -sch ~/.config/{.[^.],}* | sort -h
+    echo -n " kamui  ~  "; date; ls -1 ~/.config
+    echo -n " kamui  ~  "; date; sudo du -sch ~/.local/share/{.[^.],}* | sort -h
+    echo -n " kamui  ~  "; date; ls -1 ~/.local/share
+    echo -n " kamui  ~  "; date; apt list --installed
+
+}
 
 sprune() {
     echo -n "find . -iname \"*\""
@@ -492,15 +511,31 @@ tot() {
 
 #######################################
 # tail trash: tt or tt <nr of lines> 
+#   any other arugments are ignored
 #######################################
 tt() 
 { 
-    if [ $# -ne 1 ];
+    local trash_log_file="$TRASH/A0_trash-log.txt"
+    local args
+    local lines_to_show
+
+    # also print the header if it would be printed normally
+    if [ $# -eq 1 ];
     then
-        tail "$TRASH"/0.info;
+        args="-n $1"
+        lines_to_show="$1"
     else
-        tail -n "$1" "$TRASH"/0.info;
+        lines_to_show=10
     fi
+
+    #echo "$lines_to_show"
+    #echo "$lines_in_trash_log"
+    local lines_in_trash_log=$(wc -l "$trash_log_file" | awk '{print $1}')
+    [ "$lines_to_show" -lt "$lines_in_trash_log" ] && 
+echo "$(head -n 1 $TRASH/A0_trash-log.txt) <--- HEADER" 
+    [ "$lines_to_show" -lt $(( lines_in_trash_log - 1)) ] && echo "... $(( lines_in_trash_log - lines_to_show - 1)) more line/s" # show number of hidden lines
+
+    tail $args "$trash_log_file"
 }
 
 # }}}
