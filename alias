@@ -134,6 +134,12 @@ alias FLP="cd /mnt/e/UBB_IE_2020-2023/S3.FLP"
 alias PS="cd /mnt/e/UBB_IE_2020-2023/S3.PS"
 alias EN="cd /mnt/e/UBB_IE_2020-2023/S3.EN"
 
+alias AI="cd /mnt/e/UBB_IE_2020-2023/S4.AI"
+alias DBMS="cd /mnt/e/UBB_IE_2020-2023/S4.DBMS"
+alias SDI="cd /mnt/e/UBB_IE_2020-2023/S4.SDI"
+alias SE="cd /mnt/e/UBB_IE_2020-2023/S4.SE"
+alias WP="cd /mnt/e/UBB_IE_2020-2023/S4.WP"
+
 alias andrei="cd /mnt/e/Others/Andrei"
 
 alias ..="cd .." # [1]
