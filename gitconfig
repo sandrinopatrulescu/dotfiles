@@ -8,4 +8,4 @@
 	name = sandrinopatrulescu
 	email = sandryno_sandryno@yahoo.com
 [credential]
-	helper = cache
+	helper = cache --timeout=3600
