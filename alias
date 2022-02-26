@@ -27,7 +27,7 @@ alias sm="watch '{ sensors; sudo hddtemp /dev/sda; }'"
 
 
 # List declared aliases, functions, paths [1]
-alias aliases="alias | sed 's@=.*@@'" 
+alias aliases="alias | sed -n 's@=.*@@;/^alias/p'" 
 alias acats="grep -nT \"### \" ~/.alias"
 alias functions="grep -nT '^[a-z].*\(\)' ~/.functions"
 alias functionsa="functions | sort -k 2 | sed 's@ \{@@'"
@@ -139,6 +139,10 @@ alias DBMS="cd /mnt/e/UBB_IE_2020-2023/S4.DBMS"
 alias SDI="cd /mnt/e/UBB_IE_2020-2023/S4.SDI"
 alias SE="cd /mnt/e/UBB_IE_2020-2023/S4.SE"
 alias WP="cd /mnt/e/UBB_IE_2020-2023/S4.WP"
+
+alias glsmain='eval $(ssh-agent) && ssh-add ~/.ssh/id_ed25519_github'
+alias glst='ssh -T git@github.com'
+alias glsuni='eval $(ssh-agent) && ssh-add ~/.ssh/id_ed25519_github_uni'
 
 alias andrei="cd /mnt/e/Others/Andrei"
 
