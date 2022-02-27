@@ -2,7 +2,7 @@
 
 
 
-# uncategorized YET
+# uncategorized YET {{{
 # TODO rnm & rnmu
 alias rnm='cat << EOF
 for $file in *;
@@ -23,7 +23,10 @@ alias task="echo 'date; time <task> | tee --append \$SCRATCH/outputs/output\$(fd
 #   note that output of time still isn't inside the text file; TODO: find a better method
 alias __='sudo custom_sudo.sh '
 alias findroot='sudo find / -type d \( -path /dev -o -path /home/timeshift -o -path /proc -o -path /media -o -path /mnt -o -path /run -o -path /sys -o -path /usr/src -o -path /root \) -prune -o -print' # used to check files added by new software
-alias sm="watch '{ sensors; sudo hddtemp /dev/sda; }'"
+alias sm="watch '{ sensors; sudo hddtemp /dev/sda; }'" # montior CPU and storage temperature
+alias cs="clear; src" # clear the screen and print the new terminal message
+
+# }}}
 
 
 # List declared aliases, functions, paths [1]
@@ -34,7 +37,7 @@ alias functionsa="functions | sort -k 2 | sed 's@ \{@@'"
 alias fcats="grep -nT \"###\" ~/.functions"
 alias paths='echo -e ${PATH//:/\\n}'
 
-# Shortcuts
+# Shortcuts {{{
 alias _="sudo " # [1]
 alias g="git" # [1]
 alias gs="git status"
@@ -43,12 +46,12 @@ alias gl="git log"
 
 ##############################################
 
-### Temporary (for APM A{2..6})
+### Temporary (for APM A{2..6}) {{{
 alias rmlog='rm log/log*.txt'
 alias lclog="wc -l log/log*.txt"
 
 alias anbox="EGL_PLATFORM=x11 anbox.appmgr"
-
+### }}}
 ### Command options
 
 ###### Audio
@@ -56,7 +59,7 @@ alias espeak="espeak -v ro"
 ######
 
 
-###### Coloring
+###### Coloring {{{
 alias ls='ls --color=always'
 alias dir='dir --color=always'
 alias vdir='vdir --color=always'
@@ -64,45 +67,45 @@ alias fgrep='fgrep --color=always'
 alias egrep='egrep --color=always'
 alias tree="tree -C"
 alias diff='diff --color=auto'
-######
+###### }}}
 
-###### File System Information
+###### File System Information {{{
 alias l="ls -l"
 alias lh='ls -lh'
 alias lrt="ls -lrt"
 alias lrth="lrt -h"
 
-######
+###### }}}
 
 
-###### File System Management
-alias rs="rsync -aPvh"
-######
+###### File System Management {{{
+alias rs="date; rsync -aPvh"
+###### }}}
 
-###### Extented Regular Expressions
+###### Extented Regular Expressions {{{
 alias grep="grep -E --color"
 alias sed="sed -E"
-######
+###### }}}
 
-###### Verbosity
-alias rm="rm -v"
+###### Verbosity {{{ 
+alias rm="date; rm -v"
 #alias rm="rm -i"
-alias rmr="rm -rv"
+alias rmr="date; rm -rv"
 alias mkdir="mkdir -v"
 alias rmdir="rmdir -v"
-alias mv="mv -v"
+alias mv="date; mv -v"
 
-alias dd="dd status=progress"
-alias split="split --verbose"
-######
+alias dd="date; dd status=progress"
+alias split="date; split --verbose"
+###### }}}
 
-###### Visual
+###### Visual {{{
 alias cal="ncal -wbM"
-######
+###### }}}
 
-###
+### }}}
 
-### Navigation
+### Navigation {{{ 
 
 alias shutdown1="slay firefox && cleanup; shutdown now"
 alias restart1='slay firefox && cleanup; shutdown -r now'
@@ -154,24 +157,24 @@ alias -- -="cd -" # [1] Go to previous dir
 alias cd.='cd $(readlink -f .)' # [1] Go to real dir (i.e. if current dir is linked)
 
 alias dots='cd $(readlink -f ~/dotfiles)'
+### }}} 
 
-
-### Software
+### Software {{{
 alias javac="/home/kamui/Programs/jdk-17.0.1/bin/javac"
 alias java="/home/kamui/Programs/jdk-17.0.1/bin/java"
 alias javafxc="javac --module-path /home/kamui/Programs/javafx-sdk-17.0.1/lib --add-modules javafx.controls,javafx.fxml"
 alias javafx="java --module-path /home/kamui/Programs/javafx-sdk-17.0.1/lib --add-modules javafx.controls,javafx.fxml"
+### }}} 
 
-
-### Shortcuts
+### Shortcuts {{{
 alias uniserver="ssh -p 8937 prie2985@www.scs.ubbcluj.ro"
 #alias rmfx="rm /home/kamui/.cache/mozilla/firefox/ntrc3s4e.default/cache2/entries/*"
 #alias rmcr="rm -r /home/kamui/.cache/google-chrome/Default/Cache/* /home/kamui/.cache/google-chrome/Default/Code\ Cache/js/*"
 alias oslp="sudo pm-suspend-hybrid"
 #alias perm_to_script="chmod u+rx *.sh; echo \"All .sh files in this directory where given user read and user execute permissions.\" "
+### }}}
 
-
-### Tools
+### Tools {{{
 alias fdate="date +%Y-%m-%d_%H-%M-%S"
 alias slay="pkill -15 -f " # https://askubuntu.com/questions/1368579/how-to-kill-firefox-from-command-line
 alias slowprint="echo ' | awk '\'{if \(system\('\"sleep 0.05 && exit 2\"'\) != 2\) exit\; print}\'''"
@@ -185,10 +188,12 @@ alias log-trash='echo \"\$(fdate)||\" >> /e/trash/0.info'
 alias check-sftp-logins="cat /var/log/auth.log | grep \"Accepted password for sftp\""
 
 alias untar="tar -xvzf "
+### }}}
 
 
 
-
-# Refences:
+# Refences: {{{
 # [1] https://github.com/webpro/dotfiles/blob/master/system/.alias
 
+
+# }}}

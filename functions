@@ -366,12 +366,14 @@ big() {
     #  big <dir_followed_by_slash>
     #
     # !!! add / (slash) after directory
+    date
     du -sch ${1}{.[^.],}* | sort -h
 }
 
 
 sbig() {
     # usage: same as for big()
+    date
     sudo du -sch ${1}{.[^.],}* | sort -h
 }
 
