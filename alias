@@ -42,6 +42,8 @@ alias _="sudo " # [1]
 alias g="git" # [1]
 alias gs="git status"
 alias gl="git log"
+alias gc="git commit"
+alias gp="git push"
 
 
 ##############################################

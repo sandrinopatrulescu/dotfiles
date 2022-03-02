@@ -10,7 +10,6 @@
 # 
 
 
-
     ### Uncategorized ### {{{
 
 beep() {
@@ -49,6 +48,18 @@ calc() {
 # [1]
 mk() {
     mkdir -p "$@" && cd "$@"
+}
+
+e() {
+    (evince "$@" &)
+}
+
+m() {
+    (mousepad "$@" &)
+}
+
+t() {
+    (thunar "$@" &)
 }
 
 # }}}
@@ -705,7 +716,7 @@ sp2() {
 
     local command=$1
     shift
-    ( $command "$@" &)
+    ($command "$@" &)
 
 }
 
