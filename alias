@@ -25,7 +25,10 @@ alias __='sudo custom_sudo.sh '
 alias findroot='sudo find / -type d \( -path /dev -o -path /home/timeshift -o -path /proc -o -path /media -o -path /mnt -o -path /run -o -path /sys -o -path /usr/src -o -path /root \) -prune -o -print' # used to check files added by new software
 alias sm="watch '{ sensors; sudo hddtemp /dev/sda; }'" # montior CPU and storage temperature
 alias cs="clear; src" # clear the screen and print the new terminal message
-
+alias c="clear" # clear the terminal
+alias f="firefox "
+alias restart="shutdown -r now"
+alias cp="cp -v"
 # }}}
 
 
@@ -113,16 +116,21 @@ alias shutdown1="slay firefox && cleanup; shutdown now"
 alias restart1='slay firefox && cleanup; shutdown -r now'
 
 
+
+alias andrei="cd /mnt/e/Others/Andrei"
+
+# UBB_IE_2020-2023
 alias uni="cd /mnt/e/UBB_IE_2020-2023" # added on 03 iul 2021, 16:57
 alias unical='sp shotwell /mnt/e/UBB_IE_2020-2023/uni-cal4.0.png'
-alias studying="cd /mnt/e/Studying"
+
+# alias studying="cd /mnt/e/Studying" # not used
 alias scratch="cd /mnt/e/Scratch"
-alias bash_include="cd /mnt/e/Scratch/bash_include"
 alias videos="cd /mnt/e/Videos"
 alias captures="cd /mnt/e/Captures"
 alias trash="cd /mnt/e/trash"
 alias reading="cd /mnt/e/Reading"
 
+# S2
 alias OS="cd /mnt/e/UBB_IE_2020-2023/S2.OS"
 alias OOP="cd /mnt/e/UBB_IE_2020-2023/S2.OOP"
 alias DS="cd /mnt/e/UBB_IE_2020-2023/S2.DS"
@@ -131,6 +139,7 @@ alias GM="cd /mnt/e/UBB_IE_2020-2023/S2.GM"
 alias DSA="cd /mnt/e/UBB_IE_2020-2023/S2.DSA"
 alias MARPMI="cd /mnt/e/UBB_IE_2020-2023/S2.MARPMI"
 
+# S3
 alias APM="cd /mnt/e/UBB_IE_2020-2023/S3.APM"
 alias CN="cd /mnt/e/UBB_IE_2020-2023/S3.CN"
 alias CP="cd /mnt/e/UBB_IE_2020-2023/S3.CP"
@@ -139,17 +148,22 @@ alias FLP="cd /mnt/e/UBB_IE_2020-2023/S3.FLP"
 alias PS="cd /mnt/e/UBB_IE_2020-2023/S3.PS"
 alias EN="cd /mnt/e/UBB_IE_2020-2023/S3.EN"
 
+# S4
 alias AI="cd /mnt/e/UBB_IE_2020-2023/S4.AI"
 alias DBMS="cd /mnt/e/UBB_IE_2020-2023/S4.DBMS"
 alias SDI="cd /mnt/e/UBB_IE_2020-2023/S4.SDI"
 alias SE="cd /mnt/e/UBB_IE_2020-2023/S4.SE"
 alias WP="cd /mnt/e/UBB_IE_2020-2023/S4.WP"
 
+alias S2.DSA="cd /mnt/e/UBB_IE_2020-2023/S4.S2.DSA"
+alias S2.OOP="cd /mnt/e/UBB_IE_2020-2023/S4.S2.OOP"
+alias S2.OS="cd /mnt/e/UBB_IE_2020-2023/S4.S2.OS"
+
+
 alias glsmain='eval $(ssh-agent) && ssh-add ~/.ssh/id_ed25519_github'
 alias glst='ssh -T git@github.com'
 alias glsuni='eval $(ssh-agent) && ssh-add ~/.ssh/id_ed25519_github_uni'
-
-alias andrei="cd /mnt/e/Others/Andrei"
+alias glsus='eval $(ssh-agent) && ssh-add' # git login ssh uni server
 
 alias ..="cd .." # [1]
 alias ...="cd ../.." # [1]
