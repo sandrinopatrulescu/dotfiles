@@ -32,8 +32,9 @@ shopt -s direxpand # https://askubuntu.com/questions/70750/how-to-get-bash-to-st
 
 ## Semi-Permanent
 #append-path /home/kamui/.jdks/corretto-11.0.13/bin  # use javac and java everywhere; java installed by IntelliJ
-export JAVA_HOME=/home/kamui/Programs/jdk-17.0.1
-export JAVAFX_ARGS="--module-path /home/kamui/Programs/javafx-sdk-17.0.1/lib --add-modules javafx.controls,javafx.fxml"
+export JAVA_HOME=/home/kamui/Programs/jdk-17.0.2
+export JAVAFX_HOME=/home/kamui/Programs/javafx-sdk-17.0.2
+export JAVAFX_ARGS="--module-path $JAVAFX_HOME/lib --add-modules javafx.controls,javafx.fxml"
 ##
 
 export HISTFILESIZE=10000        # increase history file size (default is 500)

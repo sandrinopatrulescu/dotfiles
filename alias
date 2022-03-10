@@ -29,6 +29,7 @@ alias c="clear" # clear the terminal
 alias f="firefox "
 alias restart="shutdown -r now"
 alias cp="cp -v"
+alias ffmpeg_template="ffmpeg -i <foobar.mkv> -c copy <foobar.mp4>" # source: https://linuxhint.com/convert-mkv-mp4-ubuntu-ffmpeg/
 # }}}
 
 
@@ -93,9 +94,9 @@ alias sed="sed -E"
 ###### }}}
 
 ###### Verbosity {{{ 
-alias rm="date; rm -v"
+alias rm="rm -v"
 #alias rm="rm -i"
-alias rmr="date; rm -rv"
+alias rmr="rm -rv"
 alias mkdir="mkdir -v"
 alias rmdir="rmdir -v"
 alias mv="date; mv -v"
@@ -176,10 +177,10 @@ alias dots='cd $(readlink -f ~/dotfiles)'
 ### }}} 
 
 ### Software {{{
-alias javac="/home/kamui/Programs/jdk-17.0.1/bin/javac"
-alias java="/home/kamui/Programs/jdk-17.0.1/bin/java"
-alias javafxc="javac --module-path /home/kamui/Programs/javafx-sdk-17.0.1/lib --add-modules javafx.controls,javafx.fxml"
-alias javafx="java --module-path /home/kamui/Programs/javafx-sdk-17.0.1/lib --add-modules javafx.controls,javafx.fxml"
+alias javac="$JAVA_HOME/bin/javac"
+alias java="$JAVA_HOME/bin/java"
+alias javafxc="javac --module-path $JAVAFX_HOME/lib --add-modules javafx.controls,javafx.fxml"
+alias javafx="java --module-path $JAVAFX_HOME/lib --add-modules javafx.controls,javafx.fxml"
 ### }}} 
 
 ### Shortcuts {{{
