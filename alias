@@ -29,7 +29,10 @@ alias c="clear" # clear the terminal
 alias f="firefox "
 alias restart="shutdown -r now"
 alias cp="cp -v"
-alias ffmpeg_template="ffmpeg -i <foobar.mkv> -c copy <foobar.mp4>" # source: https://linuxhint.com/convert-mkv-mp4-ubuntu-ffmpeg/
+alias ffmpeg_template="ffmpeg -i foobar.mkv -c copy ../Captures/S4foobar.mp4" # source: https://linuxhint.com/convert-mkv-mp4-ubuntu-ffmpeg/
+alias ud="sudo apt update"
+alias list="apt list --upgradable"
+alias ug="sudo apt upgrade"
 # }}}
 
 
@@ -132,33 +135,33 @@ alias trash="cd /mnt/e/trash"
 alias reading="cd /mnt/e/Reading"
 
 # S2
-alias OS="cd /mnt/e/UBB_IE_2020-2023/S2.OS"
-alias OOP="cd /mnt/e/UBB_IE_2020-2023/S2.OOP"
-alias DS="cd /mnt/e/UBB_IE_2020-2023/S2.DS"
-alias GA="cd /mnt/e/UBB_IE_2020-2023/S2.GA"
-alias GM="cd /mnt/e/UBB_IE_2020-2023/S2.GM"
-alias DSA="cd /mnt/e/UBB_IE_2020-2023/S2.DSA"
-alias MARPMI="cd /mnt/e/UBB_IE_2020-2023/S2.MARPMI"
+alias OS="cd /mnt/e/UBB_IE_2020-2023/S2.OS/"
+alias OOP="cd /mnt/e/UBB_IE_2020-2023/S2.OOP/"
+alias DS="cd /mnt/e/UBB_IE_2020-2023/S2.DS/"
+alias GA="cd /mnt/e/UBB_IE_2020-2023/S2.GA/"
+alias GM="cd /mnt/e/UBB_IE_2020-2023/S2.GM/"
+alias DSA="cd /mnt/e/UBB_IE_2020-2023/S2.DSA/"
+alias MARPMI="cd /mnt/e/UBB_IE_2020-2023/S2.MARPMI/"
 
 # S3
-alias APM="cd /mnt/e/UBB_IE_2020-2023/S3.APM"
-alias CN="cd /mnt/e/UBB_IE_2020-2023/S3.CN"
-alias CP="cd /mnt/e/UBB_IE_2020-2023/S3.CP"
-alias DBS="cd /mnt/e/UBB_IE_2020-2023/S3.DBS"
-alias FLP="cd /mnt/e/UBB_IE_2020-2023/S3.FLP"
-alias PS="cd /mnt/e/UBB_IE_2020-2023/S3.PS"
-alias EN="cd /mnt/e/UBB_IE_2020-2023/S3.EN"
+alias APM="cd /mnt/e/UBB_IE_2020-2023/S3.APM/"
+alias CN="cd /mnt/e/UBB_IE_2020-2023/S3.CN/"
+alias CP="cd /mnt/e/UBB_IE_2020-2023/S3.CP/"
+alias DBS="cd /mnt/e/UBB_IE_2020-2023/S3.DBS/"
+alias FLP="cd /mnt/e/UBB_IE_2020-2023/S3.FLP/"
+alias PS="cd /mnt/e/UBB_IE_2020-2023/S3.PS/"
+alias EN="cd /mnt/e/UBB_IE_2020-2023/S3.EN/"
 
 # S4
-alias AI="cd /mnt/e/UBB_IE_2020-2023/S4.AI"
-alias DBMS="cd /mnt/e/UBB_IE_2020-2023/S4.DBMS"
-alias SDI="cd /mnt/e/UBB_IE_2020-2023/S4.SDI"
-alias SE="cd /mnt/e/UBB_IE_2020-2023/S4.SE"
-alias WP="cd /mnt/e/UBB_IE_2020-2023/S4.WP"
+alias AI="cd /mnt/e/UBB_IE_2020-2023/S4.AI/"
+alias DBMS="cd /mnt/e/UBB_IE_2020-2023/S4.DBMS/"
+alias SDI="cd /mnt/e/UBB_IE_2020-2023/S4.SDI/"
+alias SE="cd /mnt/e/UBB_IE_2020-2023/S4.SE/"
+alias WP="cd /mnt/e/UBB_IE_2020-2023/S4.WP/"
 
-alias S2.DSA="cd /mnt/e/UBB_IE_2020-2023/S4.S2.DSA"
-alias S2.OOP="cd /mnt/e/UBB_IE_2020-2023/S4.S2.OOP"
-alias S2.OS="cd /mnt/e/UBB_IE_2020-2023/S4.S2.OS"
+alias S2.DSA="cd /mnt/e/UBB_IE_2020-2023/S4.S2.DSA/"
+alias S2.OOP="cd /mnt/e/UBB_IE_2020-2023/S4.S2.OOP/"
+alias S2.OS="cd /mnt/e/UBB_IE_2020-2023/S4.S2.OS/"
 
 
 alias glsmain='eval $(ssh-agent) && ssh-add ~/.ssh/id_ed25519_github'
@@ -184,7 +187,7 @@ alias javafx="java --module-path $JAVAFX_HOME/lib --add-modules javafx.controls,
 ### }}} 
 
 ### Shortcuts {{{
-alias uniserver="ssh -p 8937 prie2985@www.scs.ubbcluj.ro"
+alias uniserver="ssh -vp 8937 prie2985@www.scs.ubbcluj.ro"
 #alias rmfx="rm /home/kamui/.cache/mozilla/firefox/ntrc3s4e.default/cache2/entries/*"
 #alias rmcr="rm -r /home/kamui/.cache/google-chrome/Default/Cache/* /home/kamui/.cache/google-chrome/Default/Code\ Cache/js/*"
 alias oslp="sudo pm-suspend-hybrid"

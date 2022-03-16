@@ -614,13 +614,13 @@ cawk() {
 cleanup() {
     echo "Chrome "
     #rm -r /home/kamui/.cache/google-chrome/Default/Cache/* /home/kamui/.cache/google-chrome/Default/Code\ Cache/js/*
-    echo -ne "Default/Service Worker/CacheStorage\t" && [ -d ~kamui/.config/google-chrome/Default/Service\ Worker/CacheStorage ] && rm -r ~kamui/.config/google-chrome/Default/Service\ Worker/CacheStorage | wc -l || echo "Empty"
+    echo -ne "Default/Service Worker/CacheStorage\t" && [ -d ~kamui/.config/google-chrome/Default/Service\ Worker/CacheStorage ] && rm -vr ~kamui/.config/google-chrome/Default/Service\ Worker/CacheStorage | wc -l || echo "Empty"
 
     echo
     echo "Firefox " 
         #find /home/kamui/.mozilla/firefox/*/storage/default -path "*/morgue/*" -type d -exec rm -r {} + # delete ocasionally
 
-        find ~kamui/.mozilla/firefox/*/ -path "*/datareporting/archived/*" -type d -exec rm -r {} +
+        echo -ne "datareporting\t"; find ~kamui/.mozilla/firefox/*/ -path "*/datareporting/archived/*" -type d -exec rm -vr {} + | wc -l || echo "Empty"
         # this above can be tested with
             # mkdir ~kamui/.mozilla/firefox/icpoa0ej.ForTesting/datareporting/archived/test_dir$(fdate)
             # ls ~kamui/.mozilla/firefox/icpoa0ej.ForTesting/datareporting/archived/
@@ -628,14 +628,14 @@ cleanup() {
             # ls ~kamui/.mozilla/firefox/icpoa0ej.ForTesting/datareporting/archived/
 
         for PROFILE_DIR in $(find ~kamui/.cache/mozilla/firefox/ -mindepth 1 -maxdepth 1 -type d); do 
-            echo -ne "$(basename "$PROFILE_DIR")\t" && [ -d "$PROFILE_DIR/cache2" ] && /usr/bin/rm -r "$PROFILE_DIR/cache2" | wc -l || echo "Empty"
+            echo -ne "$(basename "$PROFILE_DIR")\t" && [ -d "$PROFILE_DIR/cache2" ] && /usr/bin/rm -vr "$PROFILE_DIR/cache2" | wc -l || echo "Empty"
         done
         #[ -d ~/.cache/mozilla/firefox/*/cache2 ] && rm -r ~/.cache/mozilla/firefox/*/cache2 | wc -l || echo -e "\tEmpty" # OLD - used with 1 single profile
 
     echo
     echo "Teams "
-    echo -ne "Cache\t" && [ -d '~kamui/.config/Microsoft/Microsoft Teams/Cache'/ ] && /usr/bin/rm -r '~kamui/.config/Microsoft/Microsoft Teams/Cache'/ | wc -l || echo "Empty"
-    echo -ne "Code Cache\t" && [ -d '~kamui/.config/Microsoft/Microsoft Teams/Code Cache'/ ] && rm -r '~kamui/.config/Microsoft/Microsoft Teams/Code Cache'/ | wc -l || echo "Empty"
+    echo -ne "Cache\t" && [ -d '~kamui/.config/Microsoft/Microsoft Teams/Cache'/ ] && /usr/bin/rm -vr '~kamui/.config/Microsoft/Microsoft Teams/Cache'/ | wc -l || echo "Empty"
+    echo -ne "Code Cache\t" && [ -d '~kamui/.config/Microsoft/Microsoft Teams/Code Cache'/ ] && rm -vr '~kamui/.config/Microsoft/Microsoft Teams/Code Cache'/ | wc -l || echo "Empty"
 }
 
 
