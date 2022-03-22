@@ -9,3 +9,5 @@
 	email = prie2985@scs.ubbcluj.ro
 [credential]
 	helper = cache --timeout=2592000
+[core]
+	autocrlf = input

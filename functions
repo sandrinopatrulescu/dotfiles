@@ -570,7 +570,13 @@ getpwd() {
 
 # memory watcher
 mw() {
-    while :; do date; free -h; sleep 1; clear; done
+    while :; do
+        date; 
+        free -m | awk 'NR==2{printf "Percentage: %.2f%%\n", $3*100/$2}'
+        free -h; 
+        sleep 1; 
+        clear;
+    done
 }
 
 

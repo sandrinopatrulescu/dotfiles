@@ -33,6 +33,7 @@ alias ffmpeg_template="ffmpeg -i foobar.mkv -c copy ../Captures/S4foobar.mp4" # 
 alias ud="sudo apt update"
 alias list="apt list --upgradable"
 alias ug="sudo apt upgrade"
+alias la="ls -A"
 # }}}
 
 
@@ -168,6 +169,7 @@ alias glsmain='eval $(ssh-agent) && ssh-add ~/.ssh/id_ed25519_github'
 alias glst='ssh -T git@github.com'
 alias glsuni='eval $(ssh-agent) && ssh-add ~/.ssh/id_ed25519_github_uni'
 alias glsus='eval $(ssh-agent) && ssh-add' # git login ssh uni server
+alias glsuniw='eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_ed25519'
 
 alias ..="cd .." # [1]
 alias ...="cd ../.." # [1]

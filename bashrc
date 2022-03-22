@@ -72,7 +72,7 @@ grep -q "LS_COLORS" ~/.env || { dircolors -b >> ~/.env && echo 'export LS_COLORS
 #source ~/dotfiles/"alias" && source ~/dotfiles/functions
 #source ~/dotfiles/env
 
-### for printing Uni Week
+### for printing Uni Week #TODO: refactor or remove
 
 LAST_WEEK_BEFORE_SEMESTER=38 &&
 WEEK=$(expr 52 + $(date +%V) - $LAST_WEEK_BEFORE_SEMESTER) &&
