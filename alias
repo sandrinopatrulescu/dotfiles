@@ -34,6 +34,18 @@ alias ud="sudo apt update"
 alias list="apt list --upgradable"
 alias ug="sudo apt upgrade"
 alias la="ls -A"
+# C# .NET SQL Server
+alias dn="dotnet"
+alias dnb="dotnet build"
+alias dnr="dotnet run"
+alias dnbr="dotnet build && dotnet run"
+alias dnefdu="dotnet ef database update"
+alias mc="[ -d /mnt/c ] || sudo mkdir /mnt/c; sudo mount /dev/sda3 /mnt/c" # mount Windows's C: Drive
+alias connectionstr="echo 'Data Source=localhost;Initial Catalog=master;User ID=sa;Password=<pasword>'"
+alias sqlcmdc="sqlcmd -S localhost -U SA"
+
+alias umc="sudo umount -v /mnt/c" # unmount Windows's C: Drive
+alias ml="sudo mount -l | grep '^/dev'" # mount list
 # }}}
 
 

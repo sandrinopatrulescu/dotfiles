@@ -54,6 +54,7 @@ export DOTNET_CLI_TELEMETRY_OPTOUT=1 # for dotnet https://imgur.com/a/h2kpPcT
 
 
 append-path ~/.local/bin # for lvim
+append-path /opt/mssql-tools/bin # for sqlcmd (source: https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-ubuntu?view=sql-server-ver15#tools)
 
 
 # Variables

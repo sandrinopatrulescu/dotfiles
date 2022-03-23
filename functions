@@ -335,13 +335,14 @@ fi
 backup() {
     [ $# -lt 1 ] && { echo "Please provide at least 1 file name/path"; false; return; }
         
+    local file="$1"
     # %/ used to avoid creating an additional directory
     # see rsync manual usage nr 4
-    [ $# -eq 1 ] && { rsync -avP "$1" "${1%/}$(fdate)"; return; } 
+    [ $# -eq 1 ] && { rsync -avP "$file" "${file%/}$(date +%Y-%m-%d_%H-%M-%S)"; return; } 
 
     [ $# -gt 1 ] && {
         while [ $# -ne 0 ]; do
-            rsync -avP "$1" "$1$(fdate)"
+            rsync -avP "$file" "$file$(date +%Y-%m-%d_%H-%M-%S)"
             shift
         done
         return
