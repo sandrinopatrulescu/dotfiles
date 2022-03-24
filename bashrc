@@ -30,8 +30,15 @@ echo " "
 # kamui
 
 ## Initial
-source ~/dotfiles/"alias" && source ~/dotfiles/functions
-source ~/dotfiles/env
+for file in ~/dotfiles/{env,"alias",functions};
+do
+    source ${file}
+done
+
+
+append-path ~/dotfiles/bin # https://www.anishathalye.com/2014/08/03/managing-your-dotfiles/
+append-path /opt/mssql-tools/bin # 2022-02-2  for sqlcmd (source: https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-ubuntu?view=sql-server-ver15#tools)
+
 ##
 
 ## Navigation
@@ -67,10 +74,8 @@ grep -q "LS_COLORS" ~/.env || { dircolors -b >> ~/.env && echo 'export LS_COLORS
 ##
 
 
-## Sourcing and printing
+## printed at sourcing
 
-#source ~/dotfiles/"alias" && source ~/dotfiles/functions
-#source ~/dotfiles/env
 
 ### for printing Uni Week #TODO: refactor or remove
 

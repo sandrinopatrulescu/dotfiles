@@ -31,7 +31,6 @@ shopt -s direxpand # https://askubuntu.com/questions/70750/how-to-get-bash-to-st
 # Shell variables
 
 ## Semi-Permanent
-#append-path /home/kamui/.jdks/corretto-11.0.13/bin  # use javac and java everywhere; java installed by IntelliJ
 export JAVA_HOME=/home/kamui/Programs/jdk-17.0.2
 export JAVAFX_HOME=/home/kamui/Programs/javafx-sdk-17.0.2
 export JAVAFX_ARGS="--module-path $JAVAFX_HOME/lib --add-modules javafx.controls,javafx.fxml"
@@ -40,22 +39,11 @@ export JAVAFX_ARGS="--module-path $JAVAFX_HOME/lib --add-modules javafx.controls
 export HISTFILESIZE=10000        # increase history file size (default is 500)
 export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)
 
-append-path ~/dotfiles/bin # https://www.anishathalye.com/2014/08/03/managing-your-dotfiles/
 
 
 # Software Related
 
-# for nvm for npm for LunarVim
-export NVM_DIR="$HOME/.nvm" 
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
 export DOTNET_CLI_TELEMETRY_OPTOUT=1 # for dotnet https://imgur.com/a/h2kpPcT
-
-
-append-path ~/.local/bin # for lvim
-append-path /opt/mssql-tools/bin # for sqlcmd (source: https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-ubuntu?view=sql-server-ver15#tools)
-
 
 # Variables
 

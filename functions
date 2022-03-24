@@ -9,6 +9,9 @@
 #   3. use returns codes in the range 64 - 113 (https://tldp.org/LDP/abs/html/exitcodes.html)
 # 
 
+# Utility 01: find aliases inside the functions file:
+# clear; for alias_name in $(aliases | sed '/usage/d;s@alias @@;/^[^A-Za-z]/d'); do echo ${alias_name}; \grep -wn --color "${alias_name}" < ~/.functions; done
+
 
     ### Uncategorized ### {{{
 
@@ -46,8 +49,8 @@ calc() {
 
 
 # [1]
-mk() {
-    mkdir -p "$@" && cd "$@"
+mkcd() {
+    mkdir -pv "$@" && cd "$@"
 }
 
 e() {
@@ -87,7 +90,7 @@ EOF
     qmake -project
     echo 'QT += widgets' >> *.pro
     qmake
-    sed -i -E 's@^(TARGET[ ]+=.+)@\1.out@' Makefile
+    sed -Ei 's@^(TARGET[ ]+=.+)@\1.out@' Makefile
     make && ./*.out
 }
 
@@ -98,7 +101,7 @@ vc() {
 }
 
 
-## compile c file
+## compile c file TODO: compare this with the template maker and then remove it
 #ccc()  {
 #    # Note: output path:
 #    #       - can be replaced with the argument "-o <output path>"
@@ -186,8 +189,8 @@ public class ${JAVA_FILE_NAME} {
 }
 
 end_str
-    javac -Xlint:all "${FULL_NAME}"
-    [ $? -eq 0 ] && { shift; echo "--> Compilation done, now starting ${JAVA_FILE_NAME}.class <--"; java "${JAVA_FILE_NAME}" $@; }
+    $JAVA_HOME/bin/javac -Xlint:all "${FULL_NAME}"
+    [ $? -eq 0 ] && { shift; echo "--> Compilation done, now starting ${JAVA_FILE_NAME}.class <--"; $JAVA_HOME/bin/java "${JAVA_FILE_NAME}" $@; }
 
     # javafxc -d out/production/A7/ $(find src/ -name "*.java") &&
     # javafx -classpath out/production/A7/ view.Main
@@ -356,10 +359,10 @@ backup2() {
     [ $# -lt 2 ] && { echo "usage: $FUNCNAME CASE SRC... [DEST]"; echo "CASE=1..4"; false; return; }
 
     # case 1: SRC DEST
-    [ "$1" -eq 1 ] && rsync -avP "$2" "$3$(fdate)"
+    [ "$1" -eq 1 ] && rsync -avP "$2" "$3$(date +%Y-%m-%d_%H-%M-%S)"
 
     # case 2: SRC
-    [ "$1" -eq 2 ] && rsync -avP "$1" "$(basename "$1")$(fdate)"
+    [ "$1" -eq 2 ] && rsync -avP "$1" "$(basename "$1")$(date +%Y-%m-%d_%H-%M-%S)"
 
     # case 3: SRC... DEST
     [ "$1" -eq 3 ] && rsync -avP 
@@ -405,7 +408,7 @@ changeName() {
         echo "${FILE%.*}.$EXT -> ${2}.$EXT" 
         #echo "${FILE} -> ${2}.$EXT" 
                                                                                     
-        mv -- "$FILE" "${2}.$EXT"
+        mv -- "$FILE" "${2}.$EXT" # should it be mv -v ?
     done
 }
 
@@ -436,20 +439,20 @@ findSkipDirs() {
     echo "example 1: "
     echo 'sudo find / -type d -type d \( -name Google -o -name timeshift \) -prune -o -iname "*jetbrains*" -print'
     echo "example 2: "
-    echo '_ find / -type d \( -path /mnt -o -path /home/timeshift -o -path /proc \) -prune -o -iname "*cxoffice*" | tee --append find-output_$(fdate).txt'
+    echo '_ find / -type d \( -path /mnt -o -path /home/timeshift -o -path /proc \) -prune -o -iname "*cxoffice*" | tee --append find-output_$(date +%Y-%m-%d_%H-%M-%S).txt'
     #sudo find . -type d \( -path ./.cache/Google -o -path ./.mozilla/firefox \) -prune -o -iname "*jetbrains*" -print
 
     # Notes: name + -print doesn't work
     # testable with
     # rm /tmp/find-w-print.txt; date; time sudo find / -type d -type d \( -name Google -o -name timeshift \) -prune -o -iname "*jetbrains*" -print | tee --append /tmp/find-w-print.txt; date
     # rm /tmp/find-wo-print.txt; date; time sudo find / -type d -type d \( -name Google -o -name timeshift \) -prune -o -iname "*jetbrains*" | tee --append /tmp/find-wo-print.txt; date
-    # diff /tmp/find-w-print.txt /tmp/find-wo-print.txt
+    # diff --color=auto /tmp/find-w-print.txt /tmp/find-wo-print.txt
 }
 
 # not used
 multiinf() {
     # before: >sudo echo; clear # + Ctrl + L
-    echo "multiinf() at $(fdate):"
+    echo "multiinf() at $(date +%Y-%m-%d_%H-%M-%S):"
     echo -n " kamui  ~  "; date; sudo fdisk -l
     echo -n " kamui  ~  "; date; df -h | grep -v tmpfs
     echo -n " kamui  ~  "; date; df | grep -v tmpfs
@@ -494,7 +497,7 @@ tot() {
     if [ "$1" = "-l" ];
     then
         location="$2"
-        if ! readlink -f "${location}" | grep -q "^$TRASH"; then err 1 "location=${location} is not TRASH"; return; fi # more info on negation and pipelines at man bash -> SHELL GRAMMAR -> Pipelines
+        if ! readlink -f "${location}" | grep -q -E "^$TRASH"; then err 1 "location=${location} is not TRASH"; return; fi # more info on negation and pipelines at man bash -> SHELL GRAMMAR -> Pipelines
         if [ ! -d "${location}" ]; then err 1 "location=${location} is not a valid directory inside TRASH"; return; fi
         shift 2 # now $@ = reason
     fi 
@@ -518,7 +521,7 @@ tot() {
     local trash_log_file="$TRASH/A0_trash-log.txt"
     [ -e "$trash_log_file" ] || echo 'DATE|FILE|REASON' >> "$trash_log_file"
 
-    mv -v "$full_path_to_file_to_trash" "$location" && echo "$(fdate)|$full_path_to_file_to_trash|$@" >> "$trash_log_file"
+    mv -v "$full_path_to_file_to_trash" "$location" && echo "$(date +%Y-%m-%d_%H-%M-%S)|$full_path_to_file_to_trash|$@" >> "$trash_log_file"
 
 }
 
@@ -629,7 +632,7 @@ cleanup() {
 
         echo -ne "datareporting\t"; find ~kamui/.mozilla/firefox/*/ -path "*/datareporting/archived/*" -type d -exec rm -vr {} + | wc -l || echo "Empty"
         # this above can be tested with
-            # mkdir ~kamui/.mozilla/firefox/icpoa0ej.ForTesting/datareporting/archived/test_dir$(fdate)
+            # mkdir ~kamui/.mozilla/firefox/icpoa0ej.ForTesting/datareporting/archived/test_dir$(date +%Y-%m-%d_%H-%M-%S)
             # ls ~kamui/.mozilla/firefox/icpoa0ej.ForTesting/datareporting/archived/
             # src && cleanup
             # ls ~kamui/.mozilla/firefox/icpoa0ej.ForTesting/datareporting/archived/
@@ -746,7 +749,7 @@ how() {
     if [ $# -ne 1 ]; then err 1 "usage: $FUNCNAME <function name>"; return; fi
 
     # check if functions is defined
-    if ! grep -q "^$1\(\) {" ~/.functions; then err 2 "$1() is not defined"; return; fi
+    if ! grep -q -E "^$1\(\) {" ~/.functions; then err 2 "$1() is not defined"; return; fi
 
 
     \grep -Pzo "(#{39}\n)(#.*\n)*"$1"\(\)" ~/.functions # inspired from: https://stackoverflow.com/a/7167115/17299754
