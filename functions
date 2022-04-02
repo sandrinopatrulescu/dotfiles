@@ -15,7 +15,7 @@
 
     ### Uncategorized ### {{{
 
-beep() {
+beep() { # play a sound [<n times>]
     # usage: $FUNCNAME [<count>]
     [ $# -eq 0 ] && count="1" || count="$1"
 
@@ -27,7 +27,7 @@ beep() {
 }
 
 # [1] get named variabled (usage: get <VAR_NAME>)
-getvar() {
+getvar() { # print the value of a variable
     echo "${!1}"
 }
 
@@ -36,33 +36,67 @@ getvar() {
 # [1] add a new directory to the PATH variable
 # Note: I use this inside the env file, it doesn't seem to be working
 # in terminal
-append-path() {
+append-path() { # add something to $PATH
     [ -d $1 ] && ! grep -q $1 <<< "$PATH" && export PATH=$PATH:$1
 }
 
 
 
 # [1]
-calc() {
+clc() { # calculator
     echo "$*" | bc -l 
 }
 
 
 # [1]
-mkcd() {
+mkcd() { # mkdir -p + cd
     mkdir -pv "$@" && cd "$@"
 }
 
-e() {
+e() { # evince
     (evince "$@" &)
 }
 
-m() {
+m() { # mousepad
     (mousepad "$@" &)
 }
 
-t() {
+t() { # thunar
     (thunar "$@" &)
+}
+
+cscr() { #  C Sharp Compile & Run
+    local file
+    file=$1; mcs $file -r:System.Windows.Forms.dll -r:System.Data && mono $(echo "$file" | sed 's@.cs@.exe@')
+}
+
+mcs2() { # mono c sharp compiler
+    local projectName
+    projectName="$(basename $PWD)"; mcs -out:bin/Debug/"${projectName}".exe -r:System.Data -r:System.Windows.Forms.dll -r:System.Drawing $(find src/ -iname "*.cs") && (cd bin/Debug/; mono "${projectName}".exe) # https://stackoverflow.com/questions/1794127/how-do-i-compile-all-files-in-a-directory-with-mono/ 
+}
+
+
+pathwin2wsl() { # convert windows path to wsl (unix) path
+	# remove the :
+	# convert drive letter to lowercase
+	# replace backslashes with forward slashes; source: https://stackoverflow.com/questions/52256461/convert-first-letter-to-lowercase-using-sed
+	# prepend /mnt/ to the path
+	echo "$1" | sed -E 's@:@@;s@^.@\L&@;s@\\@/@g;s@^@/mnt/@'
+}
+
+pathwsl2win() { # convert wsl (unix) path to windows path
+	# replace forwardslashes with backslashes
+    # change to windows drive letter: s@^\\mnt\\([a-z])\\@\1:\\@;
+    # turn letter to upper case: s@^[a-z]@\U&@; # https://phpfog.com/how-to-uppercase-lowercase-text-with-sed/
+	# prepend \\wsl$\Ubuntu
+	readlink -f "$1" | sed -E 's@/@\\@g;s@^\\mnt\\([a-z])\\@\1:\\@;s@^[a-z]@\U&@;s@^\\@\\\\wsl\$\\Ubuntu@'
+}
+
+
+remove-package() { # taken from the Evernote/Linux - Completely remove .deb package
+    sudo apt purge "${1}"
+    sudo apt --purge autoremove
+    sudo apt clean
 }
 
 # }}}
@@ -71,7 +105,7 @@ t() {
 
     ### COMPILE ### ------------------------------ {{{
 
-qtbuild() {
+qtbuild() { # compile c++ qt apps in the cli
     if [[ ! -f "main.cpp" ]]
     then
     cat > main.cpp << EOF
@@ -96,7 +130,7 @@ EOF
 
 
 # edit c file in vi
-vc() {
+vc() { # edit .c files (extension shouldn't be written)
     vi "$1".c
 }
 
@@ -174,8 +208,7 @@ vc() {
 #
 
 # added at 16.11.2021 22;49
-# compile java file or create
-jr() {
+jr() { # compile java file or create
     [ $# -lt 1 ] && { echo "Please proide just the name of the .java file and the program args"; false; return; }
     JAVA_FILE_NAME="$1"
     FULL_NAME="${1}".java
@@ -231,7 +264,7 @@ end_str
 #   jfxr out/production/A7 src/ view.Main
 #
 #######################################
-jfxr() {
+jfxr() { # Compile and run JavaFX programs
 
     # usage:
     local usage
@@ -296,8 +329,7 @@ jfxr() {
 }
 
 
-runc() {
-# used for creating C programs to use with THREADS
+runc() { # used for creating C programs to use with THREADS
 if test $# -eq 0
 then
     echo -e "ERROR: Must provide at least a name to the C program"
@@ -335,7 +367,7 @@ fi
 
 # be careful not to include the tralining / (slash) for directories
 #   unless you want to copy inside the given directory
-backup() {
+backup() { # copy a file/folder and append $(date +%Y-%m-%d_%H-%M-%S) to the name
     [ $# -lt 1 ] && { echo "Please provide at least 1 file name/path"; false; return; }
         
     local file="$1"
@@ -354,8 +386,7 @@ backup() {
 }
 
 
-# abandoned
-backup2() {
+backup2() { # abandoned
     [ $# -lt 2 ] && { echo "usage: $FUNCNAME CASE SRC... [DEST]"; echo "CASE=1..4"; false; return; }
 
     # case 1: SRC DEST
@@ -375,7 +406,7 @@ backup2() {
 
 
 
-big() {
+big() { # display files/dirs sorted in reverse by size
     # usage: big
     #   or
     #  big <dir_followed_by_slash>
@@ -386,7 +417,7 @@ big() {
 }
 
 
-sbig() {
+sbig() { # same as big() but using sudo
     # usage: same as for big()
     date
     sudo du -sch ${1}{.[^.],}* | sort -h
@@ -413,7 +444,7 @@ changeName() {
 }
 
 
-findSkipDirs() {
+findSkipDirs() { # skip folders using find
     USAGE="usage: findSkipDirs -p|n <file_with_dirs|dirs...>"
 
     # check and set the mode
@@ -450,7 +481,7 @@ findSkipDirs() {
 }
 
 # not used
-multiinf() {
+multiinf() { # provide various system info (used at fresh installs, see Evernote/Linux install + configs)
     # before: >sudo echo; clear # + Ctrl + L
     echo "multiinf() at $(date +%Y-%m-%d_%H-%M-%S):"
     echo -n " kamui  ~  "; date; sudo fdisk -l
@@ -480,7 +511,7 @@ sprune() {
 }
 
 
-tot() {
+tot() { # to trash - move files/dirs to trash and log the date and reason
 # aka to trash
     # usage: $FUNCNAME <file_to_trash> [-l <location>] <REASON>
     #   ex: tot script.sh -l $TRASH/removed_scripts "used to show directory size, no longer needed"
@@ -530,7 +561,7 @@ tot() {
 # tail trash: tt or tt <nr of lines> 
 #   any other arugments are ignored
 #######################################
-tt() 
+tt()  # tail trash - list the last N, or last 10,  entries in the trash log file 
 { 
     local trash_log_file="$TRASH/A0_trash-log.txt"
     local args
@@ -561,7 +592,7 @@ echo "$(head -n 1 $TRASH/A0_trash-log.txt) <--- HEADER"
 
     ### NAVIGATION ### {{{
 
-getpwd() {
+getpwd() { # print pwd
     (cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 }
 
@@ -572,8 +603,7 @@ getpwd() {
     ### SYSTEM ANALYSIS ### {{{
 
 
-# memory watcher
-mw() {
+mw() { # memory watcher
     while :; do
         date; 
         free -m | awk 'NR==2{printf "Percentage: %.2f%%\n", $3*100/$2}'
@@ -585,7 +615,7 @@ mw() {
 
 
 # deprecated: $1 = foo/a/a.txt must be changed to ./foo/a/.txt
-sln() {
+sln() { # deprecated, used to create symlinks
     # sln OLD NEW
     # sln OLD # it is done in the current folder
     # TODO test if OLD exists and that NEW doesn't exists
@@ -615,13 +645,13 @@ EOS
     ### UTILS ### {{{
 
 #calculator awk
-cawk() {
+cawk() { # calculator
     # Note: * has to be escaped
     echo | awk "{print $*}"
 }
 
 
-cleanup() {
+cleanup() { # remove temporary files
     echo "Chrome "
     #rm -r /home/kamui/.cache/google-chrome/Default/Cache/* /home/kamui/.cache/google-chrome/Default/Code\ Cache/js/*
     echo -ne "Default/Service Worker/CacheStorage\t" && [ -d ~kamui/.config/google-chrome/Default/Service\ Worker/CacheStorage ] && rm -vr ~kamui/.config/google-chrome/Default/Service\ Worker/CacheStorage | wc -l || echo "Empty"
@@ -644,13 +674,30 @@ cleanup() {
 
     echo
     echo "Teams "
-    echo -ne "Cache\t" && [ -d '~kamui/.config/Microsoft/Microsoft Teams/Cache'/ ] && /usr/bin/rm -vr '~kamui/.config/Microsoft/Microsoft Teams/Cache'/ | wc -l || echo "Empty"
-    echo -ne "Code Cache\t" && [ -d '~kamui/.config/Microsoft/Microsoft Teams/Code Cache'/ ] && rm -vr '~kamui/.config/Microsoft/Microsoft Teams/Code Cache'/ | wc -l || echo "Empty"
+    echo -ne "Cache\t" && [ -d ~kamui/.config/Microsoft/"Microsoft Teams"/Cache/ ] && /usr/bin/rm -vr ~kamui/.config/Microsoft/"Microsoft Teams"/Cache/ | wc -l || echo "Empty"
+    echo -ne "Code Cache\t" && [ -d ~kamui/.config/Microsoft/"Microsoft Teams/Code Cache/" ] && /usr/bin/rm -vr ~kamui/.config/Microsoft/"Microsoft Teams/Code Cache/" | wc -l || echo "Empty"
+
+    echo
+    echo "Visual Studio Code"
+    echo -ne "Cache\t" && [ -d /home/kamui/.config/Code/Cache/ ] && /usr/bin/rm -vr /home/kamui/.config/Code/Cache | wc -l || echo "Empty"
+
+    echo
+    echo "Discord"
+    echo -ne "Cache\t" && [ -d /home/kamui/.config/discord/Cache ] && /usr/bin/rm -vr /home/kamui/.config/discord/Cache | wc -l || echo "Empty"
+
+	echo
+    echo ".gradle"
+    echo -ne "caches\t" && [ -d /home/kamui/.gradle/caches ] && /usr/bin/rm -vr /home/kamui/.gradle/caches | wc -l || echo "Empty"
+
+    echo
+    echo "yarn"
+    echo -ne "v6\t" && [ -d /home/kamui/.cache/yarn/v6 ] && /usr/bin/rm -vr /home/kamui/.cache/yarn/v6 | wc -l || echo "Empty"
+
 }
 
 
 
-err() {
+err() { # set a return code and echo a message before returning from a function
     # usage: $FUNCNAME <return code> <message...>...
     # Function.
     # Parameter 1 is the return code.
@@ -666,8 +713,7 @@ err() {
     fi
 }
 
-# date time date
-dtd() {
+dtd() { # date time <program> date
     date
     time "$@"
     RET_VAL=$?
@@ -675,7 +721,7 @@ dtd() {
     return $RET_VAL
 }
 
-hostfiles() {
+hostfiles() { # python -m http.server on / folder
     #echo "usage: $FUNCNAME [PORT=8080]"
     echo "IP is $(ifconfig | grep -A1 -E "^wlp3s0:" | tail -n 1 | awk '{print $2}')"
 #    (cd /; python3 -m http.server 8080)
@@ -689,7 +735,7 @@ hostfiles() {
 }
 
 
-perm_to_script() {
+perm_to_script() { # chmod u+rx on a file/dir
     # usage: $FUNCNAME FILE|DIR
     # descr: gives to user read and execute permissions for a given file
     #   or to all .sh files in a given folder
@@ -706,7 +752,7 @@ perm_to_script() {
 
 # used to open programs like text editors in subshells and not have
 # the output printed in the terminal
-sp() {
+sp() { # spawn a program in a subshell in the background
     [[ $# -eq 0 ]] && { echo "Please provide a program to open (ex:
     mousepad a.txt)"; false; return; }
     WHERE_TO_SPAWN=$(pwd)
@@ -721,7 +767,7 @@ sp() {
 }
 
 
-sp2() {
+sp2() { # spawn a program in a subshell in the background, V2
     if [ $# -eq 0 ]; then err 1 "Please provide a program to open (ex: mousepad a.txt"; return; fi
 
     local command=$1
@@ -744,7 +790,7 @@ sp2() {
 #   1, invalid usage
 #   2, function doesn't exist
 #######################################
-how() {
+how() { # Provide information about user-defined functions
     # arguments parsing
     if [ $# -ne 1 ]; then err 1 "usage: $FUNCNAME <function name>"; return; fi
 
@@ -783,13 +829,13 @@ EOF
 
 
 # change xfce terminal background darkness
-terminal_darkness() {
+terminal_darkness() { # change the xfce terminal's opacity
     [ $# -eq 0 ] && grep "BackgroundDarkness=" ~/.config/xfce4/terminal/terminalrc && return
     sed -Ei "s@(BackgroundDarkness=).*@\10,$1@" ~/.config/xfce4/terminal/terminalrc
 }
 
 # set the xfce tab title to pwd
-title() {
+title() { # set the xfce title to pwd or to a given string
     xtitle --version &> /dev/null || { echo "$FUNCNAME: ERROR - xtitle is not installed"; return 1; }
 
     [ $# -eq 0 ] && {
@@ -808,7 +854,7 @@ title() {
     xtitle "${TITLE/\/home\/kamui/\~}" #&& echo title was set # replace /home/kamui with ~
 }
 
-cd() {
+cd() { # wrapper for cd which also sets the terminal window/tab title
     builtin cd "$@" # found the solution @ https://askubuntu.com/questions/1238467/xfce-terminal-run-script-on-session-restore
     xtitle --version &> /dev/null && title
     #title &> /dev/null # TODO: why it doesn't work?

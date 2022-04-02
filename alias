@@ -41,30 +41,39 @@ alias dnr="dotnet run"
 alias dnbr="dotnet build && dotnet run"
 alias dnefdu="dotnet ef database update"
 alias mc="[ -d /mnt/c ] || sudo mkdir /mnt/c; sudo mount /dev/sda3 /mnt/c" # mount Windows's C: Drive
-alias connectionstr="echo 'Data Source=localhost;Initial Catalog=master;User ID=sa;Password=<pasword>'"
+alias connectionstr="echo 'Data Source=localhost;Initial Catalog=WebelopersDB;User ID=sa;Password=<pasword>'"
 alias sqlcmdc="sqlcmd -S localhost -U SA"
+alias ssql="systemctl stop mssql-server"
 
 alias umc="sudo umount -v /mnt/c" # unmount Windows's C: Drive
 alias ml="sudo mount -l | grep '^/dev'" # mount list
+
+alias gcc="gcc -Wall -g"
+
+alias sda="mono '/home/kamui/Programs/Steam Desktop Authenticator/Steam Desktop Authenticator.exe' &" # steam desktop authenticator
 # }}}
 
 
 # List declared aliases, functions, paths [1]
-alias aliases="alias | sed -n 's@=.*@@;/^alias/p'" 
-alias acats="grep -nT \"### \" ~/.alias"
-alias functions="grep -nT '^[a-z].*\(\)' ~/.functions"
-alias functionsa="functions | sort -k 2 | sed 's@ \{@@'"
-alias fcats="grep -nT \"###\" ~/.functions"
-alias paths='echo -e ${PATH//:/\\n}'
+alias aliases="alias | sed -n 's@=.*@@;/^alias/p'" # display aliases names
+alias acats="grep -nT \"### \" $DOTS/alias" # display aliases categories
+alias functions="grep -nT '^[a-z].*\(\)' $DOTS/functions" # display the user-defined functions
+alias functionsa="functions | sort -k 2 | sed 's@ \{@@'" # display the user-defined functions but in alphabetical order
+alias fcats="grep -nT \"###\" $DOTS/functions" # function categories
+alias paths='echo -e ${PATH//:/\\n}' # show all the PATH locations on different lines
 
 # Shortcuts {{{
 alias _="sudo " # [1]
 alias g="git" # [1]
+alias gb="git branch"
 alias gs="git status"
+alias gd="git diff"
+alias ga="git add ."
 alias gl="git log"
 alias gc="git commit"
 alias gp="git push"
 alias gco="git checkout"
+alias gf="git fetch"
 alias gm="git merge"
 alias gl1s="g log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'" # git log 1 specific; source: https://stackoverflow.com/questions/1838873/visualizing-branch-topology-in-git/34467298#34467298
 alias gl1="gl1s --all" # git log 1
@@ -96,7 +105,7 @@ alias diff='diff --color=auto'
 ###### }}}
 
 ###### File System Information {{{
-alias l="ls -l"
+alias l="ls -1l"
 alias lh='ls -lh'
 alias lrt="ls -lrt"
 alias lrth="lrt -h"

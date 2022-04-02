@@ -30,7 +30,7 @@ echo " "
 # kamui
 
 ## Initial
-for file in ~/dotfiles/{env,"alias",functions};
+for file in ~kamui/dotfiles/{env,"alias",functions};
 do
     source ${file}
 done
