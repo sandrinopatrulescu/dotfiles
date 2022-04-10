@@ -51,6 +51,11 @@ alias ml="sudo mount -l | grep '^/dev'" # mount list
 alias gcc="gcc -Wall -g"
 
 alias sda="mono '/home/kamui/Programs/Steam Desktop Authenticator/Steam Desktop Authenticator.exe' &" # steam desktop authenticator
+
+alias acpi="date; acpi"
+
+alias cdirs="mkdir -p {src,tests}/{domain,persistence,service,tools} src/ui"
+alias cign="echo -e '/.idea/\n/cmake*/' >> .gitignore"
 # }}}
 
 
@@ -65,7 +70,8 @@ alias paths='echo -e ${PATH//:/\\n}' # show all the PATH locations on different 
 # Shortcuts {{{
 alias _="sudo " # [1]
 alias g="git" # [1]
-alias gb="git branch"
+alias gi="git init"
+alias gb="git branch -va"
 alias gs="git status"
 alias gd="git diff"
 alias ga="git add ."
@@ -109,6 +115,7 @@ alias l="ls -1l"
 alias lh='ls -lh'
 alias lrt="ls -lrt"
 alias lrth="lrt -h"
+alias lla="ls -1lA"
 
 ###### }}}
 
@@ -200,6 +207,8 @@ alias ..="cd .." # [1]
 alias ...="cd ../.." # [1]
 alias ....="cd ../../.." # [1]
 alias .....="cd ../../../.." # [1]
+alias ......="cd ../../../../.." # [1]
+alias .......="cd ../../../../../.." # [1]
 alias -- -="cd -" # [1] Go to previous dir
 alias cd.='cd $(readlink -f .)' # [1] Go to real dir (i.e. if current dir is linked)
 

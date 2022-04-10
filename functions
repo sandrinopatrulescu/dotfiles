@@ -76,7 +76,7 @@ mcs2() { # mono c sharp compiler
 }
 
 
-pathwin2wsl() { # convert windows path to wsl (unix) path
+pathwin2wsl() { # convert windows path to wsl (unix) path; NOTE: the path needs to be quoted (for some reason or another)
 	# remove the :
 	# convert drive letter to lowercase
 	# replace backslashes with forward slashes; source: https://stackoverflow.com/questions/52256461/convert-first-letter-to-lowercase-using-sed
@@ -99,6 +99,25 @@ remove-package() { # taken from the Evernote/Linux - Completely remove .deb pack
     sudo apt clean
 }
 
+
+pd() { # go to Parent Dir or go to [n]th parent dir
+    local final_destination="."
+    # usage:
+    #   pd -p [<n>] # just print where it would lead
+    #   pd # go to parent dir
+    #   pd <n> # go to n-th parent dir
+    local print_only=0
+
+    [ "$1" == "-p" ] && { print_only=1; shift; }
+
+    [ $# -eq 1 ] && steps="$1" || steps=1
+
+    for step in $(seq $steps); do
+        final_destination="../${final_destination}"
+    done
+  
+    [ $print_only -eq 1 ] && readlink -f "$final_destination" || cd "$final_destination"
+}
 # }}}
 
 
