@@ -177,7 +177,7 @@ alias andrei="cd /mnt/e/Others/Andrei"
 
 # UBB_IE_2020-2023
 alias uni="cd /mnt/e/UBB_IE_2020-2023" # added on 03 iul 2021, 16:57
-alias unical='sp shotwell /mnt/e/UBB_IE_2020-2023/uni-cal4.0.png'
+alias unical='sp shotwell /mnt/e/UBB_IE_2020-2023/uni-cal4.0.png' # open the uni calendar
 
 # alias studying="cd /mnt/e/Studying" # not used
 alias scratch="cd /mnt/e/Scratch"
@@ -216,11 +216,11 @@ alias S2.OOP="cd /mnt/e/UBB_IE_2020-2023/S4.S2.OOP/"
 alias S2.OS="cd /mnt/e/UBB_IE_2020-2023/S4.S2.OS/"
 
 
-alias glsmain='eval $(ssh-agent) && ssh-add ~/.ssh/id_ed25519_github'
-alias glst='ssh -T git@github.com'
-alias glsuni='eval $(ssh-agent) && ssh-add ~/.ssh/id_ed25519_github_uni'
+alias glsm='eval $(ssh-agent) && ssh-add ~/.ssh/id_ed25519_github_main' # git login ssh main
+alias glst='ssh -T git@github.com' # git ssh test
 alias glsus='eval $(ssh-agent) && ssh-add' # git login ssh uni server
-alias glsuniw='eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_ed25519'
+alias glsuni='eval $(ssh-agent) && ssh-add ~/.ssh/id_ed25519_github_uni' # git login ssh uni (linux)
+alias glsuniw='eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_ed25519_github_uni_windows' # git login ssh uni (windows)
 
 alias ..="cd .." # [1]
 alias ...="cd ../.." # [1]
@@ -232,7 +232,7 @@ alias -- -="cd -" # [1] Go to previous dir
 alias ~="cd ~"
 alias cd.='cd $(readlink -f .)' # [1] Go to real dir (i.e. if current dir is linked)
 
-alias dots='cd $(readlink -f ~/dotfiles)'
+alias dots='cd $(readlink -f $DOTS)'
 ### }}} 
 
 ### Software {{{

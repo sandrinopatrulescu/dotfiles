@@ -75,7 +75,7 @@ getvar() { # print the value of a variable
 # Note: I use this inside the env file, it doesn't seem to be working
 # in terminal
 append-path() { # add something to $PATH
-    [ -d $1 ] && ! grep -q $1 <<< "$PATH" && export PATH=$PATH:$1
+    [ -d $1 ] && ! grep -q $1 <<< "$PATH" && export PATH=$PATH:$1 || true
 }
 
 
@@ -185,6 +185,116 @@ sc() { ## ssh connect
     # USAGE: sc PORT USER ADDR
     # ssh -p port user@addr
     ssh -p $1 "$2@$3"
+}
+
+
+printSemesterWeek() { # prints a message with the number of the semester week
+	# usage: [<WEEK_NUMBER>] [SEMESTER]
+	# 		WEEK_NUMBER - the week number of the year, in range [1,52], for testing
+	#		SEMESTER={1|2} - simulate a semster 
+	#		all other arguments are ignored
+	#		OBS: 
+	#			- there is 1 (kind of) unhandled case: the 2nd semester is set, but is not yet started.
+	#				The problem is that is says "x more weeks to go!", although the 1st semester is still ON-GOING
+	# testing:
+	# 		for x in {1..52}; do echo -n "$x "; printSemesterWeek $x 1; done # 1st semester
+	# 		for x in {1..52}; do echo -n "$x "; printSemesterWeek $x 2; done # 2nd semester
+
+
+	# change at the start of the semester
+	local LAST_WEEK_BEFORE_SEMESTER_START=7
+	local FIRST_VACATION_WEEK=17
+	local LAST_VACATION_WEEK=17
+	local VACATION_TYPE="Easter" # Easter / Christmass
+	
+	# unlikely to change
+	local SEMESTER_SIZE=14
+	local SUMMER_SIZE=11 # no. of summer vacation weeks 
+	
+	# sample for when SEMESTER is provided
+	[ $# -ge 2 ] && {
+		if [ "$2" -eq 1 ]; then
+				local LAST_WEEK_BEFORE_SEMESTER_START=38
+				local FIRST_VACATION_WEEK=51
+				local LAST_VACATION_WEEK=52
+				local VACATION_TYPE="Christmass" # Easter / Christmass
+		elif [ "$2" -eq 2 ]; then
+			local LAST_WEEK_BEFORE_SEMESTER_START=7
+			local FIRST_VACATION_WEEK=17
+			local LAST_VACATION_WEEK=17
+			local VACATION_TYPE="Easter" # Easter / Christmass
+		fi
+	}
+
+	local VACATION_SIZE=$((LAST_VACATION_WEEK - FIRST_VACATION_WEEK + 1))
+	local LAST_SEMESTER_WEEK=$((LAST_WEEK_BEFORE_SEMESTER_START + VACATION_SIZE + 14)) # +52 in case of 1st semester
+
+	[ $# -ge 1 ] && currentWeek=$1 || currentWeek=$(date +%V)
+	#if [ 1 -le $currentWeek -a $currentWeek -le $((LAST_SEMESTER_WEEK + 5 - 52)) ]
+	#if [ $LAST_SEMESTER_WEEK -gt 52 -a $currentWeek -lt $LAST_WEEK_BEFORE_SEMESTER_START ]
+	if [ $LAST_SEMESTER_WEEK -gt 52 -a $currentWeek -lt $((LAST_WEEK_BEFORE_SEMESTER_START + 1 - SUMMER_SIZE)) ] # 2nd comparision fixes the case when the first semester is already set during the vacation
+	then
+		((currentWeek += 52))
+	fi
+
+	if [ $currentWeek -le $LAST_WEEK_BEFORE_SEMESTER_START ] #|| [ $currentWeek -gt $((LAST_SEMESTER_WEEK + 5 )) -a $LAST_SEMESTER_WEEK -gt 52  ]
+	then
+		echo "$((LAST_WEEK_BEFORE_SEMESTER_START - currentWeek + 1)) more weeks to go!"
+	elif [ $currentWeek -lt $FIRST_VACATION_WEEK ]
+	then
+		echo "Week $((currentWeek - LAST_WEEK_BEFORE_SEMESTER_START))/$SEMESTER_SIZE" 
+	elif [ $currentWeek -le $LAST_VACATION_WEEK ]
+	then
+		echo "$VACATION_TYPE $((currentWeek - FIRST_VACATION_WEEK + 1))/$VACATION_SIZE"
+	elif [ $currentWeek -le $LAST_SEMESTER_WEEK ]
+	then
+		echo "Week $((currentWeek - LAST_WEEK_BEFORE_SEMESTER_START - VACATION_SIZE))/$SEMESTER_SIZE" 
+	elif [ $currentWeek -le $((LAST_SEMESTER_WEEK + 3)) ]
+	then
+		echo "E $((currentWeek - LAST_SEMESTER_WEEK))/3"
+	elif [ $currentWeek -eq $((LAST_SEMESTER_WEEK + 4)) ]
+	then
+		echo "V 1/1"
+	elif [ $currentWeek -eq $((LAST_SEMESTER_WEEK + 5)) ]
+	then
+		echo "R 1/1"
+	else
+		if [ $LAST_SEMESTER_WEEK -gt 52 ]; then
+			echo "You are now in the 2nd semester. Update the variables"
+		else
+			echo "You are now in vacation. Update the variables or comment out the function call"
+		fi		
+	# echo "Update the semester variables or comment out the function call."
+	fi
+}
+
+>| ~/testPrintSemesterWeek.sh
+echo '#!/bin/bash' >> ~/testPrintSemesterWeek.sh
+echo >> ~/testPrintSemesterWeek.sh
+type printSemesterWeek | sed '1d' >> ~/testPrintSemesterWeek.sh
+echo >> ~/testPrintSemesterWeek.sh
+echo 'printSemesterWeek "$@"' >> ~/testPrintSemesterWeek.sh
+chmod u+x ~/testPrintSemesterWeek.sh
+
+
+debugf() { # debug a function (by placing it in a script file and running it with bash -x)
+	# usage: $FUNCNAME <FUNCTION_NAME> <FUNCTION_ARUGMENTS>
+	local functionName=$1
+	# create a script file to put the function
+	local scriptName="/tmp/test${1^}.sh"	# man bash -> Parameter Expansion -> Case modification
+
+	shift # shift to get rid of the function name and have $@ equal to the function's argumentss
+	>| $scriptName # clear the script file
+	echo '#!/bin/bash' >> $scriptName
+	echo >> $scriptName
+	set -o pipefail # propagate the error through pipe, if the function was not found and then stop
+	type $functionName 2> /dev/null | sed '1d' >> $scriptName || { err 1 "function $functionName not found"; return; } # put the function definition in the script
+	set +o pipefail	
+	echo >> $scriptName
+	echo $functionName '"$@"' >> $scriptName # put the call to the function in the script
+	chmod u+x $scriptName # make the script executable
+	echo "Running $scriptName"
+	bash -x $scriptName "$@" # run the script
 }
 
 # }}}

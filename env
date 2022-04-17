@@ -14,6 +14,9 @@ export DOTS="/mnt/e/dotfiles"
 export TRASH="/mnt/e/trash"
 export SCRATCH="/mnt/e/Scratch"
 
+export REAL_SSH="/mnt/e/FSs/LL5_2022-02-22_00-07-40/home/kamui/.ssh/"
+export JETBRAINS="/mnt/e/FSs/LL5_2022-02-22_00-07-40/home/kamui/.local/share/JetBrains"
+
 ## Semi-Permanent
 export UNIPATH='/mnt/e/UBB_IE_2020-2023'
 

@@ -29,68 +29,16 @@ echo " "
 
 # kamui
 
-## Initial
 for file in ~kamui/dotfiles/{env,"alias",functions};
 do
     source ${file}
 done
 
+printSemesterWeek
 
-append-path ~/dotfiles/bin # https://www.anishathalye.com/2014/08/03/managing-your-dotfiles/
+append-path $DOTS/bin # https://www.anishathalye.com/2014/08/03/managing-your-dotfiles/
+
+
+## LL 5.6 only
 append-path /opt/mssql-tools/bin # 2022-02-2  for sqlcmd (source: https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-ubuntu?view=sql-server-ver15#tools)
-
 ##
-
-## Navigation
-
-[ -d /e ] || sudo ln -sT /mnt/e /e # ln -s NEW OLD
-
-
-##
-
-## System
-
-## use aliases and functions in sudo
-[ -e /usr/local/bin/custom_sudo.sh ] || echo "Run: sudo ln -s \$DOTS/bin/custom_sudo.sh /usr/local/bin # to use the \"__\" alias"
-
-##
-
-## Tools
-
-### vim
-dpkg -s vim &> /dev/null; [ $? -eq 0 ] || echo "WARNING: vim not installed";
-
-
-##
-
-
-## Visual
-
-
-
-### dircolors
-grep -q "LS_COLORS" ~/.env || { dircolors -b >> ~/.env && echo 'export LS_COLORS' >> ~/.env; }
-
-##
-
-
-
-## printed at sourcing
-
-
-### for printing Uni Week #TODO: refactor or remove
-
-LAST_WEEK_BEFORE_SEMESTER=38 &&
-WEEK=$(expr 52 + $(date +%V) - $LAST_WEEK_BEFORE_SEMESTER) &&
-WEEK=$((WEEK % 52)) &&
-# WEEK=12 <=> W12
-{ [ $WEEK -ge 13 -a $WEEK -le 14 ] && WEEK_TEXT="V $((WEEK - 12))"; } ||
-{ [ $WEEK -ge 15 -a $WEEK -le 16 ] &&  WEEK_TEXT="$((WEEK - 2))"; } ||
-{ [ $WEEK -ge 17 -a $WEEK -le 19 ] && WEEK_TEXT="E $((WEEK - 16))"; } ||
-WEEK_TEXT="$WEEK"
-echo "Week $WEEK_TEXT"
-unset WEEK WEEK_TEXT
-
-##
-
-
