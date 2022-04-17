@@ -10,8 +10,8 @@ do
     $new_file=$(echo "$file" | sed "s@@@")
     echo "$file -> $new_file"
 done
-EOF' # from rename (dry-run)
-alias rnmu="echo not implemented" # from rename (real, destructive)
+EOF' # rename (dry-run)
+alias rnmu="echo not implemented" # rename (real, destructive)
 
 # Default options
 alias rsync="rsync -vh" # [1]
@@ -22,13 +22,14 @@ alias task="echo 'date; time <task> | tee --append \$SCRATCH/outputs/output\$(fd
 # file_var="$SCRATCH/outputs/output$(fdate).txt"; date >> "$file_var"; time <task> | tee --append "$file_var"; date >> "$file_var"
 #   note that output of time still isn't inside the text file; TODO: find a better method
 alias __='sudo custom_sudo.sh '
-alias findroot='sudo find / -type d \( -path /dev -o -path /home/timeshift -o -path /proc -o -path /media -o -path /mnt -o -path /run -o -path /sys -o -path /usr/src -o -path /root \) -prune -o -print' # used to check files added by new software
+alias findroot='sudo find / -type d \( -path /dev -o -path /home/timeshift -o -path /proc -o -path /media -o -path /mnt -o -path /run -o -path /sys -o -path /usr/src -o -path /root \) -prune -o -print' # find in /; used to check files added by new software
 alias sm="watch '{ sensors; sudo hddtemp /dev/sda; }'" # montior CPU and storage temperature
 alias cs="clear; src" # clear the screen and print the new terminal message
 alias c="clear" # clear the terminal
 alias f="firefox "
 alias restart="shutdown -r now"
 alias cp="cp -v"
+alias cpr="cp -vr"
 alias ffmpeg_template="ffmpeg -i foobar.mkv -c copy ../Captures/S4foobar.mp4" # source: https://linuxhint.com/convert-mkv-mp4-ubuntu-ffmpeg/
 alias ud="sudo apt update"
 alias list="apt list --upgradable"
@@ -40,6 +41,7 @@ alias dnb="dotnet build"
 alias dnr="dotnet run"
 alias dnbr="dotnet build && dotnet run"
 alias dnefdu="dotnet ef database update"
+alias dnefma="dotnet ef migrations add"
 alias mc="[ -d /mnt/c ] || sudo mkdir /mnt/c; sudo mount /dev/sda3 /mnt/c" # mount Windows's C: Drive
 alias connectionstr="echo 'Data Source=localhost;Initial Catalog=WebelopersDB;User ID=sa;Password=<pasword>'"
 alias sqlcmdc="sqlcmd -S localhost -U SA"
@@ -49,6 +51,7 @@ alias umc="sudo umount -v /mnt/c" # unmount Windows's C: Drive
 alias ml="sudo mount -l | grep '^/dev'" # mount list
 
 alias gcc="gcc -Wall -g"
+alias g++="g++ -Wall -g --std=c++17"
 
 alias sda="mono '/home/kamui/Programs/Steam Desktop Authenticator/Steam Desktop Authenticator.exe' &" # steam desktop authenticator
 
@@ -56,7 +59,23 @@ alias acpi="date; acpi"
 
 alias cdirs="mkdir -p {src,tests}/{domain,persistence,service,tools} src/ui"
 alias cign="echo -e '/.idea/\n/cmake*/' >> .gitignore"
+
+alias lampp="/opt/lampp/xampp"
+alias php="/opt/lampp/bin/php"
+alias plogs="watch '{ tail /opt/lampp/logs/php_error_log; echo; stat /opt/lampp/logs/php_error_log | sed -n '6p'; wc -l /opt/lampp/logs/php_error_log; }'"
+alias htdocs="cd /opt/lampp/htdocs"
+
+alias ai="sudo apt install" # apt install
 # }}}
+
+
+# Windows {{{
+alias cmd="cmd.exe"
+alias powershell="powershell.exe"
+alias np="notepad.exe"
+alias npp="notepad++.exe"
+# }}}
+
 
 
 # List declared aliases, functions, paths [1]
@@ -210,6 +229,7 @@ alias .....="cd ../../../.." # [1]
 alias ......="cd ../../../../.." # [1]
 alias .......="cd ../../../../../.." # [1]
 alias -- -="cd -" # [1] Go to previous dir
+alias ~="cd ~"
 alias cd.='cd $(readlink -f .)' # [1] Go to real dir (i.e. if current dir is linked)
 
 alias dots='cd $(readlink -f ~/dotfiles)'

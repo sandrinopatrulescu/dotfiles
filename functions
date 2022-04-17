@@ -13,6 +13,44 @@
 # clear; for alias_name in $(aliases | sed '/usage/d;s@alias @@;/^[^A-Za-z]/d'); do echo ${alias_name}; \grep -wn --color "${alias_name}" < ~/.functions; done
 
 
+
+    ### Temporary ### {{{
+clone-webelopers() {
+    local project_name="SE-925-2-Webelopers"
+    # cd $UNIPATH/S4.SE/labs || return 1
+    [ -d "$project_name" ] && { echo "Directory $project_name already exists. No action will be performed"; return 1; }
+
+    echo "Connect to git:"
+    glsuni || { echo "FAILED to connect to the GitHub account"; return 1; }
+
+    g clone git@github.com:915-Negrau-Mircea/SE-925-2-Webelopers.git && echo "Successfuly cloned the repository" || { echo "FAILED to clone the repository"; return 1; }
+    echo
+    cd "$project_name" && echo "Moved to project directory" || echo "Failed to move to project directory"
+
+    echo
+    git update-index --assume-unchanged back-end/Org.Webelopers.API/appsettings.json && echo "Performed git update-index --assume-unchanged on appsettings.json" || { echo "git update-index --assume-unchanged on appsettings.json FAILED"; return 1; } 
+
+    echo
+    echo 'TO DO: Replace the content of "DefaultConnection" from the key "ConnectionStrings" inside appsettings.json with:'
+    connectionstr
+    echo
+    echo "TO DO: vi back-end/Org.Webelopers.API/appsettings.json"
+
+    echo
+    echo "TO DO: After that, perform gs (git status) to test if it succeeded."
+}
+
+re() { # repeat something N times
+    count=$1
+    shift
+    for ((i = 1; i <= $count; i++))
+    do
+        "$@"
+    done
+}
+
+# }}}
+
     ### Uncategorized ### {{{
 
 beep() { # play a sound [<n times>]
@@ -89,7 +127,13 @@ pathwsl2win() { # convert wsl (unix) path to windows path
     # change to windows drive letter: s@^\\mnt\\([a-z])\\@\1:\\@;
     # turn letter to upper case: s@^[a-z]@\U&@; # https://phpfog.com/how-to-uppercase-lowercase-text-with-sed/
 	# prepend \\wsl$\Ubuntu
-	readlink -f "$1" | sed -E 's@/@\\@g;s@^\\mnt\\([a-z])\\@\1:\\@;s@^[a-z]@\U&@;s@^\\@\\\\wsl\$\\Ubuntu@'
+	readlink -f "$1" | sed -E 's@/@\\@g;s@^\\mnt\\([a-z])\\@\1:\\@;s@^[a-z]@\U&@;s@^\\@\\\\wsl\$\\Ubuntu\\@'
+}
+
+winop() { # WINdows OPen - open files and directories using the Windows dialog
+	echo -n "Path in WSL: "; readlink -f "$1"
+	echo -n "Path in Windows: "; echo "$(pathwsl2win "$1")"
+	explorer.exe "$(pathwsl2win "$1")"
 }
 
 
@@ -118,6 +162,31 @@ pd() { # go to Parent Dir or go to [n]th parent dir
   
     [ $print_only -eq 1 ] && readlink -f "$final_destination" || cd "$final_destination"
 }
+
+cpp-generate-exception-class() {
+    [ $# -ne 2 ] && {
+        echo "usage: $FUNCNAME <exception class name> <base name>"
+    }
+    cat <<EOF
+class $1: public $2 {
+public:
+    explicit $1(const std::string& message): $2(message) { name = Meta::getClassName(this); }
+};
+EOF
+}
+
+join1() { # join arguments/strings by a character
+    local IFS="$1"
+    shift
+    echo "$*"
+}
+
+sc() { ## ssh connect
+    # USAGE: sc PORT USER ADDR
+    # ssh -p port user@addr
+    ssh -p $1 "$2@$3"
+}
+
 # }}}
 
 
@@ -375,6 +444,28 @@ else
 fi
 
 }
+
+cfc() { # c fast compile
+    local out=${1/.c/.out}
+    gcc -Wall -o $out $1 && ./$out
+}
+
+cpfc() { # c++ fast compile
+    local out=${1/.c/.out}
+    gcc -Wall -o $out $1 && ./$out
+}
+
+ccfc() { # c/c++ fast compile
+    local compiler
+    local out=
+    out=${1/.cpp/.out}
+    out=${1/.c/.out}
+    [[ $1 == *.c ]] && compiler=gcc || compiler=g++
+    
+    $compiler -Wall -o $out $1 && ./$out
+}
+
+
 # }}}
 
 

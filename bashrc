@@ -74,6 +74,7 @@ grep -q "LS_COLORS" ~/.env || { dircolors -b >> ~/.env && echo 'export LS_COLORS
 ##
 
 
+
 ## printed at sourcing
 
 
