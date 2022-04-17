@@ -13,8 +13,8 @@ fi
 
 
 ## Navigation
-[ ! -d /mnt/f ] || mkdir /mnt/f
-[ ! -d /mnt/e ] || mkdir /mnt/e
+[ -d /mnt/f ] || mkdir /mnt/f
+[ -d /mnt/e ] || mkdir /mnt/e
 [ -d /e ] || sudo ln -sT /mnt/e /e # ln -s NEW OLD
 
 
