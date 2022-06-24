@@ -28,13 +28,13 @@ clone-webelopers() {
     cd "$project_name" && echo "Moved to project directory" || echo "Failed to move to project directory"
 
     echo
-    git update-index --assume-unchanged back-end/Org.Webelopers.API/appsettings.json && echo "Performed git update-index --assume-unchanged on appsettings.json" || { echo "git update-index --assume-unchanged on appsettings.json FAILED"; return 1; } 
+    git update-index --assume-unchanged back-end/Org.Webelopers.API/appsettings.json && echo "Performed: git update-index --assume-unchanged back-end/Org.Webelopers.API/appsettings.json" || { echo "git update-index --assume-unchanged on appsettings.json FAILED"; return 1; } 
 
     echo
     echo 'TO DO: Replace the content of "DefaultConnection" from the key "ConnectionStrings" inside appsettings.json with:'
-    connectionstr
+    sqlconnectionstring
     echo
-    echo "TO DO: vi back-end/Org.Webelopers.API/appsettings.json"
+    echo "TO DO: mousepad back-end/Org.Webelopers.API/appsettings.json"
 
     echo
     echo "TO DO: After that, perform gs (git status) to test if it succeeded."
@@ -49,6 +49,9 @@ re() { # repeat something N times
     done
 }
 
+timezip() {
+    zip -r "${1}_$(date +%Y-%m-%d_%H-%M-%S).zip" "${1}" 
+}
 # }}}
 
     ### Uncategorized ### {{{
@@ -83,6 +86,11 @@ append-path() { # add something to $PATH
 # [1]
 clc() { # calculator
     echo "$*" | bc -l 
+}
+
+
+calc() { # calculator
+    clc "$@"
 }
 
 
@@ -181,10 +189,10 @@ join1() { # join arguments/strings by a character
     echo "$*"
 }
 
-sc() { ## ssh connect
+sshconnect() { ## ssh connect
     # USAGE: sc PORT USER ADDR
     # ssh -p port user@addr
-    ssh -p $1 "$2@$3"
+    ssh -vp $1 "$2@$3"
 }
 
 
@@ -268,6 +276,7 @@ printSemesterWeek() { # prints a message with the number of the semester week
 	fi
 }
 
+cat << EOF > /dev/null
 >| ~/testPrintSemesterWeek.sh
 echo '#!/bin/bash' >> ~/testPrintSemesterWeek.sh
 echo >> ~/testPrintSemesterWeek.sh
@@ -275,6 +284,7 @@ type printSemesterWeek | sed '1d' >> ~/testPrintSemesterWeek.sh
 echo >> ~/testPrintSemesterWeek.sh
 echo 'printSemesterWeek "$@"' >> ~/testPrintSemesterWeek.sh
 chmod u+x ~/testPrintSemesterWeek.sh
+EOF
 
 
 debugf() { # debug a function (by placing it in a script file and running it with bash -x)
@@ -297,6 +307,36 @@ debugf() { # debug a function (by placing it in a script file and running it wit
 	bash -x $scriptName "$@" # run the script
 }
 
+highlight() { # highlight patterns in a file using grep  
+    # searched: grep but show everything
+    # solution: https://unix.stackexchange.com/a/367/497730
+    # from: https://unix.stackexchange.com/questions/366/convince-grep-to-output-all-lines-not-just-those-with-matches
+    local file_arg
+    if [ $# -lt 2 ]; then
+        echo "usage: $FUNCNAME <pattern> <file1> [file2 ...]"
+    elif [ $# -gt 2 ]; then
+        file_arg="${@:2}"
+    else
+        file_arg="$2"
+    fi
+    grep --color -E "$1|$" $file_arg ; 
+    #grep --color -E "$1|$" "${@:2}" ; 
+
+}
+
+
+ffmpeg_convert() { # to convert mkv to mp4, based on ffmpeg_template alias
+    ffmpeg -i $1 -c copy $2
+}
+
+dpkg-log-status-installed() {
+    \grep --color "status installed ${1}" /var/log/dpkg.log
+}
+
+dpkg-log() {
+    \grep --color "${1}" /var/log/dpkg.log
+}
+
 # }}}
 
 
@@ -304,8 +344,7 @@ debugf() { # debug a function (by placing it in a script file and running it wit
     ### COMPILE ### ------------------------------ {{{
 
 qtbuild() { # compile c++ qt apps in the cli
-    if [[ ! -f "main.cpp" ]]
-    then
+    [ -f main.cpp ] || 
     cat > main.cpp << EOF
 #include <QApplication>
 #include <QWidget>
@@ -317,13 +356,26 @@ int main(int argc, char* argv[]) {
     return QApplication::exec();
 }
 EOF
-    fi
 
-    qmake -project
-    echo 'QT += widgets' >> *.pro
+    [ -f ./*.pro ] || qmake -project
+
+    grep -q "^TARGET.*\.out" *.pro || sed -Ei 's@^(TARGET[ ]+=.+)@\1.out@' *.pro 
+
+    # https://stackoverflow.com/questions/2580934/how-to-specify-different-debug-release-output-directories-in-qmake-pro-file
+    /usr/bin/grep -q "QT += widgets" *.pro || 
+    cat >> *.pro << EOF
+QT += widgets
+
+debug:DESTDIR = debug
+debug:OBJECTS_DIR = \$\${DESTDIR}/.obj
+debug:MOC_DIR = \$\${DESTDIR}/.moc
+debug:RCC_DIR = \$\${DESTDIR}/.rcc
+debug:UI_DIR = \$\${DESTDIR}/.ui
+EOF
+
+    #echo 'QT += widgets' >> *.pro
     qmake
-    sed -Ei 's@^(TARGET[ ]+=.+)@\1.out@' Makefile
-    make && ./*.out
+    make && ./debug/*.out
 }
 
 
@@ -571,8 +623,9 @@ ccfc() { # c/c++ fast compile
     out=${1/.cpp/.out}
     out=${1/.c/.out}
     [[ $1 == *.c ]] && compiler=gcc || compiler=g++
-    
-    $compiler -Wall -o $out $1 && ./$out
+    source_file="$1"
+    shift    
+    $compiler -Wall -o $out $source_file && ./$out "$@"
 }
 
 
@@ -871,14 +924,24 @@ cawk() { # calculator
 }
 
 
+__cleanup_dir() {
+    echo -ne "$1\t" && [ -d "$1" ] && rm -vr "$1" | wc -l || echo "Empty"
+}
+
+
 cleanup() { # remove temporary files
+    # TODO: use __cleanup_dir() everywhere
     echo "Chrome "
     #rm -r /home/kamui/.cache/google-chrome/Default/Cache/* /home/kamui/.cache/google-chrome/Default/Code\ Cache/js/*
     echo -ne "Default/Service Worker/CacheStorage\t" && [ -d ~kamui/.config/google-chrome/Default/Service\ Worker/CacheStorage ] && rm -vr ~kamui/.config/google-chrome/Default/Service\ Worker/CacheStorage | wc -l || echo "Empty"
+    #echo -ne ".cache/google-chrome/Default\t" && [ -d /home/kamui/.cache/google-chrome/Default ] && rm -vr /home/kamui/.cache/google-chrome/Default | wc -l || echo "Empty"
+    __cleanup_dir /home/kamui/.cache/google-chrome/Default
 
     echo
     echo "Firefox " 
         #find /home/kamui/.mozilla/firefox/*/storage/default -path "*/morgue/*" -type d -exec rm -r {} + # delete ocasionally
+# /home/kamui/.mozilla/firefox/ntrc3s4e.default/storage/default/https+++studio.youtube.com
+    echo -ne ".mozilla/firefox/ntrc3s4e.default/storage/default/https+++studio.youtube.com\t" && [ -d /home/kamui/.mozilla/firefox/ntrc3s4e.default/storage/default/https+++studio.youtube.com ] && rm -vr /home/kamui/.mozilla/firefox/ntrc3s4e.default/storage/default/https+++studio.youtube.com | wc -l || echo "Empty"
 
         echo -ne "datareporting\t"; find ~kamui/.mozilla/firefox/*/ -path "*/datareporting/archived/*" -type d -exec rm -vr {} + | wc -l || echo "Empty"
         # this above can be tested with

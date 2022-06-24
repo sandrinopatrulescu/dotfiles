@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# source: https://superuser.com/questions/1661048/how-to-download-a-portion-of-a-youtube-video
+
+
+
+if [ $# -ne 2 ]; then
+    echo "usage: $0 <link> <location.mkv>"
+    exit 1
+fi
+
+{   
+    read -r video_url  
+    read -r audio_url
+} < <(
+youtube-dl --get-url --youtube-skip-dash-manifest "$1" # seems to download the REAL best format (highest quality)
+)
+
+ffmpeg -i "$video_url" -i "$audio_url" "$2"
+
+cat << "EOF" > /dev/null
+Notes:
+
+check the format using: youtube-dl -F
+donwload using: ffmpeg -i "$(youtube-dl -f NR -g URL)" -c copy output.mp4
+
+example when -g outputs just 1 link: ffmpeg -i "$(youtube-dl -g --youtube-skip-dash-manifest https://youtu.be/StKa-TRT150)" output.mp4
+
+EOF 
+
+
+cat <<EOF > /dev/null
+Other variants:
+
+ffmpeg -i "$(youtube-dl -f best --get-url https://youtu.be/58jkKbS4mhQ)" -c:v copy -c:a copy culture-code-fairy-tale.mp4
+# has lower resolution
+
+
+ffmpeg -i "$(youtube-dl --get-url --youtube-skip-dash-manifest https://youtu.be/58jkKbS4mhQ)" -c:v copy -c:a copy culture-code-fairy-tale.mp4
+
+EOF
