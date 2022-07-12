@@ -210,10 +210,10 @@ printSemesterWeek() { # prints a message with the number of the semester week
 
 
 	# change at the start of the semester
-	local LAST_WEEK_BEFORE_SEMESTER_START=7
-	local FIRST_VACATION_WEEK=17
-	local LAST_VACATION_WEEK=17
-	local VACATION_TYPE="Easter" # Easter / Christmass
+	local LAST_WEEK_BEFORE_SEMESTER_START=36
+	local FIRST_VACATION_WEEK=51
+	local LAST_VACATION_WEEK=52
+	local VACATION_TYPE="Christmass" # Easter / Christmass
 	
 	# unlikely to change
 	local SEMESTER_SIZE=14

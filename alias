@@ -99,6 +99,16 @@ alias compileandruncwiththreads="echo 'f=2; gcc -Wall -g -o \${f}.out \$f.c -lpt
 alias sl="cd /sl"
 
 alias lns="ln -s"
+
+
+# artsoft internship 2022
+alias fortivpn="/opt/forticlient/fortivpn"
+alias fortivpns="fortivpn status"
+alias fortivpnc="fortivpn connect artsoft_ssl -u sandrinopatrulescu -p -s -w"
+alias fortivpnd="fortivpn disconnect"
+
+
+alias systemctl="_ systemctl"
 # }}}
 
 
