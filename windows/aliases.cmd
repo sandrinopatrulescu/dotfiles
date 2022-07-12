@@ -2,10 +2,9 @@
 
 
 
-:: TODO: replace "E:\dotfiles" below with a env variable 
-DOSKEY alias="notepad++.exe" E:\dotfiles\windows\aliases.cmd & :: https://stackoverflow.com/questions/20530996/aliases-in-windows-command-prompt
-DOSKEY dots=cd E:\dotfiles
-DOSKEY tmp=cd C:\Users\sandr\AppData\Local\Temp
+DOSKEY alias="notepad++.exe" %0 & :: https://stackoverflow.com/questions/20530996/aliases-in-windows-command-prompt
+DOSKEY dots=cd %DOTS%
+DOSKEY tmp=cd C:\Users\%USERNAME%\AppData\Local\Temp
 
 
 :: Windows replaced
@@ -35,11 +34,12 @@ DOSKEY touch = copy nul $* > nul & :: https://stackoverflow.com/questions/286620
 
 DOSKEY ~=cd %USERPROFILE%
 
-:: Programs
+:: Programs - System dependent
 DOSKEY npp = "notepad++.exe" $* 
 DOSKEY python = E:\Programs\python-3.10.4-embed-amd64\python $*
 
 
+:: TODO: refactor this - make it more manageable, efficient
 ::UnxUtils
 ::DOSKEY fdate = %UU%\date +%%Y-%%m-%%d_%%H-%%M-%%S
 DOSKEY fdate = %DOTSWB%\fdate.cmd
