@@ -3,6 +3,10 @@
 # TO DO
 **Other To DOs @** ```Evernote/Tree/Useful```
 
+## windows
+1. read https://stackoverflow.com/questions/7760545/escape-double-quotes-in-parameter bc. it contains explanation on using quotes in the 1st answer
+2. remember/find why is `function.ps1` here, from where and how it is used
+
 
 Written @ 2022-01-13 21:13
 ## Add folding in all the files https://www.freecodecamp.org/news/vimrc-configuration-guide-customize-your-vim-editor/

@@ -17,6 +17,3 @@ FOR %%V in ("%~dp0.") DO SET "DOTS=%%~dpV"
 
 CALL "%DOTSW%\env.cmd"
 CALL "%DOTSW%\aliases.cmd"
-
-
-:: TODO: add E:\dotfiles\windows\bin to PATH if not present
