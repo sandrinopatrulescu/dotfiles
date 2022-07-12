@@ -2,7 +2,7 @@
 
 
 
-
+:: TODO: replace "E:\dotfiles" below with a env variable 
 DOSKEY alias="notepad++.exe" E:\dotfiles\windows\aliases.cmd & :: https://stackoverflow.com/questions/20530996/aliases-in-windows-command-prompt
 DOSKEY dots=cd E:\dotfiles
 DOSKEY tmp=cd C:\Users\sandr\AppData\Local\Temp
