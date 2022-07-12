@@ -68,7 +68,6 @@ alias sda="mono '/home/kamui/Programs/Steam Desktop Authenticator/Steam Desktop 
 alias acpi="date; acpi"
 
 alias cdirs="mkdir -p {src,tests}/{domain,persistence,service,tools} src/ui"
-alias cign="echo -e '/.idea/\n/cmake*/' >> .gitignore"
 
 alias lampp="_ /opt/lampp/xampp"
 alias php="/opt/lampp/bin/php"
@@ -96,6 +95,10 @@ alias tomcatstop="/mnt/e/Programs/apache-tomcat-9.0.63/bin/shutdown.sh"
 alias par="echo \(\)6789^\&\*" # because the '(' on the keyboard isn't working
 
 alias compileandruncwiththreads="echo 'f=2; gcc -Wall -g -o \${f}.out \$f.c -lpthread &&  ./\${f}.out'" # "$" are escaped
+
+alias sl="cd /sl"
+
+alias lns="ln -s"
 # }}}
 
 
@@ -136,6 +139,8 @@ alias gmod="gm origin/develop"
 alias gfmod="gf && gmod"
 alias gl1s="g log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'" # git log 1 specific; source: https://stackoverflow.com/questions/1838873/visualizing-branch-topology-in-git/34467298#34467298
 alias gl1="gl1s --all" # git log 1
+alias gignidea='\grep -xq ".idea/" .gitignore || echo ".idea/" >> .gitignore' # ignore .idea/ folder in git
+alias gignc="echo -e '/.idea/\n/cmake*/' >> .gitignore" # ignore cmake directories in git
 
 
 ##############################################

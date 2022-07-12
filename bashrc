@@ -42,3 +42,4 @@ append-path $DOTS/bin # https://www.anishathalye.com/2014/08/03/managing-your-do
 ## LL 5.6 only
 append-path /opt/mssql-tools/bin # 2022-02-2  for sqlcmd (source: https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-ubuntu?view=sql-server-ver15#tools)
 ##
+
