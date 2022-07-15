@@ -5,7 +5,7 @@ REM reinstalls dotfiles
 SET ret_dir=%CD%
 cd %DOTS%\..
 
-rmr dotfiles
+rmdir /S dotfiles
 git clone https://github.com/sandrinopatrulescu/dotfiles 
 dotfiles\windows\install.cmd
 
