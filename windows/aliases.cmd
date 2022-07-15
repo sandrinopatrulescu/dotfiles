@@ -16,9 +16,13 @@ DOSKEY rmr = rmdir /S $*
 DOSKEY .. = cd ..
 
 
+
+
 :: Windows replaced
 DOSKEY v = "%DOTSW%\bin\var.cmd" $* & :: get the value of a variable without enclosing it in % %
 DOSKEY paths = %DOTSW%\bin\paths.cmd & :: print path folders on new lines
+DOSKEY redots=%DOTSWB%\redots.cmd
+
 
 :: TODO IDEA: an automatic way to create DOSKEY for every file in the windows/bin directory
 DOSKEY timezip = %DOTSWB%\timezip.cmd $1
