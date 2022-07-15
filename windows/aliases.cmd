@@ -1,8 +1,10 @@
 @echo off & :: https://www.makeuseof.com/what-does-the-at-sign-mean-in-echo-off/
 
 
+DOSKEY npp = start /b notepad++.exe & :: https://stackoverflow.com/a/4822427
 
-DOSKEY alias="notepad++.exe" %0 & :: https://stackoverflow.com/questions/20530996/aliases-in-windows-command-prompt
+::DOSKEY alias="notepad++.exe" %0 & :: https://stackoverflow.com/questions/20530996/aliases-in-windows-command-prompt
+DOSKEY alias=npp %0 & :: https://stackoverflow.com/questions/20530996/aliases-in-windows-command-prompt
 DOSKEY dots=cd %DOTS%
 DOSKEY tmp=cd C:\Users\%USERNAME%\AppData\Local\Temp
 
@@ -11,7 +13,8 @@ DOSKEY tmp=cd C:\Users\%USERNAME%\AppData\Local\Temp
 DOSKEY v = "%DOTSW%\bin\var.cmd" $* & :: get the value of a variable without enclosing it in % %
 DOSKEY paths = %DOTSW%\bin\paths.cmd & :: print path folders on new lines
 
-
+:: TODO IDEA: an automatic way to create DOSKEY for every file in the windows/bin directory
+DOSKEY timezip = %DOTSWB%\timezip.cmd $1
 
 
 :: https://gist.github.com/PierreMage/6874814
