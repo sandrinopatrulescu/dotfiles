@@ -1,10 +1,14 @@
 @echo off & :: https://www.makeuseof.com/what-does-the-at-sign-mean-in-echo-off/
 
 
-DOSKEY npp = start /b notepad++.exe & :: https://stackoverflow.com/a/4822427
+DOSKEY doskeys = doskey /macros & :: https://stackoverflow.com/questions/42451246/print-all-existing-doskeys
+DOSKEY npp = start /b notepad++.exe $* & :: https://stackoverflow.com/a/4822427
+
+
+DOSKEY src = %DOTSW%\init.cmd
 
 ::DOSKEY alias="notepad++.exe" %0 & :: https://stackoverflow.com/questions/20530996/aliases-in-windows-command-prompt
-DOSKEY alias=npp %0 & :: https://stackoverflow.com/questions/20530996/aliases-in-windows-command-prompt
+DOSKEY alias = start /b notepad++.exe %0 & :: https://stackoverflow.com/questions/20530996/aliases-in-windows-command-prompt
 DOSKEY dots=cd %DOTS%
 DOSKEY tmp=cd C:\Users\%USERNAME%\AppData\Local\Temp
 
@@ -38,7 +42,7 @@ DOSKEY touch = copy nul $* > nul & :: https://stackoverflow.com/questions/286620
 DOSKEY ~=cd %USERPROFILE%
 
 :: Programs - System dependent
-DOSKEY npp = "notepad++.exe" $* 
+::DOSKEY npp = "notepad++.exe" $* 
 DOSKEY python = E:\Programs\python-3.10.4-embed-amd64\python $*
 
 
