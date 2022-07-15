@@ -6,7 +6,7 @@ REM run init.cmd
 SET init_path=%~dp0\init.cmd
 echo init_path=%init_path%
 
-%init_path%
+CALL %init_path%
 
 
 REM autorun init 
