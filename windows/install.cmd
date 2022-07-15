@@ -13,14 +13,12 @@ SET init_path=
 
 REM download UnxUtils
 SET ret_dir=%CD% & :: save current loc
-cd external-tools
-mkdir UnxUtils && cd UnxUtils 
+mkdir external-tools\UnxUtils && cd external-tools\UnxUtils
 curl "https://deac-fra.dl.sourceforge.net/project/unxutils/unxutils/current/UnxUtils.zip" -O
 tar -xf UnxUtils.zip
-rm UnxUtils.zip
+DEL UnxUtils.zip
 cd %ret_dir% & ::go back to prev loc
 SET ret_dir=
-
 
 
 
