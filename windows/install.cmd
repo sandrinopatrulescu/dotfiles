@@ -1,6 +1,10 @@
 @echo off
 
 
+GOTO comment & :: for easier testing
+cd %userprofile%\stuff && rmdir /s /q dotfiles & git clone https://github.com/sandrinopatrulescu/dotfiles && cd C:\ && %userprofile%\stuff\dotfiles\windows\install.cmd
+:comment
+
 
 REM run init.cmd
 SET init_path=%~dp0\init.cmd
