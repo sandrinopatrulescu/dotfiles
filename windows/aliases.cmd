@@ -12,6 +12,9 @@ DOSKEY alias = start /b notepad++.exe %0 & :: https://stackoverflow.com/question
 DOSKEY dots=cd %DOTS%
 DOSKEY tmp=cd C:\Users\%USERNAME%\AppData\Local\Temp
 
+DOSKEY rmr = rmdir /S $*
+DOSKEY .. = cd ..
+
 
 :: Windows replaced
 DOSKEY v = "%DOTSW%\bin\var.cmd" $* & :: get the value of a variable without enclosing it in % %
