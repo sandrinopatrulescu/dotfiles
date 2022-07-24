@@ -15,7 +15,7 @@ DOSKEY tmp=cd C:\Users\%USERNAME%\AppData\Local\Temp
 DOSKEY rmr = rmdir /S $*
 DOSKEY .. = cd ..
 
-
+DOSKEY t=explorer.exe . & :: t from thunar (Ubuntu)
 
 
 :: Windows replaced

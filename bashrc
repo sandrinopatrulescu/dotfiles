@@ -1,3 +1,6 @@
+# If not running interactively, don't do anything
+[[ $- == *i* ]] || return
+
 # enable bash completion in interactive shells
 if ! shopt -oq posix; then
   if [ -f /usr/share/bash-completion/bash_completion ]; then
@@ -43,3 +46,4 @@ append-path $DOTS/bin # https://www.anishathalye.com/2014/08/03/managing-your-do
 append-path /opt/mssql-tools/bin # 2022-02-2  for sqlcmd (source: https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-ubuntu?view=sql-server-ver15#tools)
 ##
 
+par1

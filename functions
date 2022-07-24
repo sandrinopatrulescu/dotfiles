@@ -337,6 +337,30 @@ dpkg-log() {
     \grep --color "${1}" /var/log/dpkg.log
 }
 
+
+gsettings-details() {
+    echo GET
+    gsettings get $@
+    echo
+
+    echo RANGE
+    gsettings range $@
+    echo
+
+    echo DESCRIBE
+    gsettings describe $@
+    echo
+}
+
+find1() { # does find / <OPTIONS>, while excluding certain directories
+	# source: https://stackoverflow.com/a/25113492 from https://stackoverflow.com/questions/13460482/exclude-a-sub-directory-using-find 
+	# IDEA: if <OPTIONS> = "-s" then print the directories
+	# TODO: read the list of directories from the file and replace new line with |
+    local pattern=$(grep -E -v "^$|^#" $DOTS/find-skipped-directories.txt | paste -sd "|")
+	sudo find / -regextype posix-extended -regex "$pattern" -prune -o "$@"
+}
+
+
 # }}}
 
 
@@ -932,49 +956,56 @@ __cleanup_dir() {
 cleanup() { # remove temporary files
     # TODO: use __cleanup_dir() everywhere
     echo "Chrome "
-    #rm -r /home/kamui/.cache/google-chrome/Default/Cache/* /home/kamui/.cache/google-chrome/Default/Code\ Cache/js/*
-    echo -ne "Default/Service Worker/CacheStorage\t" && [ -d ~kamui/.config/google-chrome/Default/Service\ Worker/CacheStorage ] && rm -vr ~kamui/.config/google-chrome/Default/Service\ Worker/CacheStorage | wc -l || echo "Empty"
-    #echo -ne ".cache/google-chrome/Default\t" && [ -d /home/kamui/.cache/google-chrome/Default ] && rm -vr /home/kamui/.cache/google-chrome/Default | wc -l || echo "Empty"
     __cleanup_dir /home/kamui/.cache/google-chrome/Default
+    # __cleanup_dir /home/kamui/.config/google-chrome/Default/Service\ Worker/CacheStorage # enable if it gets large
+    
+    # enabled if necessary
+    #__cleanup_dir /home/kamui/.cache/sessions/
+    #__cleanup_dir /home/kamui/.cache/mesa_shader_cache
+    #__cleanup_dir /home/kamui/.cache/thumbnails/
 
-    echo
-    echo "Firefox " 
+    #__cleanup_dir /var/cache/fontconfig
+
+
+
+    #echo
+    #echo "Firefox " 
         #find /home/kamui/.mozilla/firefox/*/storage/default -path "*/morgue/*" -type d -exec rm -r {} + # delete ocasionally
 # /home/kamui/.mozilla/firefox/ntrc3s4e.default/storage/default/https+++studio.youtube.com
-    echo -ne ".mozilla/firefox/ntrc3s4e.default/storage/default/https+++studio.youtube.com\t" && [ -d /home/kamui/.mozilla/firefox/ntrc3s4e.default/storage/default/https+++studio.youtube.com ] && rm -vr /home/kamui/.mozilla/firefox/ntrc3s4e.default/storage/default/https+++studio.youtube.com | wc -l || echo "Empty"
+    #echo -ne ".mozilla/firefox/ntrc3s4e.default/storage/default/https+++studio.youtube.com\t" && [ -d /home/kamui/.mozilla/firefox/ntrc3s4e.default/storage/default/https+++studio.youtube.com ] && rm -vr /home/kamui/.mozilla/firefox/ntrc3s4e.default/storage/default/https+++studio.youtube.com | wc -l || echo "Empty"
 
-        echo -ne "datareporting\t"; find ~kamui/.mozilla/firefox/*/ -path "*/datareporting/archived/*" -type d -exec rm -vr {} + | wc -l || echo "Empty"
+        #echo -ne "datareporting\t"; find ~kamui/.mozilla/firefox/*/ -path "*/datareporting/archived/*" -type d -exec rm -vr {} + | wc -l || echo "Empty"
         # this above can be tested with
             # mkdir ~kamui/.mozilla/firefox/icpoa0ej.ForTesting/datareporting/archived/test_dir$(date +%Y-%m-%d_%H-%M-%S)
             # ls ~kamui/.mozilla/firefox/icpoa0ej.ForTesting/datareporting/archived/
             # src && cleanup
             # ls ~kamui/.mozilla/firefox/icpoa0ej.ForTesting/datareporting/archived/
 
-        for PROFILE_DIR in $(find ~kamui/.cache/mozilla/firefox/ -mindepth 1 -maxdepth 1 -type d); do 
-            echo -ne "$(basename "$PROFILE_DIR")\t" && [ -d "$PROFILE_DIR/cache2" ] && /usr/bin/rm -vr "$PROFILE_DIR/cache2" | wc -l || echo "Empty"
-        done
+        #for PROFILE_DIR in $(find ~kamui/.cache/mozilla/firefox/ -mindepth 1 -maxdepth 1 -type d); do 
+        #    echo -ne "$(basename "$PROFILE_DIR")\t" && [ -d "$PROFILE_DIR/cache2" ] && /usr/bin/rm -vr "$PROFILE_DIR/cache2" | wc -l || echo "Empty"
+        #done
         #[ -d ~/.cache/mozilla/firefox/*/cache2 ] && rm -r ~/.cache/mozilla/firefox/*/cache2 | wc -l || echo -e "\tEmpty" # OLD - used with 1 single profile
 
-    echo
-    echo "Teams "
-    echo -ne "Cache\t" && [ -d ~kamui/.config/Microsoft/"Microsoft Teams"/Cache/ ] && /usr/bin/rm -vr ~kamui/.config/Microsoft/"Microsoft Teams"/Cache/ | wc -l || echo "Empty"
-    echo -ne "Code Cache\t" && [ -d ~kamui/.config/Microsoft/"Microsoft Teams/Code Cache/" ] && /usr/bin/rm -vr ~kamui/.config/Microsoft/"Microsoft Teams/Code Cache/" | wc -l || echo "Empty"
+    #echo
+    #echo "Teams "
+    #echo -ne "Cache\t" && [ -d ~kamui/.config/Microsoft/"Microsoft Teams"/Cache/ ] && /usr/bin/rm -vr ~kamui/.config/Microsoft/"Microsoft Teams"/Cache/ | wc -l || echo "Empty"
+    #echo -ne "Code Cache\t" && [ -d ~kamui/.config/Microsoft/"Microsoft Teams/Code Cache/" ] && /usr/bin/rm -vr ~kamui/.config/Microsoft/"Microsoft Teams/Code Cache/" | wc -l || echo "Empty"
 
-    echo
-    echo "Visual Studio Code"
-    echo -ne "Cache\t" && [ -d /home/kamui/.config/Code/Cache/ ] && /usr/bin/rm -vr /home/kamui/.config/Code/Cache | wc -l || echo "Empty"
+    #echo
+    #echo "Visual Studio Code"
+    #echo -ne "Cache\t" && [ -d /home/kamui/.config/Code/Cache/ ] && /usr/bin/rm -vr /home/kamui/.config/Code/Cache | wc -l || echo "Empty"
 
     echo
     echo "Discord"
-    echo -ne "Cache\t" && [ -d /home/kamui/.config/discord/Cache ] && /usr/bin/rm -vr /home/kamui/.config/discord/Cache | wc -l || echo "Empty"
+    __cleanup_dir /home/kamui/.config/discord/Cache
 
-	echo
-    echo ".gradle"
-    echo -ne "caches\t" && [ -d /home/kamui/.gradle/caches ] && /usr/bin/rm -vr /home/kamui/.gradle/caches | wc -l || echo "Empty"
+	#echo
+    #echo ".gradle"
+    #echo -ne "caches\t" && [ -d /home/kamui/.gradle/caches ] && /usr/bin/rm -vr /home/kamui/.gradle/caches | wc -l || echo "Empty"
 
-    echo
-    echo "yarn"
-    echo -ne "v6\t" && [ -d /home/kamui/.cache/yarn/v6 ] && /usr/bin/rm -vr /home/kamui/.cache/yarn/v6 | wc -l || echo "Empty"
+    #echo
+    #echo "yarn"
+    #echo -ne "v6\t" && [ -d /home/kamui/.cache/yarn/v6 ] && /usr/bin/rm -vr /home/kamui/.cache/yarn/v6 | wc -l || echo "Empty"
 
 }
 
@@ -1134,7 +1165,7 @@ title() { # set the xfce title to pwd or to a given string
     TITLE="${TITLE/\/mnt\/e/\/e}"
     TITLE="${TITLE/\/e\/Scratch/Scratch}"
     TITLE="${TITLE/\/e\/UBB_IE_2020-2023/UBBIE2020-2023}"
-    xtitle "${TITLE/\/home\/kamui/\~}" #&& echo title was set # replace /home/kamui with ~
+    xtitle -q "${TITLE/\/home\/kamui/\~}" #&& echo title was set # replace /home/kamui with ~
 }
 
 cd() { # wrapper for cd which also sets the terminal window/tab title

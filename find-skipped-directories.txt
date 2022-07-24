@@ -1,0 +1,23 @@
+/boot
+
+/home/kamui/.config/google-chrome
+/home/kamui/.config/libreoffice
+/home/kamui/.config/GIMP
+/home/timeshift
+
+/opt/libreoffice7.2/
+/proc
+/root
+/run
+/sys
+/tmp
+
+/usr/include
+/usr/share/icons
+/usr/src
+
+# but I guess just /var is enough
+#/var
+/var/lib/apt/lists
+/var/lib/dpkg/info/ 
+/var/lib/systemd

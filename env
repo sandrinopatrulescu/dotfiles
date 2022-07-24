@@ -8,14 +8,18 @@
 all_in_1="2lazy2dealwith Torrents Downloaded_Music_To_move_to_Phone_and_Mega_and_Local_Disk_E Games Reading ebooks Media Others Scratch WorkingDirectory NotSorted ImportantStuff trash Studying Uni" # 15
 
 
+export DISTRIBUTION=LL6_2022-07-24_00-34-23
+export DISTRIBUTION_PATH="/mnt/e/FSs/${DISTRIBUTION}"
+
 
 # Exports
 export DOTS="/mnt/e/dotfiles"
 export TRASH="/mnt/e/trash"
 export SCRATCH="/mnt/e/Scratch"
 
-export REAL_SSH="/mnt/e/FSs/LL5_2022-02-22_00-07-40/home/kamui/.ssh/"
-export JETBRAINS="/mnt/e/FSs/LL5_2022-02-22_00-07-40/home/kamui/.local/share/JetBrains"
+export SSH=$(readlink -f /home/kamui/.ssh/)
+export JETBRAINS="${DISTRIBUTION_PATH}/home/kamui/.local/share/JetBrains"
+export JETBRAINS=$(readlink -f /home/kamui/.local/share/JetBrains)
 
 ## Semi-Permanent
 export UNIPATH='/mnt/e/UBB_IE_2020-2023'
@@ -38,7 +42,7 @@ export JAVA_HOME=/home/kamui/Programs/jdk-17.0.2
 #export JAVA_HOME=/home/kamui/.jdks/corretto-16.0.2/bin/java
 export JAVAFX_HOME=/home/kamui/Programs/javafx-sdk-17.0.2
 export JAVAFX_ARGS="--module-path $JAVAFX_HOME/lib --add-modules javafx.controls,javafx.fxml"
-export CMAKE="/mnt/e/FSs/LL5_2022-02-22_00-07-40/home/kamui/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.7172.20/bin/cmake/linux/bin/cmake" # added to compile mono, so I won't have to install cmake (even tho it can be installed from apt)
+export CMAKE="${DISTRIBUTION_PATH}/home/kamui/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.7172.20/bin/cmake/linux/bin/cmake" # added to compile mono, so I won't have to install cmake (even tho it can be installed from apt)
 export CATALINA_HOME=/mnt/e/Programs/apache-tomcat-9.0.63/
 ##
 

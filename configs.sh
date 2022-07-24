@@ -1,14 +1,20 @@
 #!/bin/bash
+# note, run as kamui
+
+. ./env
+
 
 ### 1. handle ssh keys
 
-[ ! -d ~/.ssh ] && mkdir ~/.ssh
-if [ $(ls ~/.ssh | wc -l) -eq 0 ]
+
+[ -d ~/.ssh ] || mkdir ~/.ssh; 
+
+if [ "$(ls -A ~/.ssh)" ]
 then
-    cp /mnt/e/FSs/LL5_2022-02-22_00-07-40/home/kamui/.ssh/* ~/.ssh
-    chmod 0600 ~/.ssh/*
+	echo "SSH keys weren't copied because ~/.ssh is not empty, you should add them manually"
 else
-    echo "SSH keys weren't copied because ~/.ssh is not empty, you should add them manually"
+    cp ${DISTRIBUTION_PATH}/home/kamui/.ssh/* ~/.ssh
+    chmod 0600 ~/.ssh/*
 fi
 
 

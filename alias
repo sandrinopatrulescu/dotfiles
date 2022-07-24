@@ -63,7 +63,7 @@ alias ml="sudo mount -l | grep '^/dev'" # mount list
 alias gcc="gcc -Wall -g"
 alias g++="g++ -Wall -g --std=c++17"
 
-alias sda="mono '/home/kamui/Programs/Steam Desktop Authenticator/Steam Desktop Authenticator.exe' &" # steam desktop authenticator
+alias sda="mono '/e/Programs/Steam Desktop Authenticator/Steam Desktop Authenticator.exe' &" # steam desktop authenticator
 
 alias acpi="date; acpi"
 
@@ -93,6 +93,7 @@ alias tomcatstart="/mnt/e/Programs/apache-tomcat-9.0.63/bin/startup.sh"
 alias tomcatstop="/mnt/e/Programs/apache-tomcat-9.0.63/bin/shutdown.sh"
 
 alias par="echo \(\)6789^\&\*" # because the '(' on the keyboard isn't working
+alias par1="printf '()\n6 ^\n8 *\n9 (\n'"
 
 alias compileandruncwiththreads="echo 'f=2; gcc -Wall -g -o \${f}.out \$f.c -lpthread &&  ./\${f}.out'" # "$" are escaped
 
@@ -109,6 +110,11 @@ alias fortivpnd="fortivpn disconnect"
 
 
 alias systemctl="_ systemctl"
+
+
+alias gsettings-reset-mousepad='gsettings list-schemas | grep -i mousepad | xargs -I {} gsettings reset-recursively {}'
+
+alias df1="df -h | grep -v tmpfs"
 # }}}
 
 
