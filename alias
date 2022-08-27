@@ -21,7 +21,7 @@ alias speedtest="wget -O /dev/null http://speed.transip.nl/100mb.bin"
 alias task="echo 'date; time <task> | tee --append \$SCRATCH/outputs/output\$(fdate).txt; date'"
 # file_var="$SCRATCH/outputs/output$(fdate).txt"; date >> "$file_var"; time <task> | tee --append "$file_var"; date >> "$file_var"
 #   note that output of time still isn't inside the text file; TODO: find a better method
-alias __='sudo custom_sudo.sh '
+alias __="sudo $DOTS/bin/custom_sudo.sh "
 alias findroot='sudo find / -type d \( -path /dev -o -path /home/timeshift -o -path /proc -o -path /media -o -path /mnt -o -path /run -o -path /sys -o -path /usr/src -o -path /root \) -prune -o -print' # find in /; used to check files added by new software
 alias sm="watch '{ sensors; sudo hddtemp /dev/sda; }'" # montior CPU and storage temperature
 alias cs="clear; src" # clear the screen and print the new terminal message
@@ -115,10 +115,17 @@ alias systemctl="_ systemctl"
 alias gsettings-reset-mousepad='gsettings list-schemas | grep -i mousepad | xargs -I {} gsettings reset-recursively {}'
 
 alias df1="df -h | grep -v tmpfs"
+
+alias phone="cd /run/user/1000/gvfs/mtp:host=HUAWEI_MAR-LX1A_L2N4C19712034847"
+
+alias scu="systemctl --machine=$USER@.host --user " # systemctl user
+alias pulseaudior="pulseaudio -k && pulseaudio --start" # pulseaudio restart
+
+alias pdf2png="pdftocairo -png " # https://askubuntu.com/a/1191060/1547353
 # }}}
 
 
-# Windows {{{
+# Windows Subsystem Linux {{{
 alias cmd="cmd.exe"
 alias powershell="powershell.exe"
 alias np="notepad.exe"
@@ -309,6 +316,7 @@ alias oslp="sudo pm-suspend-hybrid"
 ### Tools {{{
 alias fdate="date +%Y-%m-%d_%H-%M-%S" # format date (for saving timestamped file)
 alias tsfdate="date +%Y-%m-%d\ %H:%M" # Trying Scratch format date 
+alias tsfdatepattern="echo '^[0-9]{4}(-[0-9]{2}){2} [0-9]{2}:[0-9]{2}'"
 alias mtodo="(mousepad $TRASH/todos_$(fdate).txt &)" # mousepad todo
 alias slay="pkill -15 -f " # https://askubuntu.com/questions/1368579/how-to-kill-firefox-from-command-line
 alias slowprint="echo ' | awk '\'{if \(system\('\"sleep 0.05 && exit 2\"'\) != 2\) exit\; print}\'''"

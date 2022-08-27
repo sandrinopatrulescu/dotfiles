@@ -32,7 +32,7 @@ echo " "
 
 # kamui
 
-for file in ~kamui/dotfiles/{env,"alias",functions};
+for file in ~kamui/dotfiles/{env,"alias","functions"};
 do
     source ${file}
 done

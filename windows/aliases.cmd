@@ -17,6 +17,9 @@ DOSKEY .. = cd ..
 
 DOSKEY t=explorer.exe . & :: t from thunar (Ubuntu)
 
+DOSKEY glsuni=ssh-add %userprofile%\.ssh\id_ed25519_github_uni
+DOSKEY glst=ssh -vT git@github.com
+
 
 :: Windows replaced
 DOSKEY v = "%DOTSW%\bin\var.cmd" $* & :: get the value of a variable without enclosing it in % %
@@ -77,4 +80,4 @@ DOSKEY fdate = %DOTSWB%\fdate.cmd
 :: 3. https://stackoverflow.com/questions/29930624/batch-files-if-directory-exists-do-something
 :: 4. https://stackoverflow.com/questions/21057846/was-unexpected-at-this-time-if-exist-folder
 :: 5. https://stackoverflow.com/a/2768662/17299754 from https://stackoverflow.com/questions/2768608/batch-equivalent-of-bash-backticks
-:: 6. https://www.tutorialspoint.com/batch_script/batch_script_replace_string.htm
+:: 6. https://www.tutorialspoint.com/batch_script/batch_script_replace_string.htm

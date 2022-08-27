@@ -361,6 +361,11 @@ find1() { # does find / <OPTIONS>, while excluding certain directories
 }
 
 
+tsfdatecsplit() {
+    # the pattern is the from tsfdatepattern, but converted to BRE
+    csplit $1 '/^[0-9]\{4\}\(-[0-9]\{2\}\)\{2\} [0-9]\{2\}:[0-9]\{2\}/' '{*}'
+    ls xx* | sort -r | xargs cat >> xx-rejoined_$(date +%Y-%m-%d_%H-%M-%S).txt
+}
 # }}}
 
 

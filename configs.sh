@@ -51,3 +51,18 @@ dpkg -s vim &> /dev/null; [ $? -eq 0 ] || echo "WARNING: vim not installed";
 grep -q "LS_COLORS" ~/.env || { dircolors -b >> ~/.env && echo 'export LS_COLORS' >> ~/.env; }
 
 ##
+
+
+# root
+sudo ln -s $DOTS/vimrc ~root/.vimrc
+
+echo "Add the following to /root/.bashrc"
+cat << 'EOF'
+
+# kamui
+DOTS=/mnt/e/dotfiles
+for file in $DOTS/{"functions","alias"}
+do
+    source $file
+done
+EOF
