@@ -38,7 +38,8 @@ shopt -s direxpand # https://askubuntu.com/questions/70750/how-to-get-bash-to-st
 # Shell variables
 
 ## Semi-Permanent
-export JAVA_HOME=/home/kamui/Programs/jdk-17.0.2
+#export JAVA_HOME=/home/kamui/Programs/jdk-17.0.2
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 #export JAVA_HOME=/home/kamui/.jdks/corretto-16.0.2/bin/java
 export JAVAFX_HOME=/home/kamui/Programs/javafx-sdk-17.0.2
 export JAVAFX_ARGS="--module-path $JAVAFX_HOME/lib --add-modules javafx.controls,javafx.fxml"

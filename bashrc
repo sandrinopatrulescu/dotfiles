@@ -37,7 +37,7 @@ do
     source ${file}
 done
 
-printSemesterWeek
+# printSemesterWeek # TODO: fix it
 
 append-path $DOTS/bin # https://www.anishathalye.com/2014/08/03/managing-your-dotfiles/
 
@@ -46,4 +46,12 @@ append-path $DOTS/bin # https://www.anishathalye.com/2014/08/03/managing-your-do
 append-path /opt/mssql-tools/bin # 2022-02-2  for sqlcmd (source: https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-ubuntu?view=sql-server-ver15#tools)
 ##
 
+append-path /mnt/e/ProgramsUni/flutter/bin/
+
+export DOTNET_ROOT=/mnt/e/ProgramsUni/dotnet
+export PATH=$PATH:/mnt/e/ProgramsUni/dotnet
+
+par
 par1
+
+

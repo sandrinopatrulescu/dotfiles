@@ -52,6 +52,31 @@ re() { # repeat something N times
 timezip() {
     zip -r "${1}_$(date +%Y-%m-%d_%H-%M-%S).zip" "${1}" 
 }
+
+contact() {
+    echo "Pătrulescu Ronald Sandrino"
+    echo "sandrinopatrulescu@yahoo.com"
+    echo "0756587313"
+}
+
+eject-disk() {
+    # usage: eject-disk <disk>
+    # ex: eject-disk /dev/sdb
+    sudo umount $1 &&
+        eject -v $1 &&
+        udiskctl power-off -b $1
+}
+
+symlink-jetbrains() {
+    local oldpwd="$PWD"
+
+    cd ~/.local/share &&
+        sudo rsync -avP ./JetBrains /f/ &&
+        rm -r ./JetBrains &&
+        ln -s /f/JetBrains
+
+    cd "$oldpwd"
+}
 # }}}
 
     ### Uncategorized ### {{{
@@ -210,9 +235,9 @@ printSemesterWeek() { # prints a message with the number of the semester week
 
 
 	# change at the start of the semester
-	local LAST_WEEK_BEFORE_SEMESTER_START=36
-	local FIRST_VACATION_WEEK=51
-	local LAST_VACATION_WEEK=52
+	local LAST_WEEK_BEFORE_SEMESTER_START=40
+	local FIRST_VACATION_WEEK=1
+	local LAST_VACATION_WEEK=2
 	local VACATION_TYPE="Christmass" # Easter / Christmass
 	
 	# unlikely to change
@@ -238,6 +263,12 @@ printSemesterWeek() { # prints a message with the number of the semester week
 	local LAST_SEMESTER_WEEK=$((LAST_WEEK_BEFORE_SEMESTER_START + VACATION_SIZE + 14)) # +52 in case of 1st semester
 
 	[ $# -ge 1 ] && currentWeek=$1 || currentWeek=$(date +%V)
+    #((currentWeek += 1)) # TODO: increased week number by 1 for 2022 bc. 
+                # it seems that 'date' doesn't consider the week that contains
+                # January 1st as the 1st week of the year.
+                # EDIT: the reason is the ISO leap week
+
+
 	#if [ 1 -le $currentWeek -a $currentWeek -le $((LAST_SEMESTER_WEEK + 5 - 52)) ]
 	#if [ $LAST_SEMESTER_WEEK -gt 52 -a $currentWeek -lt $LAST_WEEK_BEFORE_SEMESTER_START ]
 	if [ $LAST_SEMESTER_WEEK -gt 52 -a $currentWeek -lt $((LAST_WEEK_BEFORE_SEMESTER_START + 1 - SUMMER_SIZE)) ] # 2nd comparision fixes the case when the first semester is already set during the vacation
@@ -657,6 +688,12 @@ ccfc() { # c/c++ fast compile
     $compiler -Wall -o $out $source_file && ./$out "$@"
 }
 
+g++2() {
+    local out_file=${1/.cpp/.out}
+    shift
+
+    g++ -Wall -o $out_file.out "${out_file}.cpp" && ./$out_file.out "$@"
+}
 
 # }}}
 

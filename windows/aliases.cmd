@@ -20,6 +20,7 @@ DOSKEY t=explorer.exe . & :: t from thunar (Ubuntu)
 DOSKEY glsuni=ssh-add %userprofile%\.ssh\id_ed25519_github_uni
 DOSKEY glst=ssh -vT git@github.com
 
+DOSKEY gcp = git add -A ^&^& git commit -m $* ^&^& git push
 
 :: Windows replaced
 DOSKEY v = "%DOTSW%\bin\var.cmd" $* & :: get the value of a variable without enclosing it in % %

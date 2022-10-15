@@ -35,6 +35,7 @@ alias ffmpeg_template="ffmpeg -i foobar.mkv -c copy ../Captures/S4foobar.mp4" # 
 alias aud="sudo apt update" # apt update
 alias alu="apt list --upgradable" # apt list --upgradable
 alias aug="sudo apt upgrade" # apt upgrade
+alias adl="aud && alu"
 alias la="ls -A"
 # C# .NET SQL Server
 alias dn="dotnet"
@@ -122,6 +123,8 @@ alias scu="systemctl --machine=$USER@.host --user " # systemctl user
 alias pulseaudior="pulseaudio -k && pulseaudio --start" # pulseaudio restart
 
 alias pdf2png="pdftocairo -png " # https://askubuntu.com/a/1191060/1547353
+alias mirror-screen="xrandr --output eDP --output HDMI-0 --same-as eDP" # ubuntu i cant mirror display https://askubuntu.com/questions/1140600/mirror-display-on-ubuntu-18-04
+alias bl2savedata="echo ~/.local/share/aspyr-media/borderlands 2/willowgame/savedata"
 # }}}
 
 
@@ -299,10 +302,10 @@ alias dots='cd $(readlink -f $DOTS)'
 ### }}} 
 
 ### Software {{{
-alias javac="$JAVA_HOME/bin/javac"
-alias java="$JAVA_HOME/bin/java"
-alias javafxc="javac --module-path $JAVAFX_HOME/lib --add-modules javafx.controls,javafx.fxml"
-alias javafx="java --module-path $JAVAFX_HOME/lib --add-modules javafx.controls,javafx.fxml"
+#alias javac="$JAVA_HOME/bin/javac"
+#alias java="$JAVA_HOME/bin/java"
+#alias javafxc="javac --module-path $JAVAFX_HOME/lib --add-modules javafx.controls,javafx.fxml"
+#alias javafx="java --module-path $JAVAFX_HOME/lib --add-modules javafx.controls,javafx.fxml"
 ### }}} 
 
 ### Shortcuts {{{
