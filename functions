@@ -77,6 +77,25 @@ symlink-jetbrains() {
 
     cd "$oldpwd"
 }
+
+earthrise-reminder-trello() {
+    local names=("Alice" "Andreea" "Daniela" "Florin" "Irina")
+
+    for i in ${!names[@]}; do
+        names[i]=", ${names[i]}"
+        #echo $i ${names[i]}
+    done
+
+    names+=("")
+
+    for name in "${names[@]}"; do
+        echo "Bună$name!"
+        cat <<'EOF'
+Se spune că "eșecul este cheia succesului", dar eu cred că introspecția asupra acelui eșec este adevărata cheie. Pentru a ne ajuta la introspecție și a ne motiva, avem un tool cu care să ținem evidența contribuților noastre. De asemenea, ne ajută să aratăm organizatorilor proiectului că suntem on the right track. So, kind reminder: let TRELLO know you're making history!
+EOF
+        echo
+    done
+}
 # }}}
 
     ### Uncategorized ### {{{
@@ -689,7 +708,7 @@ ccfc() { # c/c++ fast compile
 }
 
 g++2() {
-    local out_file=${1/.cpp/.out}
+    local out_file="${1%.*}" # bash remove all extensions https://stackoverflow.com/questions/965053/extract-filename-and-extension-in-bash
     shift
 
     g++ -Wall -o $out_file.out "${out_file}.cpp" && ./$out_file.out "$@"

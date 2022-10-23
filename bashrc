@@ -21,13 +21,13 @@ fi
 # Linux Lite Custom Terminal
 LLVER=$(awk '{print}' /etc/llver)
 
-echo -e "Welcome to $LLVER, ${USER}"
-echo " "
+#echo -e "Welcome to $LLVER, ${USER}"
+#echo " "
 date "+%A %d %B %Y, %T"
-free -m | awk 'NR==2{printf "Memory Usage: %s/%sMB (%.2f%%)\n", $3,$2,$3*100/$2 }'
-df -h | awk '$NF=="/"{printf "Disk Usage: %d/%dGB (%s)\n", $3,$2,$5}'
-echo "Support - https://www.linuxliteos.com/forums/ (Right click, Open Link)"
-echo " "
+#free -m | awk 'NR==2{printf "Memory Usage: %s/%sMB (%.2f%%)\n", $3,$2,$3*100/$2 }'
+#df -h | awk '$NF=="/"{printf "Disk Usage: %d/%dGB (%s)\n", $3,$2,$5}'
+#echo "Support - https://www.linuxliteos.com/forums/ (Right click, Open Link)"
+#echo " "
 
 
 # kamui
@@ -52,6 +52,6 @@ export DOTNET_ROOT=/mnt/e/ProgramsUni/dotnet
 export PATH=$PATH:/mnt/e/ProgramsUni/dotnet
 
 par
-par1
+#par1
 
 

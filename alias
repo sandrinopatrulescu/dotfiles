@@ -93,8 +93,8 @@ alias others="cd /e/others"
 alias tomcatstart="/mnt/e/Programs/apache-tomcat-9.0.63/bin/startup.sh"
 alias tomcatstop="/mnt/e/Programs/apache-tomcat-9.0.63/bin/shutdown.sh"
 
-alias par="echo \(\)6789^\&\*" # because the '(' on the keyboard isn't working
-alias par1="printf '()\n6 ^\n8 *\n9 (\n'"
+alias par="echo \(\) 6 7 8 9 ^ \& \*" # because the '(' on the keyboard isn't working
+alias par1="printf '\n6 ^\n8 *\n9 (\n'"
 
 alias compileandruncwiththreads="echo 'f=2; gcc -Wall -g -o \${f}.out \$f.c -lpthread &&  ./\${f}.out'" # "$" are escaped
 
@@ -125,6 +125,7 @@ alias pulseaudior="pulseaudio -k && pulseaudio --start" # pulseaudio restart
 alias pdf2png="pdftocairo -png " # https://askubuntu.com/a/1191060/1547353
 alias mirror-screen="xrandr --output eDP --output HDMI-0 --same-as eDP" # ubuntu i cant mirror display https://askubuntu.com/questions/1140600/mirror-display-on-ubuntu-18-04
 alias bl2savedata="echo ~/.local/share/aspyr-media/borderlands 2/willowgame/savedata"
+alias blre="systemctl restart bluetooth.service" # bluetooth restart
 # }}}
 
 
@@ -280,6 +281,13 @@ alias WP="cd /mnt/e/UBB_IE_2020-2023/S4.WP/"
 alias S2.DSA="cd /mnt/e/UBB_IE_2020-2023/S4.S2.DSA/"
 alias S2.OOP="cd /mnt/e/UBB_IE_2020-2023/S4.S2.OOP/"
 alias S2.OS="cd /mnt/e/UBB_IE_2020-2023/S4.S2.OS/"
+
+# S5
+alias FLCD="cd /mnt/e/UBB_IE_2020-2023/S5.FLCD/"
+alias MAP="cd /mnt/e/UBB_IE_2020-2023/S5.MAP/"
+alias PDP="cd /mnt/e/UBB_IE_2020-2023/S5.PDP/"
+alias PKC="cd /mnt/e/UBB_IE_2020-2023/S5.PKC/"
+alias VR="cd /mnt/e/UBB_IE_2020-2023/S5.VR/"
 
 
 alias glsm='eval $(ssh-agent) && ssh-add ~/.ssh/id_ed25519_github_main' # git login ssh main
