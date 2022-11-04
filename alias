@@ -37,6 +37,8 @@ alias alu="apt list --upgradable" # apt list --upgradable
 alias aug="sudo apt upgrade" # apt upgrade
 alias adl="aud && alu"
 alias la="ls -A"
+alias ll="ls -1"
+alias lla="ll -A"
 # C# .NET SQL Server
 alias dn="dotnet"
 alias dnb="dn build"
@@ -126,6 +128,9 @@ alias pdf2png="pdftocairo -png " # https://askubuntu.com/a/1191060/1547353
 alias mirror-screen="xrandr --output eDP --output HDMI-0 --same-as eDP" # ubuntu i cant mirror display https://askubuntu.com/questions/1140600/mirror-display-on-ubuntu-18-04
 alias bl2savedata="echo ~/.local/share/aspyr-media/borderlands 2/willowgame/savedata"
 alias blre="systemctl restart bluetooth.service" # bluetooth restart
+
+alias df="df -x tmpfs" # skip tmpfs df https://serverfault.com/questions/1002671/how-to-hide-tempfs-from-the-df-output-on-centos-7-in-ssh 
+alias dfh="df -h"
 # }}}
 
 
@@ -152,6 +157,7 @@ alias g="git" # [1]
 alias gi="git init"
 alias gb="git branch"
 alias gba="git branch -va"
+alias gcl="git clone"
 alias gs="git status"
 alias gd="git diff"
 alias ga="git add"
@@ -159,6 +165,7 @@ alias ga.="git add ."
 alias gl="git log"
 alias gc="git commit"
 alias gp="git push"
+alias gpl="git pull"
 alias gco="git checkout"
 alias gf="fdate; git fetch"
 alias gm="fdate; git merge"
@@ -318,6 +325,7 @@ alias dots='cd $(readlink -f $DOTS)'
 
 ### Shortcuts {{{
 alias uniserver="ssh -vp 8937 prie2985@www.scs.ubbcluj.ro"
+alias uniserverc="ssh -v prie2985@www.scs.ubbcluj.ro" # uniserver campus
 #alias rmfx="rm /home/kamui/.cache/mozilla/firefox/ntrc3s4e.default/cache2/entries/*"
 #alias rmcr="rm -r /home/kamui/.cache/google-chrome/Default/Cache/* /home/kamui/.cache/google-chrome/Default/Code\ Cache/js/*"
 alias oslp="sudo pm-suspend-hybrid"

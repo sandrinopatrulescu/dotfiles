@@ -48,10 +48,16 @@ append-path /opt/mssql-tools/bin # 2022-02-2  for sqlcmd (source: https://docs.m
 
 append-path /mnt/e/ProgramsUni/flutter/bin/
 
-export DOTNET_ROOT=/mnt/e/ProgramsUni/dotnet
-export PATH=$PATH:/mnt/e/ProgramsUni/dotnet
+export DOTNET_ROOT=/mnt/e/LinuxPrograms/dotnet
+export PATH=$PATH:/mnt/e/LinuxPrograms/dotnet
 
-par
-#par1
+export MSBuildSDKsPath="/e/LinuxPrograms/dotnet/sdk"
 
-
+for file in ~kamui/dotfiles/{env,"alias","functions"};
+do
+    source /home/kamui/dotfiles/functions
+done
+for file in ~kamui/dotfiles/{env,"alias","functions"};
+do
+    source /home/kamui/dotfiles/functions
+done

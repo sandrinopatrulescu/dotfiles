@@ -96,6 +96,19 @@ EOF
         echo
     done
 }
+
+concat-mp4() {
+    # usage:a concat-mp4 FILES...
+    # source: https://stackoverflow.com/questions/7333232/how-to-concatenate-two-mp4-files-using-ffmpeg 
+
+    local filename="concat-mp4-list_$(date +%Y-%m-%d_%H-%M-%S)"
+
+    for file in "$@"; do
+        echo "file '$file'" >> "$filename.txt"
+    done
+
+    ffmpeg -f concat -safe 0 -i "$filename.txt" -c copy "$filename.mp4"
+}
 # }}}
 
     ### Uncategorized ### {{{

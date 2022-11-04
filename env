@@ -24,6 +24,8 @@ export JETBRAINS=$(readlink -f /home/kamui/.local/share/JetBrains)
 ## Semi-Permanent
 export UNIPATH='/mnt/e/UBB_IE_2020-2023'
 
+export DOTNET_ROOT=/e/Linux/Programs/dotnet
+
 
 
 # Options
