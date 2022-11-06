@@ -171,7 +171,10 @@ alias gf="fdate; git fetch"
 alias gm="fdate; git merge"
 alias gmod="gm origin/develop"
 alias gfmod="gf && gmod"
-alias gl1s="g log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'" # git log 1 specific; source: https://stackoverflow.com/questions/1838873/visualizing-branch-topology-in-git/34467298#34467298
+alias gr="git remote"
+alias grv="git remote -v"
+alias grs="git remote set-url origin"
+alias gl1s="g log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'" # git log 1 specific; source: https://stackoverflow.com/questions/1838873/visualizing-branch-topology-in-git/34467298#344672981
 alias gl1="gl1s --all" # git log 1
 alias gignidea='\grep -xq ".idea/" .gitignore || echo ".idea/" >> .gitignore' # ignore .idea/ folder in git
 alias gignc="echo -e '/.idea/\n/cmake*/' >> .gitignore" # ignore cmake directories in git
