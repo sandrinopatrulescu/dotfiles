@@ -131,6 +131,8 @@ alias blre="systemctl restart bluetooth.service" # bluetooth restart
 
 alias df="df -x tmpfs" # skip tmpfs df https://serverfault.com/questions/1002671/how-to-hide-tempfs-from-the-df-output-on-centos-7-in-ssh 
 alias dfh="df -h"
+
+alias clickup="(~/Desktop/ClickUp-3.1.2.AppImage &)"
 # }}}
 
 

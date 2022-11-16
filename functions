@@ -109,6 +109,12 @@ concat-mp4() {
 
     ffmpeg -f concat -safe 0 -i "$filename.txt" -c copy "$filename.mp4"
 }
+
+
+screen-brightness() {
+    # source: linux cant change display brightness https://www.debugpoint.com/F2-ways-fix-laptop-brightness-problem-ubuntu-linux/
+    xrandr --output eDP-1 --brightness $1
+}
 # }}}
 
     ### Uncategorized ### {{{
