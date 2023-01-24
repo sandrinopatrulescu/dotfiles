@@ -40,7 +40,7 @@ clone-webelopers() {
     echo "TO DO: After that, perform gs (git status) to test if it succeeded."
 }
 
-re() { # repeat something N times
+re() { # repeat something N times: re <NR> <COMMAND...>
     count=$1
     shift
     for ((i = 1; i <= $count; i++))
@@ -97,7 +97,7 @@ EOF
     done
 }
 
-concat-mp4() {
+concat-mp4() { # merge mp4 files using ffmpeg
     # usage:a concat-mp4 FILES...
     # source: https://stackoverflow.com/questions/7333232/how-to-concatenate-two-mp4-files-using-ffmpeg 
 
@@ -393,6 +393,10 @@ highlight() { # highlight patterns in a file using grep
 
 }
 
+highlight2() { # grep everything https://unix.stackexchange.com/questions/366/convince-grep-to-output-all-lines-not-just-those-with-matches
+    grep --color -E "$1|$" "${@:1}"
+}
+
 
 ffmpeg_convert() { # to convert mkv to mp4, based on ffmpeg_template alias
     ffmpeg -i $1 -c copy $2
@@ -468,8 +472,80 @@ pdfs2png() {
     done
 }
 
+file-fs() { # get the filesystem of a file
+    df "$1" | awk 'NR == 2 {print $1}'
+}
 
+
+file-stat() { # work only on ext4 files
+    local file
+    file=$1; sudo debugfs -R "stat <$(stat -c %i "$file")>" $(file-fs $file)
+
+}
+
+tmount() { # toggle mount
+    # linux check if directory is mounted https://unix.stackexchange.com/questions/151390/how-to-check-whether-a-particular-directory-is-mounted
+    [ $# -ne 1 ] && {
+        echo "Usage: $FUNCNAME <DIR>"
+        return 1
+    }
+
+    if mountpoint -q $1; then 
+        sudo umount $1 &&
+        echo "tmount: unmounted $1"
+    else
+        sudo mount $1 &&
+        echo "tmount: mounted $1"
+    fi
+}
+
+file-stat-ntfs() {
+    # source: linux find crtime on ntfs https://unix.stackexchange.com/questions/87265/how-do-i-get-the-creation-date-of-a-file-on-an-ntfs-logical-volume/
+    local file
+    file=$1; sudo ntfsinfo -F $file /dev/nvme0n1p8
+}
+
+
+gitignore() {
+    # usage: $FUNCNAME <type> [-f]
+    # def: outputs a gitignore file, for the language specified by the argument, from https://github.com/github/gitignore 
+    #  if argument -f is provided, content is written to a file .gitignore
+
+    [ -z "$1" ] && { err 1 "must provide an argument"; return; }
+
+    local name=""
+    local outputDocument=""
+    local link
+
+    case $1 in 
+        c) name="C";;
+        cpp) name="C++";;
+        cs) name="VisualStudio";;
+        java) name="Java";;
+        jetbrains) name="Global/JetBrains";;
+        python) name="Python";;
+        qt) name="Qt";;
+        unity) name="Unity";;
+    esac
+    [ -z $name ] && { err 1 "language type not found"; return; }
+
+    link="https://raw.githubusercontent.com/github/gitignore/main/$name.gitignore"
+
+    [ "$2" == "-f" ] && outputDocument=".gitignore" || outputDocument="/dev/stdout"
+    wget --quiet --output-document=- $link >> $outputDocument
+}
+
+
+psgrep() { # ps grep
+  # ps aux grep https://askubuntu.com/questions/157075/why-does-ps-aux-grep-x-give-better-results-than-pgrep-x
+  ps wup $(pgrep -f "$1")
+}
 # }}}
+
+psgrept() { # ps grep total
+  # linux print mb in human format https://unix.stackexchange.com/questions/44040/a-standard-tool-to-convert-a-byte-count-into-human-kib-mib-etc-like-du-ls1
+  echo "$1 memory usage: ~$(ps wup $(pgrep -f "$1") | awk '{sum += $6} END {print sum}' | numfmt --to=iec-i --suffix=B --from-unit=1000)"
+}
 
 
 
@@ -1153,17 +1229,25 @@ dtd() { # date time <program> date
     return $RET_VAL
 }
 
-hostfiles() { # python -m http.server on / folder
-    #echo "usage: $FUNCNAME [PORT=8080]"
-    echo "IP is $(ifconfig | grep -A1 -E "^wlp3s0:" | tail -n 1 | awk '{print $2}')"
+hostfiles() { # python -m http.server on a folder
+    #echo "usage: $FUNCNAME [DIR=/] [PORT=8080]"
+    echo "BE AWARE OF FORWARDED PORTS!!!"
+    echo "Public IP is $(curl -s ifconfig.me)"
+    echo "LAN IP is $(ifconfig | grep -A1 -E "^enp.*:" | tail -n 1 | awk '{print $2}')"
+    echo "WiFi IP is $(ifconfig | grep -A1 -E "^wlp.*:" | tail -n 1 | awk '{print $2}')"
 #    (cd /; python3 -m http.server 8080)
     
-    cd /; python3 -m http.server ${1:-8080}
+
+    echo "Default gateways:"
+    ip route | grep default
+    echo "Location is $(readlink -f ${1:-/})"
+
+    cd ${1:-/}; python3 -m http.server ${2:-8080}
 
 #    PREV_DIR="$PWD"
 #    trap 'cd "$PREV_DIR"; exit' SIGINT
 #    cd /
-#    python3 -m http.server ${1:-8080}
+#    python3 -m http.server ${2:-8080}
 }
 
 

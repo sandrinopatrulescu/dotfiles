@@ -11,3 +11,4 @@
 	helper = cache --timeout=2592000
 [core]
 	autocrlf = input
+	editor = vim

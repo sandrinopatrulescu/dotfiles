@@ -37,8 +37,10 @@ alias alu="apt list --upgradable" # apt list --upgradable
 alias aug="sudo apt upgrade" # apt upgrade
 alias adl="aud && alu"
 alias la="ls -A"
-alias ll="ls -1"
+alias ll="ls -l"
 alias lla="ll -A"
+alias l1="ls -1"
+alias l1a="ls -1A"
 # C# .NET SQL Server
 alias dn="dotnet"
 alias dnb="dn build"
@@ -122,7 +124,12 @@ alias df1="df -h | grep -v tmpfs"
 alias phone="cd /run/user/1000/gvfs/mtp:host=HUAWEI_MAR-LX1A_L2N4C19712034847"
 
 alias scu="systemctl --machine=$USER@.host --user " # systemctl user
-alias pulseaudior="pulseaudio -k && pulseaudio --start" # pulseaudio restart
+alias pulseaudioc="pulseaudio --check" # pulseadio check
+alias pulseaudiok="pulseaudio -k" # pulseaudio kill
+alias pulseaudiod="pulseaudio -D" # pulseaudio deamon start
+alias pulseaudior="pulseaudioc && { pulseaudiok && pulseaudiod; }; pulseaudioc || pulseaudio -D" # pulseaudio restart
+alias pulseaudior2="pulseaudioc && pulseaudiok; sleep 0.1; pulseaudioc || pulseaudiod"
+alias sealsabaseconf="sudo vi /etc/modprobe.d/alsa-base.conf" # sudo edit alsa-base.conf
 
 alias pdf2png="pdftocairo -png " # https://askubuntu.com/a/1191060/1547353
 alias mirror-screen="xrandr --output eDP --output HDMI-0 --same-as eDP" # ubuntu i cant mirror display https://askubuntu.com/questions/1140600/mirror-display-on-ubuntu-18-04
@@ -132,7 +139,22 @@ alias blre="systemctl restart bluetooth.service" # bluetooth restart
 alias df="df -x tmpfs" # skip tmpfs df https://serverfault.com/questions/1002671/how-to-hide-tempfs-from-the-df-output-on-centos-7-in-ssh 
 alias dfh="df -h"
 
-alias clickup="(~/Desktop/ClickUp-3.1.2.AppImage &)"
+alias dmesg="sudo dmesg"
+alias cats="pygmentize -g -O linenos=1" # cat syntax (highlight). source: linux cat code with syntax highlighting https://stackoverflow.com/questions/7851134/syntax-highlighting-colorizing-cat
+
+alias fcpb="flutter clean && flutter pub get" # flutter clean & pub get
+
+alias mount="sudo mount"
+alias umount="sudo umount"
+
+alias earthrise="cd /e/Volunteering/Earthrise"
+alias hermes="cd /e/Volunteering/Hermes"
+alias scrcpy="scrcpy -m1024"
+alias realpath="realpath -e" # find path of file
+alias sfind="sudo find"
+alias sfindr="sudo find /"
+alias svi="sudo vi" # sudo vi
+alias myip="curl ifconfig.me" # show the public IP address https://opensource.com/article/18/5/how-find-ip-address-linux
 # }}}
 
 
@@ -166,20 +188,19 @@ alias ga="git add"
 alias ga.="git add ."
 alias gl="git log"
 alias gc="git commit"
-alias gp="git push"
 alias gpl="git pull"
 alias gco="git checkout"
 alias gf="fdate; git fetch"
 alias gm="fdate; git merge"
-alias gmod="gm origin/develop"
-alias gfmod="gf && gmod"
+alias gmod="gm origin/develop" # git merge origin/develop
 alias gr="git remote"
 alias grv="git remote -v"
 alias grs="git remote set-url origin"
-alias gl1s="g log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'" # git log 1 specific; source: https://stackoverflow.com/questions/1838873/visualizing-branch-topology-in-git/34467298#344672981
 alias gl1="gl1s --all" # git log 1
-alias gignidea='\grep -xq ".idea/" .gitignore || echo ".idea/" >> .gitignore' # ignore .idea/ folder in git
-alias gignc="echo -e '/.idea/\n/cmake*/' >> .gitignore" # ignore cmake directories in git
+alias gl1s="g log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'" # git log 1 specific; source: https://stackoverflow.com/questions/1838873/visualizing-branch-topology-in-git/34467298#344672981
+alias gl2='git log --pretty=format:"%cI | %H | %s"'
+alias gie="$EDITOR ./.gitignore"
+alias gcl="git config -l --show-origin --show-scope"
 
 
 ##############################################
@@ -212,6 +233,7 @@ alias l="ls -1l"
 alias lh='ls -lh'
 alias lrt="ls -lrt"
 alias lrth="lrt -h"
+alias lrtha="lrth -A"
 alias lla="ls -1lA"
 
 ###### }}}
@@ -341,6 +363,7 @@ alias oslp="sudo pm-suspend-hybrid"
 alias fdate="date +%Y-%m-%d_%H-%M-%S" # format date (for saving timestamped file)
 alias tsfdate="date +%Y-%m-%d\ %H:%M" # Trying Scratch format date 
 alias tsfdatepattern="echo '^[0-9]{4}(-[0-9]{2}){2} [0-9]{2}:[0-9]{2}'"
+alias fdate1="date \"+%Y-%m-%d %H:%M\""
 alias mtodo="(mousepad $TRASH/todos_$(fdate).txt &)" # mousepad todo
 alias slay="pkill -15 -f " # https://askubuntu.com/questions/1368579/how-to-kill-firefox-from-command-line
 alias slowprint="echo ' | awk '\'{if \(system\('\"sleep 0.05 && exit 2\"'\) != 2\) exit\; print}\'''"
@@ -353,7 +376,10 @@ alias log-trash='echo \"\$(fdate)||\" >> /e/trash/0.info'
 
 alias check-sftp-logins="cat /var/log/auth.log | grep \"Accepted password for sftp\""
 
-alias untar="tar -xvzf "
+alias untar="tar -xvf "
+
+alias mkcdfdate="mkcd $(fdate)"
+alias touchfdate="touch $(fdate).txt"
 ### }}}
 
 

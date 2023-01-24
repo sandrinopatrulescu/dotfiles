@@ -32,12 +32,13 @@ date "+%A %d %B %Y, %T"
 
 # kamui
 
-for file in ~kamui/dotfiles/{env,"alias","functions"};
+for file in ~kamui/dotfiles/{"env","alias","functions"};
 do
     source ${file}
 done
 
 # printSemesterWeek # TODO: fix it
+
 
 append-path $DOTS/bin # https://www.anishathalye.com/2014/08/03/managing-your-dotfiles/
 
@@ -46,18 +47,23 @@ append-path $DOTS/bin # https://www.anishathalye.com/2014/08/03/managing-your-do
 append-path /opt/mssql-tools/bin # 2022-02-2  for sqlcmd (source: https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-ubuntu?view=sql-server-ver15#tools)
 ##
 
-append-path /mnt/e/ProgramsUni/flutter/bin/
 
-export DOTNET_ROOT=/mnt/e/LinuxPrograms/dotnet
-export PATH=$PATH:/mnt/e/LinuxPrograms/dotnet
+append-path /home/kamui/.local/share/JetBrains/Toolbox/scripts
 
-export MSBuildSDKsPath="/e/LinuxPrograms/dotnet/sdk"
+#region EXPORTS/PATH UNI {{{
+append-path /mnt/e/LinuxPrograms/flutter/bin
 
-for file in ~kamui/dotfiles/{env,"alias","functions"};
-do
-    source /home/kamui/dotfiles/functions
-done
-for file in ~kamui/dotfiles/{env,"alias","functions"};
-do
-    source /home/kamui/dotfiles/functions
-done
+
+#export DOTNET_ROOT=/mnt/e/LinuxPrograms/dotnet
+export DOTNET_ROOT=/usr/lib/dotnet
+
+append-path $DOTNET_ROOT
+#export MSBuildSDKsPath="$DOTNET_ROOT/sdk"
+export MSBuildSDKsPath="$DOTNET_ROOT/sdk/6.0.113/Sdks"
+
+
+export MPJ_HOME=/mnt/e/LinuxPrograms/mpj-v0_44
+append-path $MPJ_HOME/bin
+#endregion }}}
+
+
