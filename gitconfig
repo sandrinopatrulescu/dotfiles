@@ -4,9 +4,9 @@
 	ui = true
 	status = auto
 	branch = auto
-[user]
-	name = Patrulescu-Ronald-Sandrino
-	email = prie2985@scs.ubbcluj.ro
+# [user]
+# 	name = Patrulescu-Ronald-Sandrino
+# 	email = prie2985@scs.ubbcluj.ro
 [credential]
 	helper = cache --timeout=2592000
 [core]
