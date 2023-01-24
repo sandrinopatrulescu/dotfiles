@@ -177,30 +177,39 @@ alias paths='echo -e ${PATH//:/\\n}' # show all the PATH locations on different 
 
 # Shortcuts {{{
 alias _="sudo " # [1]
+
 alias g="git" # [1]
 alias gi="git init"
-alias gb="git branch"
-alias gba="git branch -va"
 alias gcl="git clone"
+
+alias gie='$EDITOR ./.gitignore'
+alias gcl="git config -l --show-origin --show-scope"
+
 alias gs="git status"
-alias gd="git diff"
-alias ga="git add"
-alias ga.="git add ."
-alias gl="git log"
-alias gc="git commit"
-alias gpl="git pull"
 alias gco="git checkout"
-alias gf="fdate; git fetch"
-alias gm="fdate; git merge"
-alias gmod="gm origin/develop" # git merge origin/develop
-alias gr="git remote"
-alias grv="git remote -v"
-alias grs="git remote set-url origin"
+alias gd="git diff"
+
+alias gb="git branch"
+alias gbv="git branch -va"
+
+alias gl="git log"
 alias gl1="gl1s --all" # git log 1
 alias gl1s="g log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'" # git log 1 specific; source: https://stackoverflow.com/questions/1838873/visualizing-branch-topology-in-git/34467298#344672981
 alias gl2='git log --pretty=format:"%cI | %H | %s"'
-alias gie="$EDITOR ./.gitignore"
-alias gcl="git config -l --show-origin --show-scope"
+
+alias gr="git remote"
+alias grv="git remote -v"
+alias grs="git remote set-url origin"
+
+alias ga="git add"
+alias ga.="git add ."
+alias gc="git commit"
+
+alias gf="fdate; git fetch"
+alias gpl="fdate; git pull"
+alias gm="fdate; git merge"
+alias gmod="git merge origin/develop" # git merge origin/develop
+
 
 
 ##############################################
