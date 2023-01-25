@@ -291,6 +291,7 @@ alias unical='sp shotwell /mnt/e/UBB_IE_2020-2023/uni-cal4.0.png' # open the uni
 
 # alias studying="cd /mnt/e/Studying" # not used
 alias scratch="cd /mnt/e/Scratch"
+alias scratchuni="cd /mnt/e/Scratch/uni"
 alias videos="cd /mnt/e/Videos"
 alias captures="cd /mnt/e/Captures"
 alias trash="cd /mnt/e/trash"

@@ -1389,6 +1389,25 @@ testtrap () {
         echo running;
     done
 }
+# }}}
+
+gcfgu() { # git config user local
+  [ $# -ne 1 ] && echo "usage: $FUNCNAME <m/u> # (main/uni)" && return 1
+  local username
+  local email
+
+  case $1 in
+    m)
+      username="sandrinopatrulescu"
+      email="sandryno_sandryno@yahoo.com" ;;
+    u)
+      username="Patrulescu-Ronald-Sandrino"
+      email="prie2985@scs.ubbcluj.ro" ;;
+  esac
+
+  git config --local user.name $username
+  git config --local user.email $email
+}
 
 
 # references
