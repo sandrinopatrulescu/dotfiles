@@ -540,6 +540,13 @@ psgrep() { # ps grep
   # ps aux grep https://askubuntu.com/questions/157075/why-does-ps-aux-grep-x-give-better-results-than-pgrep-x
   ps wup $(pgrep -f "$1")
 }
+
+xfreerdpac() {
+  read -s -p "Password: " pass
+  xfreerdp /v:192.168.1.182 /u:sandrinopatrulescu /monitors:0,2 /multimon /p:$pass
+}
+
+
 # }}}
 
 psgrept() { # ps grep total
