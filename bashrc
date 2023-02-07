@@ -65,6 +65,7 @@ export MSBuildSDKsPath="$DOTNET_ROOT/sdk/6.0.113/Sdks"
 export MPJ_HOME=/mnt/e/LinuxPrograms/mpj-v0_44
 append-path $MPJ_HOME/bin
 #endregion }}}
+export NODE_OPTIONS=--openssl-legacy-provider
 
 
 
