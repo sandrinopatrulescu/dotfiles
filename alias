@@ -156,6 +156,37 @@ alias sfind="sudo find"
 alias sfindr="sudo find /"
 alias svi="sudo vi" # sudo vi
 alias myip="curl ifconfig.me" # show the public IP address https://opensource.com/article/18/5/how-find-ip-address-linux
+
+alias termdown="termdown -e"
+
+alias greek='printf "\
+Α α  Alpha
+Β β  Beta
+Γ γ  Gamma
+Δ δ  Delta
+Ε ε  Epsilon
+Ζ ζ  Zeta
+Η η  Eta
+Θ θ  Theta
+Ι ι  Iota
+Κ κ  Kappa
+Λ λ  Lambda
+Μ μ  Mu
+Ν ν  Nu
+Ξ ξ  Xi
+Ο ο  Omicron
+Π π  Pi
+Ρ ρ  Rho
+Σ σς Sigma
+Τ τ  Tau
+Υ υ  Upsilon
+Φ φ  Phi
+Χ χ  Chi
+Ψ ψ  Psi
+Ω ω  Omega
+"'
+
+
 # }}}
 
 
@@ -333,6 +364,8 @@ alias MAP="cd /mnt/e/UBB_IE_2020-2023/S5.MAP/"
 alias PDP="cd /mnt/e/UBB_IE_2020-2023/S5.PDP/"
 alias PKC="cd /mnt/e/UBB_IE_2020-2023/S5.PKC/"
 alias VR="cd /mnt/e/UBB_IE_2020-2023/S5.VR/"
+
+alias jflap=/e/Scratch/uni/flcd/JFLAP7.1.jar
 
 
 alias glsm='eval $(ssh-agent) && ssh-add ~/.ssh/id_ed25519_github_main' # git login ssh main
