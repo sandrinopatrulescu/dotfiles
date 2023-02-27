@@ -113,6 +113,7 @@ alias fortivpns="fortivpn status"
 alias fortivpnc="fortivpn connect artsoft_ssl -u sandrinopatrulescu -p -s -w"
 alias fortivpnd="fortivpn disconnect"
 alias generate-viewform-links="/mnt/e/Scratch/CurlPython2/generate-viewform-links.py"
+alias forticonnect="title forti && fortivpnc; fortivpns"
 
 
 alias systemctl="_ systemctl"
@@ -405,9 +406,9 @@ alias oslp="sudo pm-suspend-hybrid"
 
 ### Tools {{{
 alias fdate="date +%Y-%m-%d_%H-%M-%S" # format date (for saving timestamped file)
-alias tsfdate="date +%Y-%m-%d\ %H:%M" # Trying Scratch format date 
-alias tsfdatepattern="echo '^[0-9]{4}(-[0-9]{2}){2} [0-9]{2}:[0-9]{2}'"
-alias fdate1="date \"+%Y-%m-%d %H:%M\""
+alias fdatets="date +%Y-%m-%d\ %H:%M" # Trying Scratch format date
+alias fdatetspattern="echo '^[0-9]{4}(-[0-9]{2}){2} [0-9]{2}:[0-9]{2}'"
+alias fdatec="date \"+%Y-%m-%d %a\"" # format date clickup
 alias mtodo='(mousepad $TRASH/todos_$(fdate).txt &)' # mousepad todo
 alias slay="pkill -15 -f " # https://askubuntu.com/questions/1368579/how-to-kill-firefox-from-command-line
 alias slowprint="echo ' | awk '\'{if \(system\('\"sleep 0.05 && exit 2\"'\) != 2\) exit\; print}\'''"
