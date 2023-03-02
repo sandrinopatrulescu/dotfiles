@@ -1,8 +1,3 @@
-# Fig pre block. Keep at the top of this file.
-#[[ -f "$HOME/.fig/shell/bashrc.pre.bash" ]] && builtin source "$HOME/.fig/shell/bashrc.pre.bash"
-# If not running interactively, don't do anything
-[[ $- == *i* ]] || return
-
 # enable bash completion in interactive shells
 if ! shopt -oq posix; then
   if [ -f /usr/share/bash-completion/bash_completion ]; then
@@ -34,46 +29,10 @@ date "+%A %d %B %Y, %T"
 
 # kamui
 
-for file in ~kamui/dotfiles/{"env","alias","functions"};
+for file in ~/dotfiles/{"env","alias","functions"};
 do
     source ${file}
 done
 
-# printSemesterWeek # TODO: fix it
-
 
 append-path $DOTS/bin # https://www.anishathalye.com/2014/08/03/managing-your-dotfiles/
-
-
-## LL 5.6 only
-append-path /opt/mssql-tools/bin # 2022-02-2  for sqlcmd (source: https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-ubuntu?view=sql-server-ver15#tools)
-##
-
-
-append-path /home/kamui/.local/share/JetBrains/Toolbox/scripts
-
-#region EXPORTS/PATH UNI {{{
-append-path /mnt/e/LinuxPrograms/flutter/bin
-
-
-#export DOTNET_ROOT=/mnt/e/LinuxPrograms/dotnet
-export DOTNET_ROOT=/usr/lib/dotnet
-
-append-path $DOTNET_ROOT
-#export MSBuildSDKsPath="$DOTNET_ROOT/sdk"
-export MSBuildSDKsPath="$DOTNET_ROOT/sdk/6.0.113/Sdks"
-
-
-export MPJ_HOME=/mnt/e/LinuxPrograms/mpj-v0_44
-append-path $MPJ_HOME/bin
-#endregion }}}
-export NODE_OPTIONS=--openssl-legacy-provider
-
-
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-# Fig post block. Keep at the bottom of this file.
-#[[ -f "$HOME/.fig/shell/bashrc.post.bash" ]] && builtin source "$HOME/.fig/shell/bashrc.post.bash"
