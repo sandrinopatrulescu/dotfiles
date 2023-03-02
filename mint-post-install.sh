@@ -36,9 +36,9 @@ replaceSshDirAnswer="$4"
 shopt -s expand_aliases
 alias fdate="date +%Y-%m-%d_%H-%M-%S"
 
-rawInstallDate="$(dumpe2fs /dev/nvme0n1p5 | grep -i created | cut -d' ' -f9-)"
 homePartiton="$(lsblk -fs | grep " /home$" | cut -d' ' -f1)"
 rootPartition="$(lsblk -fs | grep " /$" | cut -d' ' -f1)"
+rawInstallDate="$(sudo dumpe2fs /dev/"${rootPartition}" | grep -i created | cut -d' ' -f9-)"
 
 
 
@@ -247,7 +247,7 @@ echo "# end."
 
 
 echo "TODO:"
-echo "- add install header in doc: $(date -d "${rawInstallDate}" +'%Y-%m-%d_%H-%M-%S') on ${rootPartition} $(awk -F= '/^PRETTY_NAME=/ { print $2 }' /etc/os-release)"
+echo "- add install header in doc: $(date -d "${rawInstallDate}" +'%Y %b %d %H:%M:%S') on /dev/${rootPartition} $(awk -F= '/^PRETTY_NAME=/ { print $2 }' /etc/os-release)"
 
 
 
