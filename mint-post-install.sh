@@ -72,13 +72,13 @@ echo
 
 echo "# 3.2 auto mount E"
 ePartitionUUID="$(blkid | grep "${ePartition}" | sed -E 's@^.* UUID="([0-9a-zA-Z]+)" .*$@\1@')"
-cp /etc/fstab "/etc/fstab_$(fdate).bak" # backup /etc/fstab
-echo '# Windows E:'\\ >> /etc/fstab
-echo "UUID=${ePartitionUUID} /mnt/e ntfs permissions 0 0" >> /etc/fstab
-mountpoint -q /mnt/e && sudo umount /mnt/e
+sudo cp /etc/fstab "/etc/fstab_$(fdate).bak" # backup /etc/fstab
+sudo echo '# Windows E:'\\ >> /etc/fstab
+sudo echo "UUID=${ePartitionUUID} /mnt/e ntfs permissions 0 0" >> /etc/fstab
+sudo mountpoint -q /mnt/e && sudo umount /mnt/e
 [ -d /mnt/e ] || sudo mkdir /mnt/e
-ln -s -T /mnt/e /e
-mount -a
+sudo ln -s -T /mnt/e /e
+sudo mount -a
 echo
 
 
@@ -106,7 +106,7 @@ function installDotfiles() {
     tmpfile=$(mktemp /tmp/abc-script.XXXXXX)
     echo "tmpfile=${tmpfile}"
     cat ~/.bashrc > "${tmpfile}"
-    read -p "Press enter to continue"
+    read -rp "Press enter to continue"
     echo
     echo
     echo
@@ -150,7 +150,7 @@ echo
 
 
 
-echo "# 3.7 shorcuts"
+echo "# 3.7 shortcuts in file manager & file picker"
 cat << EOF > /home/"${user}"/.config/gtk-3.0/bookmarks
 file:///home/${user}/Downloads
 file:///tmp
@@ -161,6 +161,14 @@ file:///e/UBB_IE_2020-2023
 file:///e/Videos
 EOF
 echo
+
+filePickerConfigFile=/home/"${user}"/.config/QtProject.conf
+cp "$filePickerConfigFile" "${filePickerConfigFile}_$(fdate).bak"
+filePickerShortcutsAddition=$(awk -v d=", " '{s=s d$0} END{print s}' /home/"${user}"/.config/gtk-3.0/bookmarks)  # bash join lines with separator https://www.baeldung.com/linux/join-multiple-lines
+tmpFile=$(mktemp /tmp/abc-script.XXXXXX)
+awk -v addition="$filePickerShortcutsAddition" '/^shortcuts/ {print $0 addition} !/^shortcuts/ {print}' "$filePickerConfigFile" >| "$tmpFile"
+mv "$tmpFile" "$filePickerConfigFile"
+
 
 
 
