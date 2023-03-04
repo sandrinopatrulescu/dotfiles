@@ -19,7 +19,7 @@ DRIVE_NAME="drive-main"
 
 # Name and locations of the passwords file
 DB_FILE_NAME="Passwords.kdbx"
-LOCAL_LOCATION="/mnt/e/GDrive/"
+LOCAL_LOCATION="/mnt/e/GDrive"
 REMOTE_LOCATION="Save/ImportantStuff"
 
 #####################
