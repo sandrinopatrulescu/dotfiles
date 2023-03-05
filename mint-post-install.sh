@@ -229,7 +229,7 @@ if [ "${install3Answer}" = "y" ]; then
     echo "installing forti..."
     # TODO: fix dependecies
     sudo apt install -qqy libdbusmenu-gtk4  libappindicator1 libnss3-tools
-    wget --quiet -O /tmp/forticlient.deb "https://repo.fortinet.com/repo/forticlient/7.2/ubuntu/pool/multiverse/forticlient/forticlient_7.2.0.0644_amd64.deb" && dpkg -i /tmp/forticlient.deb 
+    wget --quiet -O /tmp/forticlient.deb "https://repo.fortinet.com/repo/forticlient/7.2/ubuntu/pool/multiverse/forticlient/forticlient_7.2.0.0644_amd64.deb" && sudo dpkg -i /tmp/forticlient.deb
     echo "Install 3 finished..."
 else
     echo "Skipping install 3"

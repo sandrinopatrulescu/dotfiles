@@ -110,7 +110,7 @@ alias lns="ln -s"
 # artsoft internship 2022
 alias fortivpn="/opt/forticlient/fortivpn"
 alias fortivpns="fortivpn status"
-alias fortivpnc="fortivpn connect artsoft_ssl -u sandrinopatrulescu -p -s -w"
+alias fortivpnc="fortivpn connect artsoft_vpn -u sandrinopatrulescu -p -s -w"
 alias fortivpnd="fortivpn disconnect"
 alias generate-viewform-links="/mnt/e/Scratch/CurlPython2/generate-viewform-links.py"
 alias forticonnect="title forti && fortivpnc; fortivpns"
@@ -187,7 +187,7 @@ alias greek='printf "\
 Ω ω  Omega
 "'
 
-
+alias dpkgi="sudo dpkg -i"
 # }}}
 
 
