@@ -548,6 +548,32 @@ xfreerdpac() {
 }
 
 
+fix-camera() {
+  # https://bugs.launchpad.net/ubuntu/+source/linux/+bug/2000947/comments/19
+
+  local currentDir="$PWD"
+  cd /tmp && mkcdfdate
+
+
+  # enable source code repositories https://askubuntu.com/questions/158871/how-do-i-enable-the-source-code-repositories
+  read -rp "Enable source code repositories and then press enter to continue"
+
+  apt-get source linux-modules-extra-$(uname -r)
+  cd linux-"$(uname -r | cut -d- -f1)"/drivers/media/usb/uvc
+  mv uvc_driver.c uvc_driver.old
+  wget https://raw.githubusercontent.com/Giuliano69/uvc_driver-for-Quanta-HD-User-Facing-0x0408-0x4035-/main/uvc_driver.c
+
+  make -j4 -C /lib/modules/$(uname -r)/build M=$(pwd) modules
+  sudo cp uvcvideo.ko /lib/modules/$(uname -r)/kernel/drivers/media/usb/uvc/
+
+  sudo rmmod uvcvideo && sudo modprobe uvcvideo
+
+  read -rp "Disable source code repositories and then press enter to continue"
+
+  echo "Now test the camera"
+  cd "$currentDir"
+}
+
 # }}}
 
 psgrept() { # ps grep total
