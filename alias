@@ -188,6 +188,7 @@ alias greek='printf "\
 "'
 
 alias dpkgi="sudo dpkg -i"
+alias keys='awk "{s=s \$0} END{print s}" /home/kamui/Desktop/keys.txt' # alias awk https://superuser.com/questions/696411/how-to-alias-an-awk-command
 # }}}
 
 
