@@ -1,0 +1,26 @@
+--- /etc/initramfs-tools/initramfs.conf2023-03-06_10-55-05	2022-02-08 21:54:47.000000000 +0200
++++ /etc/initramfs-tools/initramfs.conf	2023-03-06 11:02:46.900627615 +0200
+@@ -17,7 +17,10 @@
+ # list - Only include modules from the 'additional modules' list
+ #
+ 
+-MODULES=most
++# original
++#MODULES=most
++# patch
++MODULES=dep
+ 
+ #
+ # BUSYBOX: [ y | n | auto ]
+@@ -33,7 +36,10 @@
+ # COMPRESS: [ gzip | bzip2 | lz4 | lzma | lzop | xz | zstd ]
+ #
+ 
+-COMPRESS=zstd
++# original
++#COMPRESS=zstd
++# patch
++COMPRESS=xz
+ 
+ #
+ # DEVICE: ...
