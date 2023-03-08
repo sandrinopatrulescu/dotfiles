@@ -369,6 +369,13 @@ alias VR="cd /mnt/e/UBB_IE_2020-2023/S5.VR/"
 
 alias jflap=/e/Scratch/uni/flcd/JFLAP7.1.jar
 
+# S6
+alias SSVV="cd /mnt/e/UBB_IE_2020-2023/S6.SSVV/"
+alias NC="cd /mnt/e/UBB_IE_2020-2023/S6.NC/"
+alias PBT="cd /mnt/e/UBB_IE_2020-2023/S6.PBT/"
+alias BSC="cd /mnt/e/UBB_IE_2020-2023/S6.BSC/"
+alias HCS="cd /mnt/e/UBB_IE_2020-2023/S6.HCS/"
+alias TDT="cd /mnt/e/UBB_IE_2020-2023/S6.TDT/"
 
 alias glsm='eval $(ssh-agent) && ssh-add ~/.ssh/id_ed25519_github_main' # git login ssh main
 alias glst='ssh -T git@github.com' # git ssh test

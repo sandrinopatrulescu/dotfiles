@@ -193,7 +193,7 @@ echo
 
 echo "# 5.1 apt install "
 echo "Install 1 starting..."
-apt install -qqy vim keepassxc scrcpy manpages-posix-dev xfce4-clipman vokoscreen-ng xtitle ffmpeg rclone 
+apt install -qqy vim keepassxc scrcpy manpages-posix-dev xfce4-clipman vokoscreen-ng xtitle ffmpeg rclone tree
 echo "Install 1 finished..."
 echo
 
@@ -201,19 +201,20 @@ echo
 echo "# 5.2 manual install "
 
 echo "installing chrome..." # https://askubuntu.com/questions/510056/how-to-install-google-chrome 
-wget https://dl-ssl.google.com/linux/linux_signing_key.pub -O /tmp/google.pub
-gpg --no-default-keyring --keyring /etc/apt/keyrings/google-chrome.gpg --import /tmp/google.pub
+sudo wget https://dl-ssl.google.com/linux/linux_signing_key.pub -O /tmp/google.pub
+sudo gpg --no-default-keyring --keyring /etc/apt/keyrings/google-chrome.gpg --import /tmp/google.pub
+
 echo 'deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list
 apt update -qq && apt install -qqy google-chrome-stable
 
 echo "installing discord..."
 sudo apt install -qqy libgconf-2-4 libc++1
 # TODO: fix problems w/ dependecies
-wget --quiet -O /tmp/discord.deb "https://discord.com/api/download?platform=linux&format=deb" && dpkg -i /tmp/discord.deb
+wget --quiet -O /tmp/discord.deb "https://discord.com/api/download?platform=linux&format=deb" && sudo dpkg -i /tmp/discord.deb
 
 echo "installling teamviewer..."
 # TODO: fix problems w/ dependecies
-wget --quiet -O /tmp/teamviewer.deb "https://download.teamviewer.com/download/linux/teamviewer_amd64.deb" && dpkg -i /tmp/teamviewer.deb
+wget --quiet -O /tmp/teamviewer.deb "https://download.teamviewer.com/download/linux/teamviewer_amd64.deb" && sudo dpkg -i /tmp/teamviewer.deb
 echo
 
 
@@ -221,7 +222,9 @@ echo "# 5.3 AC install"
 if [ "${install3Answer}" = "y" ]; then
     echo "Install 3 starting..."
     echo "installing skype..."
-    apt install -qqy skypeforlinux
+    wget --quiet -O /tmp/skype.deb "https://go.skype.com/skypeforlinux-64.deb" && sudo dpkg -i /tmp/skype.deb
+    sudo sed -i 's;\[arch=amd64\];\[arch=amd64 signed-by=/usr/share/keyrings/skype.gpg\];g' /etc/apt/sources.list.d/skype-stable.list && apt update
+    sudo apt-key export DF7587C3 | sudo gpg --dearmour -o /usr/share/keyrings/skype.gpg
     echo "installing RDC..."
     apt install -qqy remmina
     echo "installing freerdp2-x11..."
