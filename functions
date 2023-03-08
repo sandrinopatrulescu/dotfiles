@@ -441,19 +441,26 @@ fdatetscsplit() {
 }
 
 
-extract-basename-wo-extension() {
-    # source: bash get basename without extension  https://stackoverflow.com/questions/2664740/extract-file-basename-without-path-and-extension-in-bash
-    # usage: extract-basename-wo-extension <FILE>
-
-    [ $# -ne 1 ] && return $(err 1 "usage: extract-basename-wo-extension <FILE>")  # return 1
-
-    local result="${1##*/}"
-    echo "${result%.*}"
-
+get-file-extension() {
+    # usage: get-basename-extension <FILE>
+    echo "${1##*.}"
 }
 
+get-file-extensionless() {
+    # usage: basename-extensionless <FILE>
+    # NOTE that if there is no extension, the whole basename is returned
+    echo "${1%.*}"
+}
 
+backup3() { # backup files
+  extension="${1##*.}"
+  filepathWithoutExtension="${1%.*}"
 
+  backupFilepath="${filepathWithoutExtension}_$(date +%Y-%m-%d_%H-%M-%S)"
+  [ "$extension" != "$filename" ] && backupFilepath="$backupFilepath.$extension"
+
+  cp "$1" "$backupFilepath"
+}
 
 pdfs2png() {
     # usage: pdfs2png <PDF file>
