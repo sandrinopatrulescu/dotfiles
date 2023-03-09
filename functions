@@ -457,7 +457,7 @@ backup3() { # backup files
   filepathWithoutExtension="${1%.*}"
 
   backupFilepath="${filepathWithoutExtension}_$(date +%Y-%m-%d_%H-%M-%S)"
-  [ "$extension" != "$filename" ] && backupFilepath="$backupFilepath.$extension"
+  [ "$extension" != "$(basename "$1")" ] && backupFilepath="$backupFilepath.$extension"
 
   cp "$1" "$backupFilepath"
 }

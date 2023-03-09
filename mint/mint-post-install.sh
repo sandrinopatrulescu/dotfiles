@@ -72,9 +72,9 @@ echo
 
 echo "# 3.2 auto mount E"
 ePartitionUUID="$(blkid | grep "${ePartition}" | sed -E 's@^.* UUID="([0-9a-zA-Z]+)" .*$@\1@')"
-sudo cp /etc/fstab "/etc/fstab_$(fdate).bak" # backup /etc/fstab
-sudo echo '# Windows E:'\\ >> /etc/fstab
-sudo echo "UUID=${ePartitionUUID} /mnt/e ntfs permissions 0 0" >> /etc/fstab
+sudo cp /etc/fstab "/etc/fstab_$(fdate)" # backup /etc/fstab
+sudo echo '# Windows E:'\\ | sudo tee -a /etc/fstab
+sudo echo "UUID=${ePartitionUUID} /mnt/e ntfs-3g uid=1000,gid=1000,dmask=027,fmask=137,windows_names 0 0" | sudo tee -a /etc/fstab
 sudo mountpoint -q /mnt/e && sudo umount /mnt/e
 [ -d /mnt/e ] || sudo mkdir /mnt/e
 sudo ln -s -T /mnt/e /e
@@ -84,7 +84,7 @@ echo
 
 
 echo "# 3.3 grub"
-sudo cp /etc/default/grub "/etc/default/grub_$(fdate).bak"
+sudo cp /etc/default/grub "/etc/default/grub_$(fdate)"
 sudo sed -Ei 's@^(GRUB_CMDLINE_LINUX_DEFAULT)=.*$@\1=""@' /etc/default/grub
 sudo sed -Ei '$aGRUB_BACKGROUND="/mnt/e/Media/GravityFalls08.jpeg"' /etc/default/grub
 sudo update-grub
@@ -163,7 +163,7 @@ EOF
 echo
 
 filePickerConfigFile=/home/"${user}"/.config/QtProject.conf
-cp "$filePickerConfigFile" "${filePickerConfigFile}_$(fdate).bak"
+cp "$filePickerConfigFile" "${filePickerConfigFile}_$(fdate)"
 filePickerShortcutsAddition=$(awk -v d=", " '{s=s d$0} END{print s}' /home/"${user}"/.config/gtk-3.0/bookmarks)  # bash join lines with separator https://www.baeldung.com/linux/join-multiple-lines
 tmpFile=$(mktemp /tmp/abc-script.XXXXXX)
 awk -v addition="$filePickerShortcutsAddition" '/^shortcuts/ {print $0 addition} !/^shortcuts/ {print}' "$filePickerConfigFile" >| "$tmpFile"
