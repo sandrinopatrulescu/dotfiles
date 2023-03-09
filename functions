@@ -1179,65 +1179,50 @@ cawk() { # calculator
 }
 
 
-__cleanup_dir() {
+__cleanup-dir() {
+    # usage __cleanup-dir <dir>
     echo -ne "$1\t" && [ -d "$1" ] && rm -vr "$1" | wc -l || echo "Empty"
 }
 
 
 cleanup() { # remove temporary files
-    # TODO: use __cleanup_dir() everywhere
-    echo "Chrome "
-    __cleanup_dir /home/kamui/.cache/google-chrome/Default
-    # __cleanup_dir /home/kamui/.config/google-chrome/Default/Service\ Worker/CacheStorage # enable if it gets large
-    
-    # enabled if necessary
-    #__cleanup_dir /home/kamui/.cache/sessions/
-    #__cleanup_dir /home/kamui/.cache/mesa_shader_cache
-    #__cleanup_dir /home/kamui/.cache/thumbnails/
+  # TODO: idea: export the multimap
+  declare -A multimap
+  local separator="|"
+#  multimap["Chrome"]="/home/kamui/.cache/google-chrome/Default/Cache/Cache_Data|/home/kamui/.cache/google-chrome/Default/Code Cache/js"
+  multimap["Chrome"]="$(join1 "$separator" /home/kamui/.cache/google-chrome/*/{Cache/Cache_Data,Code\ Cache/js} /home/kamui/.config/google-chrome/*/Service\ Worker/CacheStorage)"
+  multimap["Discord"]="/home/kamui/.config/discord/Cache"
+  multimap["Firefox"]="$(join1 "$separator" /home/kamui/.cache/mozilla/firefox/*/cache2/entries)"
+  # simulating: for f in echo /home/kamui/.cache/mozilla/firefox/*/cache2; do echo $f; mkdir -p "$f"/entries/{a..z}; done
+  multimap["Teams"]="$(join1 "$separator" /home/kamui/.config/Microsoft/Microsoft\ Teams/{Cache,Code\ Cache,Service\ Worker/CacheStorage})"
 
-    #__cleanup_dir /var/cache/fontconfig
+  for key in "${!multimap[@]}"; do
+    echo -e "\n$key"
+    IFS="$separator" read -ra locations <<< "${multimap[$key]}"
+    for location in "${locations[@]}"; do
+#      echo "$location"
+      __cleanup-dir "$location"
+    done
+  done
 
-
-
-    #echo
-    #echo "Firefox " 
-        #find /home/kamui/.mozilla/firefox/*/storage/default -path "*/morgue/*" -type d -exec rm -r {} + # delete ocasionally
+  #echo
+  #echo "Firefox "
+      #find /home/kamui/.mozilla/firefox/*/storage/default -path "*/morgue/*" -type d -exec rm -r {} + # delete ocasionally
 # /home/kamui/.mozilla/firefox/ntrc3s4e.default/storage/default/https+++studio.youtube.com
-    #echo -ne ".mozilla/firefox/ntrc3s4e.default/storage/default/https+++studio.youtube.com\t" && [ -d /home/kamui/.mozilla/firefox/ntrc3s4e.default/storage/default/https+++studio.youtube.com ] && rm -vr /home/kamui/.mozilla/firefox/ntrc3s4e.default/storage/default/https+++studio.youtube.com | wc -l || echo "Empty"
+  #echo -ne ".mozilla/firefox/ntrc3s4e.default/storage/default/https+++studio.youtube.com\t" && [ -d /home/kamui/.mozilla/firefox/ntrc3s4e.default/storage/default/https+++studio.youtube.com ] && rm -vr /home/kamui/.mozilla/firefox/ntrc3s4e.default/storage/default/https+++studio.youtube.com | wc -l || echo "Empty"
 
-        #echo -ne "datareporting\t"; find ~kamui/.mozilla/firefox/*/ -path "*/datareporting/archived/*" -type d -exec rm -vr {} + | wc -l || echo "Empty"
-        # this above can be tested with
-            # mkdir ~kamui/.mozilla/firefox/icpoa0ej.ForTesting/datareporting/archived/test_dir$(date +%Y-%m-%d_%H-%M-%S)
-            # ls ~kamui/.mozilla/firefox/icpoa0ej.ForTesting/datareporting/archived/
-            # src && cleanup
-            # ls ~kamui/.mozilla/firefox/icpoa0ej.ForTesting/datareporting/archived/
+      #echo -ne "datareporting\t"; find ~kamui/.mozilla/firefox/*/ -path "*/datareporting/archived/*" -type d -exec rm -vr {} + | wc -l || echo "Empty"
+      # this above can be tested with
+          # mkdir ~kamui/.mozilla/firefox/icpoa0ej.ForTesting/datareporting/archived/test_dir$(date +%Y-%m-%d_%H-%M-%S)
+          # ls ~kamui/.mozilla/firefox/icpoa0ej.ForTesting/datareporting/archived/
+          # src && cleanup
+          # ls ~kamui/.mozilla/firefox/icpoa0ej.ForTesting/datareporting/archived/
 
-        #for PROFILE_DIR in $(find ~kamui/.cache/mozilla/firefox/ -mindepth 1 -maxdepth 1 -type d); do 
-        #    echo -ne "$(basename "$PROFILE_DIR")\t" && [ -d "$PROFILE_DIR/cache2" ] && /usr/bin/rm -vr "$PROFILE_DIR/cache2" | wc -l || echo "Empty"
-        #done
-        #[ -d ~/.cache/mozilla/firefox/*/cache2 ] && rm -r ~/.cache/mozilla/firefox/*/cache2 | wc -l || echo -e "\tEmpty" # OLD - used with 1 single profile
-
-    #echo
-    #echo "Teams "
-    #echo -ne "Cache\t" && [ -d ~kamui/.config/Microsoft/"Microsoft Teams"/Cache/ ] && /usr/bin/rm -vr ~kamui/.config/Microsoft/"Microsoft Teams"/Cache/ | wc -l || echo "Empty"
-    #echo -ne "Code Cache\t" && [ -d ~kamui/.config/Microsoft/"Microsoft Teams/Code Cache/" ] && /usr/bin/rm -vr ~kamui/.config/Microsoft/"Microsoft Teams/Code Cache/" | wc -l || echo "Empty"
-
-    #echo
-    #echo "Visual Studio Code"
-    #echo -ne "Cache\t" && [ -d /home/kamui/.config/Code/Cache/ ] && /usr/bin/rm -vr /home/kamui/.config/Code/Cache | wc -l || echo "Empty"
-
-    echo
-    echo "Discord"
-    __cleanup_dir /home/kamui/.config/discord/Cache
-
-	#echo
-    #echo ".gradle"
-    #echo -ne "caches\t" && [ -d /home/kamui/.gradle/caches ] && /usr/bin/rm -vr /home/kamui/.gradle/caches | wc -l || echo "Empty"
-
-    #echo
-    #echo "yarn"
-    #echo -ne "v6\t" && [ -d /home/kamui/.cache/yarn/v6 ] && /usr/bin/rm -vr /home/kamui/.cache/yarn/v6 | wc -l || echo "Empty"
-
+  # enabled if necessary
+  #__cleanup-dir /home/kamui/.cache/sessions/
+  #__cleanup-dir /home/kamui/.cache/mesa_shader_cache
+  #__cleanup-dir /home/kamui/.cache/thumbnails/
+  #__cleanup-dir /var/cache/fontconfig
 }
 
 
