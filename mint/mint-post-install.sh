@@ -74,7 +74,7 @@ echo "# 3.2 auto mount E"
 ePartitionUUID="$(blkid | grep "${ePartition}" | sed -E 's@^.* UUID="([0-9a-zA-Z]+)" .*$@\1@')"
 sudo cp /etc/fstab "/etc/fstab_$(fdate)" # backup /etc/fstab
 sudo echo '# Windows E:'\\ | sudo tee -a /etc/fstab
-sudo echo "UUID=${ePartitionUUID} /mnt/e ntfs-3g uid=1000,gid=1000,dmask=027,fmask=137,windows_names 0 0" | sudo tee -a /etc/fstab
+sudo echo "UUID=${ePartitionUUID} /mnt/e auto uid=1000,gid=1000,nosuid,nodev,nofail,x-gvfs-show,windows_names 0 0" | sudo tee -a /etc/fstab
 sudo mountpoint -q /mnt/e && sudo umount /mnt/e
 [ -d /mnt/e ] || sudo mkdir /mnt/e
 sudo ln -s -T /mnt/e /e
@@ -177,8 +177,29 @@ dconf load /org/x/editor/ < /e/dotfiles/dconf_xed.conf # https://askubuntu.com/q
 echo
 
 
+echo "# 3.9 personalization"
+cat <<EOF > /home/"${user}"/.local/share/desktop-directories/menulibre-main.directory
+[Desktop Entry]
+Version=1.1
+Type=Directory
+Name=main
+Comment=Main stuff
+Icon=/e/Media/Gintama 01
+EOF
 
-echo "# 3.9 create system restore point 2"
+cat <<EOF > /home/"${user}"/.local/share/applications/'menulibre-dots-(dotfiles)'.desktop
+[Desktop Entry]
+Version=1.1
+Type=Application
+Name=dots dotfiles
+Comment=Open dotfiles directory in IntelliJ
+Icon=intellij
+Exec=idea /mnt/e/dotfiles
+Actions=
+Categories=X-XFCE;X-Xfce-Toplevel;menulibre-main;
+EOF
+
+echo "# 3.10 create system restore point 2"
 timeshift --create --target "${homePartiton}"
 echo
 
@@ -212,7 +233,7 @@ sudo apt install -qqy libgconf-2-4 libc++1
 # TODO: fix problems w/ dependecies
 wget --quiet -O /tmp/discord.deb "https://discord.com/api/download?platform=linux&format=deb" && sudo dpkg -i /tmp/discord.deb
 
-echo "installling teamviewer..."
+echo "installing teamviewer..."
 # TODO: fix problems w/ dependecies
 wget --quiet -O /tmp/teamviewer.deb "https://download.teamviewer.com/download/linux/teamviewer_amd64.deb" && sudo dpkg -i /tmp/teamviewer.deb
 echo
