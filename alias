@@ -191,6 +191,11 @@ alias dpkgi="sudo dpkg -i"
 alias keys='awk "{s=s \$0} END{print s}" /home/kamui/Desktop/keys.txt' # alias awk https://superuser.com/questions/696411/how-to-alias-an-awk-command
 
 alias sudoi="sudo -i"
+
+alias wcl="wc -l"
+alias default-gateway='ip route | grep default | awk "{print \$3}"'
+alias default-gateway1='ip route | grep default'
+alias default-gateway-open="xdg-open http://$(default-gateway | head -n1) 1>/dev/null"
 # }}}
 
 

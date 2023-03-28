@@ -581,6 +581,10 @@ fix-camera() {
   cd "$currentDir"
 }
 
+#default-gateway-open() {
+#    (echo $(xdg-open http://$(ip route | grep default | awk '{print $3}' | head -n1) &))
+#}
+
 # }}}
 
 psgrept() { # ps grep total

@@ -214,7 +214,7 @@ echo
 
 echo "# 5.1 apt install "
 echo "Install 1 starting..."
-apt install -qqy vim keepassxc scrcpy manpages-posix-dev xfce4-clipman vokoscreen-ng xtitle ffmpeg rclone tree
+apt install -qqy vim keepassxc scrcpy manpages-posix-dev xfce4-clipman vokoscreen-ng xtitle ffmpeg rclone tree python3-pip
 echo "Install 1 finished..."
 echo
 
