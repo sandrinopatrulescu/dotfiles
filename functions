@@ -563,7 +563,10 @@ fix-camera() {
 
 
   # enable source code repositories https://askubuntu.com/questions/158871/how-do-i-enable-the-source-code-repositories
-  read -rp "Enable source code repositories and then press enter to continue"
+#  sudo software-sources
+#  read -rp "Enable source code repositories and then press enter to continue"
+  echo "Enable source code repositories"
+  sudo software-sources
 
   apt-get source linux-modules-extra-$(uname -r)
   cd linux-"$(uname -r | cut -d- -f1)"/drivers/media/usb/uvc
@@ -575,7 +578,9 @@ fix-camera() {
 
   sudo rmmod uvcvideo && sudo modprobe uvcvideo
 
-  read -rp "Disable source code repositories and then press enter to continue"
+
+  echo "Disable source code repositories"
+  sudo software-sources
 
   echo "Now test the camera"
   cd "$currentDir"

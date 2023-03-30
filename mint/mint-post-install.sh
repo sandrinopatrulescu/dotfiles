@@ -86,6 +86,7 @@ echo
 echo "# 3.3 grub"
 sudo cp /etc/default/grub "/etc/default/grub_$(fdate)"
 sudo sed -Ei 's@^(GRUB_CMDLINE_LINUX_DEFAULT)=.*$@\1=""@' /etc/default/grub
+sudo sed -Ei 's@^(GRUB_TIMEOUT)=.*$@\1=3@' /etc/default/grub
 sudo sed -Ei '$aGRUB_BACKGROUND="/mnt/e/Media/GravityFalls08.jpeg"' /etc/default/grub
 sudo update-grub
 echo
