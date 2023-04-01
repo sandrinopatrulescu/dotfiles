@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.1
+Type=Application
+Name=chrome-left
+Comment=Google Chrome opened on left screen
+Icon=google-chrome
+Exec=google-chrome --window-position=22,28 --window-size=1230,790
+Actions=

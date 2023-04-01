@@ -179,26 +179,17 @@ echo
 
 
 echo "# 3.9 personalization"
-cat <<EOF > /home/"${user}"/.local/share/desktop-directories/menulibre-main.directory
-[Desktop Entry]
-Version=1.1
-Type=Directory
-Name=main
-Comment=Main stuff
-Icon=/e/Media/Gintama 01
-EOF
 
-cat <<EOF > /home/"${user}"/.local/share/applications/'menulibre-dots-(dotfiles)'.desktop
-[Desktop Entry]
-Version=1.1
-Type=Application
-Name=dots dotfiles
-Comment=Open dotfiles directory in IntelliJ
-Icon=intellij
-Exec=idea /mnt/e/dotfiles
-Actions=
-Categories=X-XFCE;X-Xfce-Toplevel;menulibre-main;
-EOF
+ for dir in ./desktop-entries/*/; do
+#for dir in /mnt/e/dotfiles/mint/desktop-entries/*/; do
+  if [ "$(find "$dir" -maxdepth 1 -type f -name '*.directory' | wc -l)" -gt 1 ]; then
+    echo "There are more than 1 .directory files in $dir. Skipping."
+    continue
+  fi
+
+  dirname="$(basename "$dir")"
+  xdg-desktop-menu install --novendor "$dir"/"$dirname".directory "$dir"/*.desktop
+done
 
 echo "# 3.10 create system restore point 2"
 timeshift --create --target "${homePartiton}"

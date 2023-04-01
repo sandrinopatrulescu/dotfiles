@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.1
+Type=Application
+Name=dots dotfiles
+Comment=Open dotfiles directory in IntelliJ
+Icon=intellij
+Exec=idea /mnt/e/dotfiles
+Actions=
