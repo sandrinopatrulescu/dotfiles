@@ -127,3 +127,4 @@ done
 
 append-path $DOTS/bin # https://www.anishathalye.com/2014/08/03/managing-your-dotfiles/
 append-path ~/bin
+append-path ~/.local/bin

@@ -196,6 +196,14 @@ alias wcl="wc -l"
 alias default-gateway='ip route | grep default | awk "{print \$3}"'
 alias default-gateway1='ip route | grep default'
 alias default-gateway-open="xdg-open http://$(default-gateway | head -n1) 1>/dev/null"
+
+alias grepi="grep -i"
+
+alias inximintforums="inxi -Fxxxrz"
+
+alias codec-audio="cat /proc/asound/card*/codec* | grep Codec"
+alias docker="sudo docker"
+alias python="python3"
 # }}}
 
 

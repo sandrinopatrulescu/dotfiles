@@ -590,6 +590,43 @@ fix-camera() {
 #    (echo $(xdg-open http://$(ip route | grep default | awk '{print $3}' | head -n1) &))
 #}
 
+
+de-prioritize-dotnet() { # TODO: WIP
+  sudo apt remove 'dotnet*' 'aspnet*' 'netstandard*'
+  touch /etc/apt/preferences
+  echo "Package: dotnet*" >> /etc/apt/preferences
+#Package: dotnet* aspnet* netstandard*
+#Pin: origin "<your-package-source>"
+#Pin-Priority: -10
+  grep /etc/apt/preferences.d/
+
+}
+
+setup-ssvv-testlink-and-jenkins() { # for S6.SSVV
+  # $1 = location of VVSS-how-to-docker
+
+  if [ -z "$1" ]; then echo "must provide a location for VVSS-how-to-docker"; return; fi
+
+  if [ "$(docker ps -a --format "{{.ID}}" | wc -l)" -ne 0 ]; then
+    read -rp "Docker containers are present. Do you want to stop and remove them all? [y/n] " answer
+    if [ "$answer" == "y" ]; then docker rm $(docker stop $(docker ps -aq)); else echo "user gave negative answer, exiting"; return; fi
+  fi
+
+  cd "$1"/step1/
+
+
+  cd ./step2/
+
+  docker load -i bitnami-mariadb.tar
+  docker load -i bitnami-testlink.tar
+  docker load -i vvss-jenkins.tar
+
+  cd ./step3/
+  chmod o+w -vR ./mariadb_data/data/
+  chmod o+w -vR ./testlink_data/upload_area/
+
+  docker compose up
+}
 # }}}
 
 psgrept() { # ps grep total

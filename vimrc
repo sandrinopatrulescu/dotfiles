@@ -53,8 +53,7 @@ set nocompatible " prepend 'no' to disable the option [2]
 
 " Colors
 syntax enable " enable syntax processing [5]
-colo default " line 
-colo delek " line 
+colo slate" line 
 
 " Space & Tabs
 set tabstop=4 " number of visual spaces per TAB [5]
