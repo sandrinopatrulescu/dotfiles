@@ -591,16 +591,16 @@ fix-camera() {
 #}
 
 
-de-prioritize-dotnet() { # TODO: WIP
+de-prioritize-dotnet() {
   sudo apt remove 'dotnet*' 'aspnet*' 'netstandard*'
-  touch /etc/apt/preferences
-  echo "Package: dotnet*" >> /etc/apt/preferences
-#Package: dotnet* aspnet* netstandard*
-#Pin: origin "<your-package-source>"
-#Pin-Priority: -10
-  grep /etc/apt/preferences.d/
+  # if file exists then return with error and display message
+  [ -f /etc/apt/preferences.d/dotnet.pref ] && { echo "file /etc/apt/preferences.d/dotnet.pref already exists"; return 1; }
 
+  echo "Package: dotnet* aspnet* netstandard*" | sudo tee -a /etc/apt/preferences.d/dotnet.pref
+  echo "Pin: origin archive.ubuntu.com" | sudo tee -a /etc/apt/preferences.d/dotnet.pref
+  echo "Pin-Priority: -10" | sudo tee -a /etc/apt/preferences.d/dotnet.pref
 }
+
 
 setup-ssvv-testlink-and-jenkins() { # for S6.SSVV
   # $1 = location of VVSS-how-to-docker
