@@ -556,7 +556,14 @@ xfreerdpac() {
 
 
 fix-camera() {
-  # https://bugs.launchpad.net/ubuntu/+source/linux/+bug/2000947/comments/19
+  # usage: fix-camera <patch file>
+  # source: https://askubuntu.com/questions/1264173/how-to-fix-camera-on-ubuntu-20-04
+
+  # how to create .patch files?
+  # git diff --no-index uvc_driver.c uvc_driver.c.1 | sed -E 's@\<(uvc_driver.c)[^ ]+\>@\1@g' >| /mnt/e/dotfiles/linux-patches/uvc_driver-for-Quanta-HD-User-Facing-0x0408-0x4035_5.15.0-58-generic.patch
+
+
+  [ -f "$1" ] || { echo "Usage: $FUNCNAME <patch file>"; echo "Error: patch file not found"; return 1; }
 
   local currentDir="$PWD"
   cd /tmp && mkcdfdate
@@ -567,14 +574,18 @@ fix-camera() {
 #  read -rp "Enable source code repositories and then press enter to continue"
   echo "Enable source code repositories"
   sudo software-sources
+  # TODO: try w/ sudo ../bin/mintsources2.py enable & sudo ../bin/mintsources2.py enable
 
-  apt-get source linux-modules-extra-$(uname -r)
-  cd linux-"$(uname -r | cut -d- -f1)"/drivers/media/usb/uvc
-  mv uvc_driver.c uvc_driver.old
-  wget https://raw.githubusercontent.com/Giuliano69/uvc_driver-for-Quanta-HD-User-Facing-0x0408-0x4035-/main/uvc_driver.c
 
-  make -j4 -C /lib/modules/$(uname -r)/build M=$(pwd) modules
-  sudo cp uvcvideo.ko /lib/modules/$(uname -r)/kernel/drivers/media/usb/uvc/
+  apt-get source linux-modules-extra-"$(uname -r)"
+  [ "$(/usr/bin/ls -d linux-*/ | wc -l)" -eq 1 ] || { echo "Error: more than one directory found"; return 1; }
+  cd "$(/usr/bin/ls -d linux-*/)"drivers/media/usb/uvc || { echo "Error: directory not found"; return 1; }
+
+  echo "Apply patch"
+  git apply -v "$1" || { echo "Error: patch failed"; return 1; }
+
+  make -j4 -C /lib/modules/"$(uname -r)"/build M="$(pwd)" modules
+  sudo cp uvcvideo.ko /lib/modules/"$(uname -r)"/kernel/drivers/media/usb/uvc/
 
   sudo rmmod uvcvideo && sudo modprobe uvcvideo
 
@@ -582,24 +593,14 @@ fix-camera() {
   echo "Disable source code repositories"
   sudo software-sources
 
+
   echo "Now test the camera"
-  cd "$currentDir"
+  cd "$currentDir" || { echo "Error: directory not found"; return 1; }
 }
 
 #default-gateway-open() {
 #    (echo $(xdg-open http://$(ip route | grep default | awk '{print $3}' | head -n1) &))
 #}
-
-
-de-prioritize-dotnet() {
-  sudo apt remove 'dotnet*' 'aspnet*' 'netstandard*'
-  # if file exists then return with error and display message
-  [ -f /etc/apt/preferences.d/dotnet.pref ] && { echo "file /etc/apt/preferences.d/dotnet.pref already exists"; return 1; }
-
-  echo "Package: dotnet* aspnet* netstandard*" | sudo tee -a /etc/apt/preferences.d/dotnet.pref
-  echo "Pin: origin archive.ubuntu.com" | sudo tee -a /etc/apt/preferences.d/dotnet.pref
-  echo "Pin-Priority: -10" | sudo tee -a /etc/apt/preferences.d/dotnet.pref
-}
 
 
 setup-ssvv-testlink-and-jenkins() { # for S6.SSVV
@@ -627,6 +628,12 @@ setup-ssvv-testlink-and-jenkins() { # for S6.SSVV
 
   docker compose up
 }
+
+scriptpath() {
+  return "$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+#  return "$(dirname "$(readlink -f "$0")")" # also works w/
+}
+
 # }}}
 
 psgrept() { # ps grep total
@@ -1482,5 +1489,17 @@ gcfgu() { # git config user local
 }
 
 
-# references
+
+
+
+#region references
 # [1]
+#endregion
+
+
+#region bash completion
+
+grep -rl "argcomplete\.autocomplete" "$DOTS"/bin --include="*.py" | while read -r file; do eval "$(register-python-argcomplete "$file")"; done
+
+
+#endregiion

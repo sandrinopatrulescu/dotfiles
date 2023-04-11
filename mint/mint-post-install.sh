@@ -38,6 +38,7 @@ alias fdate="date +%Y-%m-%d_%H-%M-%S"
 
 homePartiton="$(lsblk -fs | grep " /home$" | cut -d' ' -f1)"
 rootPartition="$(lsblk -fs | grep " /$" | cut -d' ' -f1)"
+# also works w/: stat / | grep "Birth" | sed 's/.*Birth: //g'
 rawInstallDate="$(sudo dumpe2fs /dev/"${rootPartition}" | grep -i created | cut -d' ' -f9-)"
 
 
