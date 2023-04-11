@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.1
+Type=Application
+Name=scrcpy
+Comment=
+Icon=
+Exec=scrcpy -m1024
+Actions=

@@ -181,7 +181,7 @@ echo
 
 echo "# 3.9 personalization"
 
- for dir in ./desktop-entries/*/; do
+for dir in ./desktop-entries/*/; do
 #for dir in /mnt/e/dotfiles/mint/desktop-entries/*/; do
   if [ "$(find "$dir" -maxdepth 1 -type f -name '*.directory' | wc -l)" -gt 1 ]; then
     echo "There are more than 1 .directory files in $dir. Skipping."
@@ -190,6 +190,7 @@ echo "# 3.9 personalization"
 
   dirname="$(basename "$dir")"
   xdg-desktop-menu install --novendor "$dir"/"$dirname".directory "$dir"/*.desktop
+  # one-liner: name="scrcpy"; dirname="main"; dir=/mnt/e/dotfiles/mint/desktop-entries/"$dirname"; xdg-desktop-menu install --novendor "$dir"/"$dirname".directory "$dir"/"$name".desktop
 done
 
 echo "# 3.10 create system restore point 2"
