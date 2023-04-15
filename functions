@@ -465,7 +465,7 @@ backup3() { # backup files
 pdfs2png() {
     # usage: pdfs2png <PDF file>
     for filepath in "$@"; do
-        local f="$(extract-basename-wo-extension $filepath)"
+        local f="$(get-file-extensionless $filepath)"
         echo $filepath
         filepath="$(realpath "$filepath")"
         #echo $f
