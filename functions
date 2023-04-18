@@ -1320,6 +1320,9 @@ hostfiles() { # python -m http.server on a folder
     echo "Default gateways:"
     ip route | grep default
     echo "Location is $(readlink -f ${1:-/})"
+    echo "http://localhost:${2:-8080}/"
+    echo "http://$(ifconfig | grep -A1 -E "^enp.*:" | tail -n 1 | awk '{print $2}'):${2:-8080}/"
+    echo "http://$(ifconfig | grep -A1 -E "^wlp.*:" | tail -n 1 | awk '{print $2}'):${2:-8080}/"
 
     cd ${1:-/}; python3 -m http.server ${2:-8080}
 
