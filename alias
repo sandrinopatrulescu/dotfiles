@@ -212,6 +212,7 @@ alias vis="sudo vi"
 alias xclip-clip="xclip -sel clip"
 alias xclp="xclip -sel clip"
 alias xcc="xclip -sel clip"
+alias xcco="xclip -sel clip -o"
 
 alias clip-six='echo -n 6 | xclip -selection clipboard'
 alias clip-eight='echo -n 8 | xclip -selection clipboard'

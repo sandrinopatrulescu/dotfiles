@@ -10,6 +10,8 @@
 # (Database --> Merge from database).
 
 
+
+
 #####################
 ##  Configuration  ##
 #####################
@@ -24,6 +26,8 @@ REMOTE_LOCATION="Save/ImportantStuff"
 
 #####################
 
+### Args
+[ "$1" = "-d" ]; isDryRun=$?
 
 # Compose full path to local and remote database files
 LOCAL_PATH="$LOCAL_LOCATION/$DB_FILE_NAME"
@@ -92,7 +96,7 @@ function sync_passwords ()
         if [ "$local_mtime_in_seconds_since_epoch" -gt "$remote_mtime_in_seconds_since_epoch" ]; then
                 printf "Local passwords file found to be newer than remote!\n"
                 printf "Exporting...\t"
-                passwords_export
+                ((isDryRun == 0)) && echo "DRY RUN" || passwords_export
                 printf "Done!\n"
 		return 0
 
@@ -100,7 +104,7 @@ function sync_passwords ()
         elif [ "$local_mtime_in_seconds_since_epoch" -lt "$remote_mtime_in_seconds_since_epoch" ]; then
                 printf "Local passwords file found to be older than remote!\n"
                 printf "Importing...\t"
-                passwords_import
+                ((isDryRun == 0)) && echo "DRY RUN" || passwords_import
                 printf "Done!\n"
 		return 0
 
