@@ -1502,7 +1502,7 @@ gcfgu() { # git config user local
 
 #region bash completion
 
-grep -rl "argcomplete\.autocomplete" "$DOTS"/bin --include="*.py" | while read -r file; do eval "$(register-python-argcomplete "$file")"; done
+grep -rl "argcomplete\.autocomplete" "$DOTS"/bin --include="*.py" | while read -r file; do eval "$(register-python-argcomplete3 "$file")"; done
 
 
 #endregiion

@@ -205,6 +205,20 @@ alias inximintforums="inxi -Fxxxrz"
 alias codec-audio="cat /proc/asound/card*/codec* | grep Codec"
 alias docker="sudo docker"
 alias python="python3"
+
+alias vir="vi -R"
+alias vis="sudo vi"
+
+alias xclip-clip="xclip -sel clip"
+alias xclp="xclip -sel clip"
+alias xcc="xclip -sel clip"
+
+alias clip-six='echo -n 6 | xclip -selection clipboard'
+alias clip-eight='echo -n 8 | xclip -selection clipboard'
+alias clip-asterisk='echo -n "*" | xclip -selection clipboard'
+alias clip-nine='echo -n 9 | xclip -selection clipboard'
+alias clip-rbo='echo -n "(" | xclip -selection clipboard'
+
 # }}}
 
 
