@@ -96,7 +96,7 @@ function sync_passwords ()
         if [ "$local_mtime_in_seconds_since_epoch" -gt "$remote_mtime_in_seconds_since_epoch" ]; then
                 printf "Local passwords file found to be newer than remote!\n"
                 printf "Exporting...\t"
-                ((isDryRun == 0)) && echo "DRY RUN" || passwords_export
+                if ((isDryRun == 0)); then echo "DRY RUN"; else passwords_export; fi
                 printf "Done!\n"
 		return 0
 
@@ -104,7 +104,7 @@ function sync_passwords ()
         elif [ "$local_mtime_in_seconds_since_epoch" -lt "$remote_mtime_in_seconds_since_epoch" ]; then
                 printf "Local passwords file found to be older than remote!\n"
                 printf "Importing...\t"
-                ((isDryRun == 0)) && echo "DRY RUN" || passwords_import
+                if ((isDryRun == 0)); then echo "DRY RUN"; else passwords_import; fi
                 printf "Done!\n"
 		return 0
 
