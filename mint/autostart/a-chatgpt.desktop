@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=0.9.4
+Type=Application
+Name=a-chatgpt
+Comment=
+Exec=google-chrome-stable --app="https://chat.openai.com/c/cee29e8b-bfd7-4971-b806-478512bf8650" --class=WebApp-Google6348
+OnlyShowIn=XFCE;
+RunHook=0
+StartupNotify=false
+Terminal=false
+Hidden=false
+
