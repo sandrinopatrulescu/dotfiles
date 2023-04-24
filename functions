@@ -555,9 +555,13 @@ xfreerdpac() {
 
 xfreerdpac2() {
   read -s -p "Password: " pass && echo "Password was read"
-  xfreerdp /v:192.168.1.182 /u:sandrinopatrulescu /p:"$pass"
+  xfreerdp /v:192.168.1.182 /f /u:sandrinopatrulescu /p:"$pass"
 }
 
+xfreerdpac3() {
+  read -s -p "Password: " pass && echo "Password was read"
+  xfreerdp /v:192.168.1.182 /u:sandrinopatrulescu /multimon /p:"$pass"
+}
 
 fix-camera() {
   # usage: fix-camera <patch file>
