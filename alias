@@ -132,6 +132,7 @@ alias pulseaudiok="pulseaudio -k" # pulseaudio kill
 alias pulseaudiod="pulseaudio -D" # pulseaudio deamon start
 alias pulseaudior="pulseaudioc && { pulseaudiok && pulseaudiod; }; pulseaudioc || pulseaudio -D" # pulseaudio restart
 alias pulseaudior2="pulseaudioc && pulseaudiok; sleep 0.1; pulseaudioc || pulseaudiod"
+alias pulseaudior3="pulseaudio -k && pulseaudio --start"
 alias alsabaseconfedit="sudo vi /etc/modprobe.d/alsa-base.conf" # sudo edit alsa-base.conf
 
 alias pdf2png="pdftocairo -png " # https://askubuntu.com/a/1191060/1547353
