@@ -1,0 +1,9 @@
+[Unit]
+Description=notify-send apt download & list
+After=network.target
+
+[Service]
+ExecStart=/mnt/e/dotfiles/bin/notify-send-adl.sh
+
+[Install]
+WantedBy=multi-user.target

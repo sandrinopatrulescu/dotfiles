@@ -116,6 +116,32 @@ screen-brightness() {
     # source: linux cant change display brightness https://www.debugpoint.com/F2-ways-fix-laptop-brightness-problem-ubuntu-linux/
   xrandr --output eDP-1 --brightness $1
 }
+
+mint_setup_autostart() {
+  for file in "$DOTS"/mint/autostart/*; do
+    if [ -L ~/.config/autostart/"$(basename "$file")" ]; then
+      if [ "$(readlink ~/.config/autostart/"$(basename "$file")")" = "$file" ]; then
+        continue; # already linked
+      else
+        echo "Already linked to another file: $file";
+        continue;
+      fi
+    else
+      # link the file
+      ln -vs "$file" ~/.config/autostart;
+    fi
+  done
+}
+
+mint_setup_services() {
+  for file in "$DOTS"/mint/service/*; do
+    echo "$file";
+    [ ! -L /etc/systemd/system/"$(basename "$file")" ] && sudo ln -vs "$file" /etc/systemd/system/;
+    sudo systemctl enable "$(basename "$file")";
+    sudo systemctl start "$(basename "$file")";
+  done
+  echo "Reboot to take effect"
+}
 # }}}
 
     ### Uncategorized ### {{{
