@@ -40,13 +40,9 @@ clone-webelopers() {
     echo "TO DO: After that, perform gs (git status) to test if it succeeded."
 }
 
-re() { # repeat something N times: re <NR> <COMMAND...>
-    count=$1
-    shift
-    for ((i = 1; i <= $count; i++))
-    do
-        "$@"
-    done
+repeat() { # repeat something N times: re <NR> <COMMAND...>
+#    for ((i = 1; i <= $1; i++)); do "${@:2}"; done
+     for _ in $(seq 1 "$1"); do "${@:2}"; done
 }
 
 timezip() {
@@ -146,14 +142,20 @@ mint_setup_services() {
 
     ### Uncategorized ### {{{
 
-beep() { # play a sound [<n times>]
+beep() { # play beep sound [<n times>]
     # usage: $FUNCNAME [<count>]
-    [ $# -eq 0 ] && count="1" || count="$1"
 
-    for a in $(seq "$count"); 
-    do
-        paplay /usr/share/sounds/Lite/stereo/phone-incoming-call.oga
-    done
+    # find first phone-incoming-call.* in /usr/share/sounds
+    declare phoneIncomingCallFiles="$(find /usr/share/sounds/ -iname "phone-incoming-call.*")"
+
+    # if there are multiple files, choose the one not in the freedesktop directory, otherwise choose that one, otherwise choose the first one, otherwise fail
+    declare phoneIncomingCallFile="$(echo "${phoneIncomingCallFiles}" | grep -v "freedesktop" | head -n 1)"
+    [ -z "${phoneIncomingCallFile}" ] && phoneIncomingCallFile="$(echo "${phoneIncomingCallFiles}" | grep "freedesktop" | head -n 1)"
+    [ -z "${phoneIncomingCallFile}" ] && phoneIncomingCallFile="$(echo "${phoneIncomingCallFiles}" | head -n 1)"
+    [ -z "${phoneIncomingCallFile}" ] && { echo "No phone-incoming-call.* file found in /usr/share/sounds/"; return 1; }
+
+
+    repeat "${1:-1}" paplay "${phoneIncomingCallFile}"
     # source: https://www.newbiescorner.com/2017/12/06/beep-command-alert-when-the-task-is-finished/ 
 }
 
