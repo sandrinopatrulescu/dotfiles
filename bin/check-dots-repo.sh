@@ -1,5 +1,6 @@
 #!/bin/bash
 
+sleep 1
 # set the path to your git repository
 repo_path="/mnt/e/dotfiles"
 

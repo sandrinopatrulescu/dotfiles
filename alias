@@ -447,7 +447,8 @@ alias dots='cd $(readlink -f $DOTS)'
 
 ### Shortcuts {{{
 alias uniserver="ssh -vp 8937 prie2985@www.scs.ubbcluj.ro"
-alias uniserverc="ssh -v prie2985@www.scs.ubbcluj.ro" # uniserver campus
+alias uniserverc="ssh -v prie2985@linux.scs.ubbcluj.ro" # uniserver campus
+alias uniserverc1="ssh -v prie2985@172.30.0.9" # uniserver campus
 #alias rmfx="rm /home/kamui/.cache/mozilla/firefox/ntrc3s4e.default/cache2/entries/*"
 #alias rmcr="rm -r /home/kamui/.cache/google-chrome/Default/Cache/* /home/kamui/.cache/google-chrome/Default/Code\ Cache/js/*"
 alias oslp="sudo pm-suspend-hybrid"
