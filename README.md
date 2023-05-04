@@ -50,5 +50,3 @@ replace in functions java and javac with $JAVA_HOME/java...
 Fix assumings 
 
 Written @ 2022-01-10 22:05
-
-
