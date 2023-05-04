@@ -1,5 +1,6 @@
 # vim: set filetype=sh : " treat this file as a shell script
 
+. "$DOTS"/linux/functions.sh
 
 # Notes:
 #   1. add comments inside the function, for easier portability
@@ -38,11 +39,6 @@ clone-webelopers() {
 
     echo
     echo "TO DO: After that, perform gs (git status) to test if it succeeded."
-}
-
-repeat() { # repeat something N times: re <NR> <COMMAND...>
-#    for ((i = 1; i <= $1; i++)); do "${@:2}"; done
-     for _ in $(seq 1 "$1"); do "${@:2}"; done
 }
 
 timezip() {
@@ -1471,22 +1467,20 @@ terminal_darkness() { # change the xfce terminal's opacity
 
 # set the xfce tab title to pwd
 title() { # set the xfce title to pwd or to a given string
-    xtitle --version &> /dev/null || { echo "$FUNCNAME: ERROR - xtitle is not installed"; return 1; }
+    [ $# -eq 0 ] && TITLE="$PWD"
+    [ $# -gt 0 ] && TITLE="$@"
 
-    [ $# -eq 0 ] && {
-        TITLE="$PWD"       
-        
-    }
-    [ $# -eq 1 ] && {
-        TITLE="$1"
-    }
-    [ $# -gt 1 ] && echo "usage: $FUNCNAME [<title>]" && return 1
     TITLE="${TITLE/\/home\/kamui\//\~/}" # replace /home/kamui/ with ~/ literal
     TITLE="${TITLE/\/mnt\/e\/Scratch/Scratch}"
     TITLE="${TITLE/\/mnt\/e/\/e}"
     TITLE="${TITLE/\/e\/Scratch/Scratch}"
     TITLE="${TITLE/\/e\/UBB_IE_2020-2023/UBBIE2020-2023}"
-    xtitle -q "${TITLE/\/home\/kamui/\~}" #&& echo title was set # replace /home/kamui with ~
+    TITLE="${TITLE/\/home\/kamui\//\~/}" # replace /home/kamui/ with ~/ literal
+
+    # linux mint change xfce terminal window title using the command line -> https://askubuntu.com/questions/636944/how-to-change-the-title-of-the-current-terminal-tab-using-only-the-command-line -> https://askubuntu.com/a/1037309/1547353
+    local ORIG_PS1=$PS1
+    local TITLE="\e]2;$TITLE\a"
+    PS1="${ORIG_PS1}${TITLE}"
 }
 
 cd() { # wrapper for cd which also sets the terminal window/tab title
