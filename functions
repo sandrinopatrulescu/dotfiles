@@ -667,6 +667,10 @@ scriptpath() {
 #  return "$(dirname "$(readlink -f "$0")")" # also works w/
 }
 
+opf() {
+    (xdg-open "$@" &)
+}
+
 # }}}
 
 psgrept() { # ps grep total

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.1
+Type=Application
+Name=bt-be bachelor-thesis backend
+Comment=Open bachelor-thesis backend directory in Rider
+Icon=/home/kamui/.local/share/JetBrains/Toolbox/apps/Rider/ch-0/.icon.svg
+Exec=rider /mnt/e/UBB_IE_2020-2023/S6.BE/bachelor-thesis/backend/backend.sln
+Actions=
