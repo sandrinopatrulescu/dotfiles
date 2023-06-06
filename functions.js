@@ -2,6 +2,13 @@
 
 /* NOTE: don't use inline comments if you plan to use it as bookmarklet https://mrcoles.com/bookmarklet/ */
 
+/*
+IDEA: i need something that allows me everytime I do a push to my dotfiles github repo
+to have all the javascript code converted into bookmarklets and puts them in
+my browser's bookmarks list in a special folder (all automatically)
+OR EVEN BETTER: create an extension with all this fixes and the possibility to disable any
+*/
+
 function showPassword() {
     const inputElementsHTMLCollection = document.getElementsByTagName('input');
     const inputElementsArray = Array.from(inputElementsHTMLCollection);
@@ -52,4 +59,29 @@ function uniFilterSchedule() {
 
     Array.from(document.getElementsByTagName("table"))
         .filter((value, index) => index !== TABLE_INDEX).forEach(table => table.remove());
+}
+
+
+//
+/**
+ * Runs properly from either a video page (watch?v) or a channel page.
+ */
+function youtubePlayAllFromChannel() {
+    /* source: https://www.google.com/search?q=youtube+play+all+button -> https://www.reddit.com/r/youtube/comments/rl2rtu/comment/jfksy1d/ -> https://old.reddit.com/r/youtube/comments/v5vugs/uploads_playlist_bookmarklet_for_channels_that/ */
+    function findVal(object, key) { /* https://stackoverflow.com/a/40604638 */
+        var value;
+        Object.keys(object).some(function(k) {
+            if (k === key) {
+                value = object[k];
+                return true;
+            }
+            if (object[k] && typeof object[k] === 'object') {
+                value = findVal(object[k], key);
+                return value !== undefined;
+            }
+        });
+        return value;
+    }
+    var channelID = findVal(ytInitialData, 'browseId');
+    window.location.replace("https://youtube.com/playlist?list=" + channelID.replace("UC", "UU"));
 }
