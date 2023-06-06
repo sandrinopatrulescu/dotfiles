@@ -1,3 +1,4 @@
+# vim: set filetype=sh : " treat this file as a shell script
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
