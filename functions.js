@@ -61,8 +61,63 @@ function uniFilterSchedule() {
         .filter((value, index) => index !== TABLE_INDEX).forEach(table => table.remove());
 }
 
+function uniSemesterGradeCalculator() {
+    const table = $('table')[0];
+    const gradeHeader = "Nota";
+    const creditsHeader = "Nr. Credite";
+    const nameHeader = "Disciplina";
 
-//
+
+    let numerator = 0;
+    let denominator = 0;
+    let numeratorString = "";
+    let denominatorString = "";
+
+    const rows = table.rows;
+
+    const headerTexts = Array.from(rows[0].cells).map(cell => cell.innerText);
+    const gradeColumnIndex = headerTexts.indexOf(gradeHeader);
+    const creditsColumnIndex = headerTexts.indexOf(creditsHeader);
+    const nameColumnIndex = headerTexts.indexOf(nameHeader);
+
+    console.log(`${gradeHeader} index: ${gradeColumnIndex}`);
+    console.log(`${creditsHeader} index: ${creditsColumnIndex}`);
+    console.log(`${nameHeader} index: ${nameColumnIndex}`);
+
+    for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
+        const getCell = (rowIndex, columnIndex) => rows[rowIndex].cells[columnIndex].innerText;
+        const credits = getCell(rowIndex, creditsColumnIndex);
+        const name = getCell(rowIndex, nameColumnIndex);
+        let grade = getCell(rowIndex, gradeColumnIndex);
+        console.log(`name: ${name}, grade: ${grade}, credits: ${credits}`);
+
+        if (!$.isNumeric(grade)) {
+            console.log(`Grade for ${name} (${credits} credits) was not set. Prompting user for value...`);
+            grade = prompt(`Grade for ${name} (${credits} credits) not set.\n Set value or leave blank to exclude: `);
+            if ($.isNumeric(grade)) {
+                console.log(`Setting grade for ${name} (${credits} credits) to ${grade}.`);
+            }
+        }
+        if (grade === "") {
+            console.log(`Excluding ${name} (${credits} credits)`);
+        } else {
+            numerator += credits * grade;
+            denominator += parseInt(credits);
+            numeratorString += `${credits} * ${grade}` + (rowIndex === rows.length - 1 ? "" : " + ");
+            denominatorString += `${credits}` + (rowIndex === rows.length - 1 ? "" : " + ");
+        }
+    }
+
+    const truncateNumber = (number, digits) => Math.trunc(number * Math.pow(10, digits)) / Math.pow(10, digits);
+
+    const result = numerator / denominator;
+    const resultString = `(${numeratorString}) / (${denominatorString})`;
+    const message = `Result: ${result}\n${truncateNumber(result, 2)} = ${resultString}`;
+    console.log(message);
+    alert(message);
+}
+
+
 /**
  * Runs properly from either a video page (watch?v) or a channel page.
  */
