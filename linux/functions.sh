@@ -11,3 +11,22 @@ repeat() { # repeat something N times: re <NR> <COMMAND...>
 #    for ((i = 1; i <= $1; i++)); do "${@:2}"; done
      for _ in $(seq 1 "$1"); do "${@:2}"; done
 }
+
+alternate-wip() { # TODO
+    # usage: start end step commands
+    start=$1
+    step=$2
+    stop=$3
+    command="${@:4}"
+
+    current=$start
+    while true; do
+        printf -v cmd "$command" "$current"
+        eval "$cmd"
+
+        current=$(echo "$current + $step" | bc)
+        if (( $(echo "$current >= $stop" | bc -l) )); then
+            current=$start
+        fi
+    done
+}

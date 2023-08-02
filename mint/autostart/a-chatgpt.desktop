@@ -6,5 +6,5 @@ Exec=google-chrome-stable --app="https://chat.openai.com/c/cee29e8b-bfd7-4971-b8
 OnlyShowIn=XFCE;
 StartupNotify=false
 Terminal=false
-Hidden=false
+Hidden=true
 
