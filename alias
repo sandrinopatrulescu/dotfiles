@@ -3,6 +3,9 @@
 
 
 # uncategorized YET {{{
+alias fix-camera-mint="fix-camera /mnt/e/dotfiles/linux-patches/uvc_driver-for-Quanta-HD-User-Facing-0x0408-0x4035_6.1.0-1008-oem.patch"
+
+
 # TODO rnm & rnmu
 alias rnm='cat << EOF
 for $file in *;
