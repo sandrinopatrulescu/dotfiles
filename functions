@@ -671,6 +671,88 @@ opf() {
     (xdg-open "$@" &)
 }
 
+
+chrome-left() {
+    local order="${1:-1}"
+
+    # Get the window ID of the Google Chrome instance using wmctrl
+    local window_id
+    window_id=$(wmctrl -l | grep "Google Chrome" | awk -v order="$order" '{if (NR == order) print $1}')
+
+    # If window_id is not empty, move the window
+    if [ -n "$window_id" ]; then
+        wmctrl -ir "$window_id" -b remove,maximized_vert,maximized_horz
+        wmctrl -ir "$window_id" -e 0,0,20,1240,790
+        echo "Moved Google Chrome instance $order to the left."
+    else
+        echo "Google Chrome instance $order not found."
+    fi
+}
+
+
+chrome-mid() {
+    local order="${1:-1}"
+
+    # Get the window ID of the Google Chrome instance using wmctrl
+    local window_id
+    window_id=$(wmctrl -l | grep "Google Chrome" | awk -v order="$order" '{if (NR == order) print $1}')
+
+    # If window_id is not empty, move the window
+    if [ -n "$window_id" ]; then
+        wmctrl -ir "$window_id" -e0,1280,0,1920,1047
+        wmctrl -ir "$window_id" -b add,maximized_vert,maximized_horz
+        echo "Moved Google Chrome instance $order to the left."
+    else
+        echo "Google Chrome instance $order not found."
+    fi
+}
+
+
+mvchr() {
+    local direction="$1"
+    local order="${2:-1}"
+
+    # Validate direction
+    case "$direction" in
+        "left" | "center" | "right")
+            ;;
+        *)
+            echo "Invalid direction. Usage: mvchr <left|center|right> <order>"
+            return 1
+            ;;
+    esac
+
+    # Get the window ID of the Google Chrome instance using wmctrl
+    local window_id
+    window_id=$(wmctrl -l | grep "Google Chrome" | awk -v order="$order" '{if (NR == order) print $1}')
+
+    # If window_id is not empty, perform the specified move based on direction
+    if [ -n "$window_id" ]; then
+        case "$direction" in
+            "left")
+                wmctrl -ir "$window_id" -b remove,maximized_vert,maximized_horz
+                wmctrl -ir "$window_id" -e 0,0,20,1240,790
+                echo "Moved Google Chrome instance $order to the left."
+                ;;
+            "center")
+                wmctrl -ir "$window_id" -e0,1280,0,1920,1047
+                wmctrl -ir "$window_id" -b add,maximized_vert,maximized_horz
+                echo "Moved Google Chrome instance $order to the center."
+                ;;
+            "right")
+                wmctrl -ir "$window_id" -e0,3200,0,1920,1047
+                wmctrl -ir "$window_id" -b add,maximized_vert,maximized_horz
+                echo "Moved Google Chrome instance $order to the right."
+                ;;
+        esac
+    else
+        echo "Google Chrome instance $order not found."
+    fi
+}
+
+
+
+
 # }}}
 
 psgrept() { # ps grep total

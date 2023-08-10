@@ -248,8 +248,11 @@ alias livemic="arecord -f cd | aplay"
 alias livemic2="arecord -f cd | aplay -D hw:1,0"
 alias livecam="ffplay -f v4l2 -i /dev/video0"
 # wmctrl -G -l | grep "Chrome" | awk '{print "google-chrome --new-window --window-position="$3","$4" --window-size="$5","$6}' FS=' ' OFS=' '
-alias chrome-left="wmctrl -r chrome -b remove,maximized_vert,maximized_horz && wmctrl -r chrome -e0,0,20,1240,790"
-alias chrome-mid="wmctrl -r chrome -e0,1280,0,1920,1047 && wmctrl -r chrome -b add,maximized_vert,maximized_horz"
+#alias chrome-left="wmctrl -r chrome -b remove,maximized_vert,maximized_horz && wmctrl -r chrome -e0,0,20,1240,790"
+#alias chrome-mid="wmctrl -r chrome -e0,1280,0,1920,1047 && wmctrl -r chrome -b add,maximized_vert,maximized_horz"
+alias mvchrl="mvchr left"
+alias mvchrc="mvchr center"
+alias mvchrr="mvchr right"
 alias find2='find / -type d \( -path /home/timeshift -o -path /mnt -o -path /proc -o -path /run -o -path /tmp \) -prune -o '
 alias find2s='sudo find / -type d \( -path /home/timeshift -o -path /mnt -o -path /proc -o -path /run -o -path /tmp \) -prune -o '
 alias find3s='sudo find / -type d \( -path /home/timeshift -o -path /mnt -o -path /proc -o -path /run -o -path /tmp \) -prune -o '
