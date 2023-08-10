@@ -463,7 +463,8 @@ alias oslp="sudo pm-suspend-hybrid"
 ### }}}
 
 ### Tools {{{
-alias fdate="date +%Y-%m-%d_%H-%M-%S" # format date (for saving timestamped file)
+#alias fdate="date +%Y-%m-%d_%H-%M-%S" # format date (for saving timestamped file) # V1
+alias fdate='date +%Y-%m-%d_%H-%M-%S | tee >(xargs echo -n | xclip -selection clipboard -i);'
 alias fdatets="date +%Y-%m-%d\ %H:%M" # Trying Scratch format date
 alias fdatetspattern="echo '^[0-9]{4}(-[0-9]{2}){2} [0-9]{2}:[0-9]{2}'"
 alias fdatec="date \"+%Y-%m-%d %a\"" # format date clickup
