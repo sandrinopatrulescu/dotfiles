@@ -717,7 +717,7 @@ mvchr() {
         "left" | "center" | "right")
             ;;
         *)
-            echo "Invalid direction. Usage: mvchr <left|center|right> <order>"
+            echo "Invalid direction. Usage: mvchr <left|center|right> [<order>=1]"
             return 1
             ;;
     esac
@@ -735,11 +735,13 @@ mvchr() {
                 echo "Moved Google Chrome instance $order to the left."
                 ;;
             "center")
+                wmctrl -ir "$window_id" -b remove,maximized_vert,maximized_horz
                 wmctrl -ir "$window_id" -e0,1280,0,1920,1047
                 wmctrl -ir "$window_id" -b add,maximized_vert,maximized_horz
                 echo "Moved Google Chrome instance $order to the center."
                 ;;
             "right")
+                wmctrl -ir "$window_id" -b remove,maximized_vert,maximized_horz
                 wmctrl -ir "$window_id" -e0,3200,0,1920,1047
                 wmctrl -ir "$window_id" -b add,maximized_vert,maximized_horz
                 echo "Moved Google Chrome instance $order to the right."
