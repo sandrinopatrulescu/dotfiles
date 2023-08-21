@@ -49,6 +49,9 @@ noremap <Down> gj
 set nocompatible " prepend 'no' to disable the option [2]
 
 
+" Allow saving of files as sudo when I forgot to start vim using sudo.[8]
+cmap w!! w !sudo tee > /dev/null %
+
 "### Part 2: options
 
 " Colors
@@ -101,6 +104,7 @@ set history=1000
 "[5] !!! https://dougblack.io/words/a-good-vimrc.html (see especially gundo, SilverSearcher and CtrlP)
 "[6] https://vim.fandom.com/wiki/Toggle_auto-indenting_for_code_paste#Paste_toggle
 "[7] https://vim.fandom.com/wiki/Best_Vim_Tips#More.2C_unformatted_tips
+"[8] https://www.google.com/search?q=vim+write+when+not+root ->  https://stackoverflow.com/questions/2600783/how-does-the-vim-write-with-sudo-trick-work
 
 "### Part 4: Color List
 
