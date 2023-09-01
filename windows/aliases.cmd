@@ -9,8 +9,8 @@ DOSKEY src = %DOTSW%\init.cmd
 
 ::DOSKEY alias="notepad++.exe" %0 & :: https://stackoverflow.com/questions/20530996/aliases-in-windows-command-prompt
 DOSKEY alias = start /b notepad++.exe %0 & :: https://stackoverflow.com/questions/20530996/aliases-in-windows-command-prompt
-DOSKEY dots=cd %DOTS%
-DOSKEY tmp=cd C:\Users\%USERNAME%\AppData\Local\Temp
+DOSKEY dots=cd /D %DOTS%
+DOSKEY tmp=cd /D C:\Users\%USERNAME%\AppData\Local\Temp
 
 DOSKEY rmr = rmdir /S $*
 DOSKEY .. = cd ..
@@ -50,7 +50,7 @@ DOSKEY sudo = runas /user:administrator $*
 DOSKEY touch = copy nul $* > nul & :: https://stackoverflow.com/questions/28662004/setup-windows-doskey-for-echo-filename-txt
 
 
-DOSKEY ~=cd %USERPROFILE%
+DOSKEY ~=cd /D %USERPROFILE%
 
 :: Programs - System dependent
 ::DOSKEY npp = "notepad++.exe" $* 
