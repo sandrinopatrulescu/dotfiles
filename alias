@@ -38,6 +38,8 @@ alias ffmpeg_template="ffmpeg -i foobar.mkv -c copy ../Captures/S4foobar.mp4" # 
 alias aud="sudo apt update" # apt update
 alias alu="apt list --upgradable" # apt list --upgradable
 alias aug="sudo apt upgrade" # apt upgrade
+alias augy="aug -y"
+alias aar="sudo apt autoremove -y"
 alias adl="aud && alu"
 alias la="ls -A"
 alias ll="ls -l"
@@ -466,7 +468,8 @@ alias oslp="sudo pm-suspend-hybrid"
 
 ### Tools {{{
 #alias fdate="date +%Y-%m-%d_%H-%M-%S" # format date (for saving timestamped file) # V1
-alias fdate='date +%Y-%m-%d_%H-%M-%S | tee >(xargs echo -n | xclip -selection clipboard -i);'
+alias fdatei='date +%Y-%m-%d_%H-%M-%S' # fdate internal
+alias fdate="fdatei | tee >(xargs echo -n | xclip -selection clipboard -i);"
 alias fdatets="date +%Y-%m-%d\ %H:%M" # Trying Scratch format date
 alias fdatetspattern="echo '^[0-9]{4}(-[0-9]{2}){2} [0-9]{2}:[0-9]{2}'"
 alias fdatec="date \"+%Y-%m-%d %a\"" # format date clickup
@@ -483,9 +486,9 @@ alias log-trash='echo \"\$(fdate)||\" >> /e/trash/0.info'
 alias check-sftp-logins="cat /var/log/auth.log | grep \"Accepted password for sftp\""
 
 alias untar="tar -xvf "
-
-alias mkcdfdate='mkcd $(fdate)'
-alias touchfdate='touch $(fdate).txt'
+# TODO: determine why this takes 16 seconds: mkcd $(date +%Y-%m-%d_%H-%M-%S | tee >(xargs echo -n | xclip -selection clipboard -i))
+alias mkcdfdate='mkcd $(fdatei)'
+alias touchfdate='touch $(fdatei).txt'
 ### }}}
 
 

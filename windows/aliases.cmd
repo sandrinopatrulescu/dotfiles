@@ -63,6 +63,11 @@ DOSKEY python = E:\Programs\python-3.10.4-embed-amd64\python $*
 DOSKEY fdate = %DOTSWB%\fdate.cmd
 
 
+
+:: AC
+DOSKEY generate-viewform-links = python.exe C:\Users\sandrinopatrulescu\stuff\CurlPython2\generate-viewform-links.py $*
+
+
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :: Other scripts
