@@ -118,7 +118,8 @@ alias fortivpn="/opt/forticlient/fortivpn"
 alias fortivpns="fortivpn status"
 alias fortivpnc="fortivpn connect artsoft_vpn -u sandrinopatrulescu -p -s -w"
 alias fortivpnd="fortivpn disconnect"
-alias generate-viewform-links="/mnt/e/Scratch/CurlPython2/generate-viewform-links.py"
+alias generate_viewform_links="/mnt/e/Scratch/CurlPython2/generate_viewform_links.py"
+alias complete_forms="/mnt/e/Scratch/CurlPython2/complete_forms.py"
 alias forticonnect="title forti && fortivpnc; fortivpns"
 alias remminac="remmina -c /home/kamui/.local/share/remmina/group_rdp_artsoft-172_192-168-1-182.remmina"
 
@@ -228,6 +229,13 @@ alias clip-rbo='echo -n "(" | xclip -selection clipboard'
 
 alias xxdp="xxd -p"
 alias echon="echo -n"
+
+alias xr="xrandr"
+alias xra="xrandr --auto"
+alias xrlm="xrandr --listmonitors"
+alias xrlma="xrandr --listactivemonitors"
+alias xrfb="xrandr --fb "
+alias xrdm="xrandr --delmonitor "
 # }}}
 
 
@@ -252,6 +260,7 @@ alias livemic="arecord -f cd | aplay"
 alias livemic2="arecord -f cd | aplay -D hw:1,0"
 alias livecam="ffplay -f v4l2 -i /dev/video0"
 # wmctrl -G -l | grep "Chrome" | awk '{print "google-chrome --new-window --window-position="$3","$4" --window-size="$5","$6}' FS=' ' OFS=' '
+alias wmctrll="wmctrl -Gl"
 #alias chrome-left="wmctrl -r chrome -b remove,maximized_vert,maximized_horz && wmctrl -r chrome -e0,0,20,1240,790"
 #alias chrome-mid="wmctrl -r chrome -e0,1280,0,1920,1047 && wmctrl -r chrome -b add,maximized_vert,maximized_horz"
 alias mvchrl="mvchr left"

@@ -731,7 +731,7 @@ mvchr() {
         case "$direction" in
             "left")
                 wmctrl -ir "$window_id" -b remove,maximized_vert,maximized_horz
-                wmctrl -ir "$window_id" -e 0,0,20,1280,800
+                wmctrl -ir "$window_id" -e 0,0,20,1280,768
                 echo "Moved Google Chrome instance $order to the left."
                 ;;
             "center")
