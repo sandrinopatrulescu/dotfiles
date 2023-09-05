@@ -65,7 +65,8 @@ DOSKEY fdate = %DOTSWB%\fdate.cmd
 
 
 :: AC
-DOSKEY generate-viewform-links = python.exe C:\Users\sandrinopatrulescu\stuff\CurlPython2\generate-viewform-links.py $*
+DOSKEY generate_viewform_links = python.exe C:\Users\sandrinopatrulescu\stuff\CurlPython2\generate_viewform_links.py $*
+DOSKEY complete_forms = python.exe C:\Users\sandrinopatrulescu\stuff\CurlPython2\complete_forms.py $*
 
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::
