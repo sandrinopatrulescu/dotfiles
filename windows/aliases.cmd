@@ -65,6 +65,19 @@ DOSKEY fdate = %DOTSWB%\fdate.cmd
 
 
 
+
+:: aliases git
+DOSKEY g=git $*
+DOSKEY gs=git status
+DOSKEY gl=git log $*
+DOSKEY gb=git branch $*
+DOSKEY gco=git checkout $*
+
+DOSKEY gf=git fetch
+DOSKEY gc=git commit $*
+DOSKEY pull=git pull
+DOSKEY push=git push $*
+
 :: AC
 DOSKEY generate_viewform_links = python.exe C:\Users\sandrinopatrulescu\stuff\CurlPython2\generate_viewform_links.py $*
 DOSKEY complete_forms = python.exe C:\Users\sandrinopatrulescu\stuff\CurlPython2\complete_forms.py $*
