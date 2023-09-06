@@ -31,7 +31,7 @@ DOSKEY redots=%DOTSWB%\redots.cmd
 :: TODO IDEA: an automatic way to create DOSKEY for every file in the windows/bin directory
 DOSKEY timezip = %DOTSWB%\timezip.cmd $1
 
-DOSKEY cd = cd /d
+DOSKEY cd = cd /d $*
 
 :: https://gist.github.com/PierreMage/6874814
 DOSKEY cat = type $*
