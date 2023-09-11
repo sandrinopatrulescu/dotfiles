@@ -1,3 +1,5 @@
 external-tools
 .idea/
 *.iml
+
+secrets
