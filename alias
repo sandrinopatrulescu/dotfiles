@@ -266,6 +266,7 @@ alias wmctrll="wmctrl -Gl"
 alias mvchrl="mvchr left"
 alias mvchrc="mvchr center"
 alias mvchrr="mvchr right"
+alias pan2nrows="xfconf-query -c xfce4-panel -p /panels/panel-2/nrows -s" # change panel 2 height
 alias find2='find / -type d \( -path /home/timeshift -o -path /mnt -o -path /proc -o -path /run -o -path /tmp \) -prune -o '
 alias find2s='sudo find / -type d \( -path /home/timeshift -o -path /mnt -o -path /proc -o -path /run -o -path /tmp \) -prune -o '
 alias find3s='sudo find / -type d \( -path /home/timeshift -o -path /mnt -o -path /proc -o -path /run -o -path /tmp \) -prune -o '
