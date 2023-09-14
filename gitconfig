@@ -14,3 +14,7 @@
 	autocrlf = input
 	editor = vim
 	filemode = false
+[alias]
+    hide = update-index --skip-worktree
+    unhide = update-index --no-skip-worktree
+    hidden = ! git ls-files -v | grep '^S' | cut -c3-
