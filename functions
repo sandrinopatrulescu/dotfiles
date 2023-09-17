@@ -753,6 +753,87 @@ mvchr() {
 }
 
 
+ac::internal::wl_ok() {
+    local last_modified=$(stat -c %Y /home/kamui/.config/google-chrome/Default/cookie-wol)
+    local current_time=$(date +%s)
+    local time_diff=$((current_time - last_modified))
+    local char_count=$(wc -c < /home/kamui/.config/google-chrome/Default/cookie-wol)
+    [ "$time_diff" -le 30 ] && [ "$char_count" -ge 420 ]
+}
+
+ac::internal::wp_ok() {
+    [ -n "$1" ] && jq -e '.success == "OK"' <<< "$1" > /dev/null && \
+     jq -e 'has("data") and (.data | has("result")) and (.data.result | has("alive"))' <<< "$1" > /dev/null
+    # testing: src; ac::internal::wolp_ok "$(cat $(ls -rt | tail -1))"; echo $?
+}
+
+ac::internal::wp_alive() {
+    jq -e '.data.result.alive == true' <<< "$1" > /dev/null
+    # testing: src; ac::internal::wolp_alive "$(cat $(ls -rt | tail -1))"; echo $?
+}
+
+ac::internal::ww_ok() {
+    cat | grep -E -q "^(200|304)$"
+    # test: src; curl -s --fail --show-error https://httpbin.org/status/204 -w "%{http_code}\n" | ac::internal::ww_ok; echo $?
+}
+
+acvs() { # ac vpn status
+    nmcli con show --active | grep -q "ssl_artsoft"
+    local result=$?
+    [ "$1" = "-q" ] && return $result
+    [ "$result" -eq 0 ] && echo "VPN is connected" || echo "VPN is not connected"
+    return $result
+    # test: src; acvsq; echo $?; echo; acvs
+}
+
+acvsq() { # ac vpn status quiet
+    acvs -q
+}
+
+acvc() { # ac vpn connect
+    # https://www.google.com/search?q=ubuntu+connect+to+vpn+command+line -> https://askubuntu.com/questions/57339/connect-disconnect-from-vpn-from-the-command-line
+    acvs || nmcli con up id ssl_artsoft
+}
+
+acvd() { # ac vpn disconnect
+    acvs && nmcli con down id ssl_artsoft
+}
+
+acwl() { # ac wol login
+curl --silent --show-error -c /home/kamui/.config/google-chrome/Default/cookie-wol \
+    --location 'https://cas.artsoft-consult.ro:8443/cas/login?service=http://wol.artsoft-consult.ro/&renew=true' \
+    --data-urlencode 'username=sandrinopatrulescu' \
+    --data-urlencode "password=${SOGO_PASSWORD}" \
+    --data-urlencode "execution=$(cat /mnt/e/dotfiles-secrets/wolloginexecution)" \
+    --data-urlencode '_eventId=submit' \
+    -o /dev/null
+#    -w "%{http_code}\n"
+}
+
+acwp() { # ac wol ping
+curl --silent --show-error -b /home/kamui/.config/google-chrome/Default/cookie-wol \
+    --location 'https://wol.artsoft-consult.ro/ping' \
+    --header 'Content-type: application/json; charset=UTF-8' \
+    --data '{"host":false}'
+#    -w "\n%{http_code}\n"
+}
+
+acww() { # ac wol wake
+curl --silent --show-error -b /home/kamui/.config/google-chrome/Default/cookie-wol \
+    --location 'https://wol.artsoft-consult.ro/wake' \
+    -w "\n%{http_code}\n"
+}
+
+acrc() { # ac remmina connect
+    remmina -c /home/kamui/.local/share/remmina/group_rdp_artsoft-172_192-168-1-182.remmina >/dev/null 2>&1 &
+}
+
+acd() { # artsoft consult disconnect, opposite to acc bin/ script
+    killall -15 skypeforlinux
+    killall -15 remmina
+    acvd
+}
+
 
 
 # }}}
@@ -1563,7 +1644,8 @@ title() { # set the xfce title to pwd or to a given string
     TITLE="${TITLE/\/mnt\/e/\/e}"
     TITLE="${TITLE/\/e\/Scratch/Scratch}"
     TITLE="${TITLE/\/e\/UBB_IE_2020-2023/UBBIE2020-2023}"
-    TITLE="${TITLE/\/home\/kamui\//\~/}" # replace /home/kamui/ with ~/ literal
+    TITLE="${TITLE/\/home\/kamui/\~}" # replace /home/kamui with ~ literal
+    # TODO: instead of /home/kamui use $HOME
 
     # linux mint change xfce terminal window title using the command line -> https://askubuntu.com/questions/636944/how-to-change-the-title-of-the-current-terminal-tab-using-only-the-command-line -> https://askubuntu.com/a/1037309/1547353
     local ORIG_PS1=$PS1
