@@ -834,8 +834,10 @@ acd() { # artsoft consult disconnect, opposite to acc bin/ script
     acvd
 }
 
-
-
+instaloader1() {
+    instaloader --dirname-pattern=/tmp --no-captions --no-metadata-json --filename-pattern={date}_{shortcode} -- \
+     -$(echo "$1" | grep -oE '/p/[^/]+/' | sed 's|/p/||;s|/||')
+}
 # }}}
 
 psgrept() { # ps grep total
@@ -1674,25 +1676,43 @@ testtrap () {
 }
 # }}}
 
-gcfgu() { # git config user local
-  [ $# -ne 1 ] && echo "usage: $FUNCNAME <m/u> # (main/uni)" && return 1
-  local username
-  local email
+__gcfgu() {
+    [ $# -ne 2 ] && echo "usage: $FUNCNAME <m/u> # (main/uni)" && return 1
 
-  case $1 in
+    # https://www.google.com/search?q=bash+return+2+vlues+from+function -> https://unix.stackexchange.com/questions/408543/how-can-a-bash-function-return-multiple-values
+    local -n __user=$2
+
+    case $1 in
     m)
-      username="sandrinopatrulescu"
-      email="sandryno_sandryno@yahoo.com" ;;
+        __user["username"]="sandrinopatrulescu"
+        __user["email"]="sandryno_sandryno@yahoo.com"
+      ;;
     u)
-      username="Patrulescu-Ronald-Sandrino"
-      email="prie2985@scs.ubbcluj.ro" ;;
-  esac
+        __user["username"]="Patrulescu-Ronald-Sandrino"
+        __user["email"]="prie2985@scs.ubbcluj.ro"
+      ;;
+    esac
 
-  git config --local user.name $username
-  git config --local user.email $email
+## debug print
+#    for key in ${!__user[@]}
+#    do
+#      echo "${key}, ${__user[${key}]}"
+#    done
 }
 
+gcfgu() { # git config user local
+    local -A user
+    __gcfgu $1 user || return $?
+    git config --local user.name user["username"]
+    git config --local user.email user["email"]
+}
 
+gcfgup() { # git config user local print
+    local -A user
+    __gcfgu $1 user || return $?
+    echo "git config --local user.name ${user["username"]}"
+    echo "git config --local user.email ${user["email"]}"
+}
 
 
 
