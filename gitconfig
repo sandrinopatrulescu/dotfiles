@@ -2,8 +2,8 @@
 	defaultBranch = main
 [color]
 	ui = true
-	status = auto
-	branch = auto
+	status = true
+	branch = true
 [user]
 	name = Patrulescu-Ronald-Sandrino
 	email = prie2985@scs.ubbcluj.ro
@@ -15,7 +15,7 @@
 	editor = vim
 	filemode = false
 [alias]
-    cfg = config --list --show-origin
+    cfg = config --list --show-origin --show-scope
 
     hide = update-index --skip-worktree
     unhide = update-index --no-skip-worktree
@@ -24,7 +24,7 @@
 # [1]
     setusermain = config --local user.name 'sandriopatrulescu' && config --local user.email 'sandryno_sandryno@yahoo.com'
     setuseruni = config --local user.name 'Patrulescu-Ronald-Sandrino' && config --local user.email 'prie2985@scs.ubbcluj.ro'
-[includeIf "gitdir:/**/dhc/.git"]
+[includeIf "gitdir:dhc/.git"]
     path = "C:/Users/sandrinopatrulescu/stuff/dotfiles-worklib/.gitconfig"
 
 
