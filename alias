@@ -301,9 +301,9 @@ alias ga="git add"
 alias ga.="git add ."
 alias gc="git commit"
 
-alias gf="fdate; git fetch"
-alias gpl="fdate; git pull"
-alias gm="fdate; git merge"
+alias gf="fdatei; git fetch"
+alias gpl="fdatei; git pull"
+alias gm="fdatei; git merge"
 alias gmod="git merge origin/develop" # git merge origin/develop
 
 
