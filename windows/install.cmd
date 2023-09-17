@@ -11,14 +11,15 @@ SET init_path=%~dp0\init.cmd
 echo init_path=%init_path%
 
 CALL %init_path%
+REM --------------------------------------------
 
 
-REM autorun init 
+REM add init.cmd to autorun
 :: https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/reg-add
 reg add "HKLM\SOFTWARE\Microsoft\Command Processor" /v AutoRun /t REG_SZ /d %init_path%
 echo.
 SET init_path=
-
+REM --------------------------------------------
 
 
 REM download UnxUtils
@@ -31,8 +32,33 @@ tar -xf UnxUtils.zip
 DEL UnxUtils.zip
 cd %ret_dir% & ::go back to prev loc
 SET ret_dir=
+REM --------------------------------------------
 
 
+REM link .gitconfig
+setlocal enabledelayedexpansion
+
+SET linkDir=%userprofile%
+SET linkName=.gitconfig
+SET target=%DOTS%gitconfig
+
+SET link=%linkDir%\%linkName%
+
+
+IF EXIST "%link%" (
+	DIR %link% | FINDSTR "<SYMLINK>[ ]+%linkName% \[%target%\]" >nul && SET "found=1" || SET "found=0"
+
+	IF "!found!" EQU "1" (
+		echo "%link%" is already a symlink to "%target%"
+	) ELSE (
+		echo "%link%" is NOT a symlink to "%target%".
+		echo Check it's contents and eventually run:
+		echo mklink "%link%" "%target%"
+	)
+) ELSE (
+    mklink %link% %target%
+)
+REM --------------------------------------------
 
 
 PAUSE
