@@ -1,0 +1,56 @@
+#!/bin/bash
+# artsoft consult connect
+shopt -s expand_aliases
+#set -x
+
+source /home/kamui/.functions
+source /home/kamui/.alias
+
+#nohup remmina >/dev/null 2>&1 & sleep 0.2s && wmctrl -a 'kamui@an5: ~'
+
+# while not connected to the vpn keep trying with a timeout
+while [ true ]; do
+    echo "!!! Open phone and approve the connection !!!"
+    acvc && break
+    sleep 30s
+done
+
+sleep 1s
+
+# login to wol
+while [ true ]; do
+    echo "[LOG][$(fdateiso)] Trying to login to WOL..."
+    acwl && ac::internal::wl_ok && break
+    sleep 5s
+done
+
+# ping wol
+isAlive=false
+while [ true ]; do
+    echo "[LOG][$(fdateiso)] Trying to ping WOL..."
+    response="$(acwp)"
+    [ $? -eq 0 ] || continue
+    ac::internal::wp_ok "${response}" || continue
+    ac::internal::wp_alive "${response}" && isAlive=true
+    break
+    sleep 5s
+done
+
+#  if not alive then try to wake it up
+[ "${isAlive}" = false ] && {
+    while [ true ]; do
+        echo "[LOG][$(fdateiso)] Trying to wake up WOL..."
+        acww | ac::internal::ww_ok && break
+        sleep 5s
+    done
+
+    bootWaitTime="${1:-60}" # 30 is too early, 34-70 ok
+    echo "[LOG][$(fdateiso)] Waiting ${bootWaitTime} seconds to boot...(til $(date -d "+${bootWaitTime} seconds" +'%Y-%m-%dT%H:%M:%SZ'))"
+    sleep "${bootWaitTime}s"
+}
+
+nohup remmina -c /home/kamui/.local/share/remmina/group_rdp_artsoft-172_192-168-1-182.remmina >/dev/null 2>&1 & # [1]
+skypeforlinux && sleep 1s && wmctrl -a 'Artsoft 172'
+
+
+# [1] https://stackoverflow.com/questions/9190151/how-to-run-a-command-in-the-background-and-get-no-output#comment133149106_29547803
