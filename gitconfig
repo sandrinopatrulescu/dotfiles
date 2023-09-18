@@ -8,8 +8,11 @@
 	name = Patrulescu-Ronald-Sandrino
 	email = prie2985@scs.ubbcluj.ro
 ; [2]
-[url "ssh://git@github.com/"]
-    insteadOf = https://github.com/
+; enable the following [url] setting if you want to use ssh over https for every single user
+; [url "ssh://git@github.com/"]
+;     insteadOf = https://github.com/
+[url "git@github.com:sandrinopatrulescu"]
+    insteadOf = https://github.com/sandrinopatrulescu
 [url "gh-uni:Patrulescu-Ronald-Sandrino"]
     insteadOf = git@github.com:Patrulescu-Ronald-Sandrino
     insteadOf = https://github.com/Patrulescu-Ronald-Sandrino
