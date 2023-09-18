@@ -22,7 +22,7 @@ clone-webelopers() {
     [ -d "$project_name" ] && { echo "Directory $project_name already exists. No action will be performed"; return 1; }
 
     echo "Connect to git:"
-    glsuni || { echo "FAILED to connect to the GitHub account"; return 1; }
+    sau || { echo "FAILED to connect to the GitHub account"; return 1; }
 
     g clone git@github.com:915-Negrau-Mircea/SE-925-2-Webelopers.git && echo "Successfuly cloned the repository" || { echo "FAILED to clone the repository"; return 1; }
     echo
@@ -133,6 +133,24 @@ mint_setup_services() {
     sudo systemctl start "$(basename "$file")";
   done
   echo "Reboot to take effect"
+}
+
+
+try_git_clone() {
+    # usage: try_git_clone <mode (ssh/https)> <user> <repo name>
+    [ $# -eq 3 ] || { echo "usage: $FUNCNAME <mode (ssh/https)> <user> <repo name>" && return 1; }
+    local url="$2/$3"
+    case $1 in
+    ssh)
+        url="git@github.com:${url}.git";;
+    https)
+        url="https://github.com/${url}";;
+    *)
+        echo "Invalid mode: $1"; return 1;;
+    esac
+    sudo rm -r "$3"
+    echo "URL: $url"
+    git clone "${url}"
 }
 # }}}
 

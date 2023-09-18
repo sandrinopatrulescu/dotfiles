@@ -130,17 +130,18 @@ echo "3.4 DONE"
 
 
 echo "# 3.5 ssh"
-sshDir=/home/"${user}"/.ssh
-[ -d "${sshDir}" ] || mkdir "${sshDir}"; # create ssh dir if it doesn't exist
-
-if [ -z "$(ls -A "${sshDir}")" ] || [ "${replaceSshDirAnswer}" = "y" ]; then
-    cp -r /e/.ssh /home/"${user}"
-    sudo chown -R "${user}" "${sshDir}"
-    chmod 0600 "${sshDir}"/*
-else
-    echo "SSH keys weren't copied because /home/${user}/.ssh is not empty and you opted not to replace them"
-fi
-echo
+echo "run: git -C /e/ clone git@github.com:sandrinopatrulescu/dotfiles-secrets.git 1>>/dev/null && ln -sT /e/dotfiles-secrets/ssh /home/kamui/.ssh"
+#sshDir=/home/"${user}"/.ssh
+#[ -d "${sshDir}" ] || mkdir "${sshDir}"; # create ssh dir if it doesn't exist
+#
+#if [ -z "$(ls -A "${sshDir}")" ] || [ "${replaceSshDirAnswer}" = "y" ]; then
+#    cp -r /e/.ssh /home/"${user}"
+#    sudo chown -R "${user}" "${sshDir}"
+#    chmod 0600 "${sshDir}"/*
+#else
+#    echo "SSH keys weren't copied because /home/${user}/.ssh is not empty and you opted not to replace them"
+#fi
+#echo
 
 
 
