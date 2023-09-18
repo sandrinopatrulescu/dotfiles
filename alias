@@ -236,6 +236,9 @@ alias xrlm="xrandr --listmonitors"
 alias xrlma="xrandr --listactivemonitors"
 alias xrfb="xrandr --fb "
 alias xrdm="xrandr --delmonitor "
+
+alias work="cd /mnt/e/work"
+alias worzy="cd /mnt/e/work/1-ac/worzy"
 # }}}
 
 
@@ -279,7 +282,6 @@ alias gi="git init"
 alias gcl="git clone"
 
 alias gie='$EDITOR ./.gitignore'
-alias gcl="git config -l --show-origin --show-scope"
 
 alias gs="git status"
 alias gco="git checkout"
@@ -440,11 +442,13 @@ alias HCS="cd /mnt/e/UBB_IE_2020-2023/S6.HCS/"
 alias TDT="cd /mnt/e/UBB_IE_2020-2023/S6.TDT/"
 alias BE="cd /mnt/e/UBB_IE_2020-2023/S6.BE/"
 
-alias glsm='eval $(ssh-agent) && ssh-add ~/.ssh/id_ed25519_github_main' # git login ssh main
-alias glst='ssh -T git@github.com' # git ssh test
-alias glsus='eval $(ssh-agent) && ssh-add' # git login ssh uni server
-alias glsuni='eval $(ssh-agent) && ssh-add ~/.ssh/id_ed25519_github_uni' # git login ssh uni (linux)
-alias glsuniw='eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_ed25519_github_uni_windows' # git login ssh uni (windows)
+alias sshtestgithub="ssh -vT git@github.com"
+alias sa="ssh-add" # ssh add
+alias sal="ssh-add -l" # ssh add list
+alias sas='eval $(ssh-agent)' # ssh agent start
+alias sam='ssh-add ~/.ssh/id_ed25519_gh_main' # ssh add main
+alias sau='ssh-add ~/.ssh/id_ed25519_gh_uni' # ssh add uni
+alias saa='ssh-add ~/.ssh/id_ed25519_gh_main ~/.ssh/id_ed25519_gh_uni' # ssh add all
 
 alias ..="cd .." # [1]
 alias ...="cd ../.." # [1]

@@ -20,8 +20,12 @@ DOSKEY ..... = cd ..\..\..\..
 
 DOSKEY t=explorer.exe . & :: t from thunar (Ubuntu)
 
-DOSKEY glsuni=ssh-add %userprofile%\.ssh\id_ed25519_github_uni
-DOSKEY glst=ssh -vT git@github.com
+DOSKEY sshtestgithub=ssh -vT git@github.com
+DOSKEY sa=ssh-add $*
+DOSKEY sal=ssh-add -l
+DOSKEY sam=ssh-add %userprofile%\.ssh\id_ed25519_gh_main
+DOSKEY sau=ssh-add %userprofile%\.ssh\id_ed25519_gh_uni
+DOSKEY saa=ssh-add %userprofile%\.ssh\id_ed25519_gh_main %userprofile%\.ssh\id_ed25519_gh_uni
 
 :: DOSKEY gacp = git add -A ^&^& git commit -m $* ^&^& git push & :: git add commit push
 
