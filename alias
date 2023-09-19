@@ -491,6 +491,7 @@ alias fdatetspattern="echo '^[0-9]{4}(-[0-9]{2}){2} [0-9]{2}:[0-9]{2}'"
 alias fdatec="date \"+%Y-%m-%d %a\"" # format date clickup
 alias mtodo='(mousepad $TRASH/todos_$(fdate).txt &)' # mousepad todo
 alias slay="pkill -15 -f " # https://askubuntu.com/questions/1368579/how-to-kill-firefox-from-command-line
+alias slay9="pkill -9 -f "
 alias slowprint="echo ' | awk '\'{if \(system\('\"sleep 0.05 && exit 2\"'\) != 2\) exit\; print}\'''"
 #alias slowprint="echo ' | awk '\'{if \(system\(\"sleep 0.05 && exit 2\"\) != 2\) exit\; print}\'''"
 alias src="source ~/.bashrc"
