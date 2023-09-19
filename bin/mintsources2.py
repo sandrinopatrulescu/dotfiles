@@ -69,7 +69,7 @@ def disable():
 
 def reload():
     Application().apply_official_sources()
-    subprocess.run(['sudo', 'apt', 'update'])
+    subprocess.run(['sudo', 'apt-get', 'update'], stdout=subprocess.DEVNULL)
     status()
 
 

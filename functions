@@ -619,14 +619,8 @@ fix-camera() {
   local currentDir="$PWD"
   cd /tmp && mkcdfdate
 
-
-  # enable source code repositories https://askubuntu.com/questions/158871/how-do-i-enable-the-source-code-repositories
-#  sudo software-sources
-#  read -rp "Enable source code repositories and then press enter to continue"
-  echo "Enable source code repositories"
-  sudo software-sources
-  # TODO: try w/ sudo ../bin/mintsources2.py enable & sudo ../bin/mintsources2.py enable
-
+  echo "Enable source code repositories" # https://askubuntu.com/questions/158871/how-do-i-enable-the-source-code-repositories
+  sudo "${DOTSB}"/mintsources2.py enable
 
   apt-get source linux-modules-extra-"$(uname -r)"
   [ "$(/usr/bin/ls -d linux-*/ | wc -l)" -eq 1 ] || { echo "Error: more than one directory found"; return 1; }
@@ -642,7 +636,7 @@ fix-camera() {
 
 
   echo "Disable source code repositories"
-  sudo software-sources
+  sudo "${DOTSB}"/mintsources2.py disable
 
 
   echo "Now test the camera"
@@ -856,6 +850,12 @@ instaloader1() {
     instaloader --dirname-pattern=/tmp --no-captions --no-metadata-json --filename-pattern={date}_{shortcode} -- \
      -$(echo "$1" | grep -oE '/p/[^/]+/' | sed 's|/p/||;s|/||')
 }
+
+webm2mp4() {
+    ffmpeg -i "$1" -c:v libx264 -c:a aac -strict experimental "$(echo "$1" | sed -E 's@\.[^.]+$@@').mp4"
+}
+
+
 # }}}
 
 psgrept() { # ps grep total
