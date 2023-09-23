@@ -1675,7 +1675,7 @@ title() { # set the xfce title to pwd or to a given string
 
 cd() { # wrapper for cd which also sets the terminal window/tab title
     builtin cd "$@" # found the solution @ https://askubuntu.com/questions/1238467/xfce-terminal-run-script-on-session-restore
-    xtitle --version &> /dev/null && title
+#    xtitle --version &> /dev/null && title # TODO check if this causes text overlapping in terminal (see  title())
     #title &> /dev/null # TODO: why it doesn't work?
 }
 
