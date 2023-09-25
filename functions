@@ -837,7 +837,7 @@ curl --silent --show-error -b /home/kamui/.config/google-chrome/Default/cookie-w
 }
 
 acrc() { # ac remmina connect
-    remmina -c /home/kamui/.local/share/remmina/group_rdp_artsoft-172_192-168-1-182.remmina >/dev/null 2>&1 &
+    remmina -c /home/kamui/.local/share/remmina/group_rdp_artsoft-172_10-79-254-172.remmina >/dev/null 2>&1 &
 }
 
 acd() { # artsoft consult disconnect, opposite to acc bin/ script

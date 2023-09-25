@@ -12,7 +12,7 @@ source /home/kamui/.alias
 while [ true ]; do
     echo "!!! Open phone and approve the connection !!!"
     acvc && break
-    sleep 30s
+    sleep 33s
 done
 
 sleep 1s
@@ -29,6 +29,9 @@ isAlive=false
 while [ true ]; do
     echo "[LOG][$(fdateiso)] Trying to ping WOL..."
     response="$(acwp)"
+    echo "response: $response"
+    ac::internal::wp_ok "${response}"; echo "wp_ok: $?"
+    ac::internal::wp_alive "${response}"; echo "wp_alive: $?"
     [ $? -eq 0 ] || continue
     ac::internal::wp_ok "${response}" || continue
     ac::internal::wp_alive "${response}" && isAlive=true
@@ -49,7 +52,7 @@ done
     sleep "${bootWaitTime}s"
 }
 
-nohup remmina -c /home/kamui/.local/share/remmina/group_rdp_artsoft-172_192-168-1-182.remmina >/dev/null 2>&1 & # [1]
+nohup remmina -c /home/kamui/.local/share/remmina/group_rdp_artsoft-172_10-79-254-172.remmina >/dev/null 2>&1 & # [1]
 skypeforlinux && sleep 1s && wmctrl -a 'Artsoft 172'
 
 
