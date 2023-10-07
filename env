@@ -16,6 +16,7 @@ export DISTRIBUTION_PATH="/mnt/e/FSs/${DISTRIBUTION}"
 export DOTS="/mnt/e/dotfiles"
 export TRASH="/mnt/e/trash"
 export SCRATCH="/mnt/e/Scratch"
+export DOTS_SECRETS="/mnt/e/dotfiles-secrets/"
 
 export DOTSB="${DOTS}/bin"
 
