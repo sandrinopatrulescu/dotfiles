@@ -46,9 +46,7 @@ timezip() {
 }
 
 contact() {
-    echo "Pătrulescu Ronald Sandrino"
-    echo "sandrinopatrulescu@yahoo.com"
-    echo "0756587313"
+    cat $DOTS_SECRETS/contact.txt
 }
 
 eject-disk() {
