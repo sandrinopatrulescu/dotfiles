@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=a-hostfiles-movies
+Comment=
+Exec=/mnt/e/dotfiles/bin/hostfiles-movies.sh
+OnlyShowIn=XFCE;
+StartupNotify=false
+Terminal=false
+Hidden=false
+
