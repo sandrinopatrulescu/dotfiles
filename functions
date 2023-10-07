@@ -853,6 +853,18 @@ webm2mp4() {
     ffmpeg -i "$1" -c:v libx264 -c:a aac -strict experimental "$(echo "$1" | sed -E 's@\.[^.]+$@@').mp4"
 }
 
+localhosts() {
+    # https://www.google.com/search?q=linux+command+line+view+all+lan+devices -> https://superuser.com/a/1195142
+    ip neigh | awk '{ print $1 }' | xargs -I % sh -c 'echo % $(host %)'
+}
+
+localhost() {
+    localhosts | grep $1 | awk '{ print $1 }'
+}
+
+sshaa5() {
+    ssh "kamui@$(localhost $AA5_HOSTNAME)"
+}
 
 # }}}
 
