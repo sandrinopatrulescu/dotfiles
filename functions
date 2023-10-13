@@ -844,8 +844,12 @@ acd() { # artsoft consult disconnect, opposite to acc bin/ script
     acvd
 }
 
-instaloader1() {
-    instaloader --dirname-pattern=/tmp --no-captions --no-metadata-json --filename-pattern={date}_{shortcode} -- \
+ytdlp() {
+    yt-dlp -P "${2:-/tmp}" "$1"
+}
+
+il1() {
+    instaloader --no-video-thumbnails --dirname-pattern="${2:-/tmp}" --no-captions --no-metadata-json --filename-pattern={date}_{shortcode} -- \
      -$(echo "$1" | grep -oE '/p/[^/]+/' | sed 's|/p/||;s|/||')
 }
 
