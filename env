@@ -17,6 +17,8 @@ export DOTS="/mnt/e/dotfiles"
 export TRASH="/mnt/e/trash"
 export SCRATCH="/mnt/e/Scratch"
 export DOTS_SECRETS="/mnt/e/dotfiles-secrets/"
+export SECRETS="${DOTS_SECRETS}"
+export SECRETS_FILE="${DOTS_SECRETS}/secrets"
 
 export DOTSB="${DOTS}/bin"
 
