@@ -40,6 +40,10 @@ export SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS=0 # tf2 monitor keep focus https://githu
 
 export AA5_HOSTNAME="AcerAspireV5-552G"
 
+# idk?
+. "$DOTS"/linux/functions.sh
+
+
 # Options
 set -o noclobber # disable overwritting using > and replce with >|
 
@@ -91,6 +95,7 @@ export WTMP="/mnt/c/Users/sandr/AppData/Local/Temp"
 # ubuntu show return code in terminal prompt -> https://stackoverflow.com/questions/16715103/bash-prompt-with-the-last-exit-code
 PROMPT_COMMAND=__prompt_command
 
+
 __prompt_command() {
     local exitCode="$?"                # This needs to be first
     local exitCodeInPrompt=""
@@ -100,7 +105,8 @@ __prompt_command() {
 
     [ $exitCode != 0 ] && exitCodeInPrompt=" ${Red}${exitCode}${RCol}"
 
-    PS1="\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]${exitCodeInPrompt}\$ "
+    local branchName="\[\e[33m\]\$(parse_git_branch)\[\e[00m\]"
+    PS1="\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\W\[\033[00m\]${branchName}${exitCodeInPrompt}\$ "
 }
 
 export BROWSER=/usr/bin/google-chrome

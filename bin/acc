@@ -12,7 +12,7 @@ source /home/kamui/.alias
 while [ true ]; do
     echo "!!! Open phone and approve the connection !!!"
     acvc && break
-    sleep 33s
+    sleep 37s
 done
 
 sleep 1s
