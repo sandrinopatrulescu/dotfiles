@@ -240,6 +240,10 @@ alias xrdm="xrandr --delmonitor "
 
 alias work="cd /mnt/e/work"
 alias worzy="cd /mnt/e/work/1-ac/worzy"
+
+alias yt-dlp-update="pip install yt-dlp -U"
+
+alias mkdirp="mkdir -p"
 # }}}
 
 
@@ -378,6 +382,7 @@ alias cal="ncal -wbM"
 
 alias shutdownn="shutdown +0"
 alias shutdown1="slay firefox; slay chrome; cleanup; shutdown +0"
+alias shutdown1s120="sleep 120; shutdown1"
 alias restart1='slay firefox; slay chrome; cleanup; shutdown -r +0'
 
 
