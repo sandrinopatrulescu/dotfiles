@@ -63,7 +63,9 @@ export JAVAFX_HOME=/home/kamui/Programs/javafx-sdk-17.0.2
 export JAVAFX_ARGS="--module-path $JAVAFX_HOME/lib --add-modules javafx.controls,javafx.fxml"
 export CMAKE="${DISTRIBUTION_PATH}/home/kamui/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.7172.20/bin/cmake/linux/bin/cmake" # added to compile mono, so I won't have to install cmake (even tho it can be installed from apt)
 export CATALINA_HOME=/mnt/e/Programs/apache-tomcat-9.0.63/
+export ANDROID_HOME=/home/kamui/Android/Sdk
 ##
+
 
 export HISTFILESIZE=10000        # increase history file size (default is 500)
 export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)

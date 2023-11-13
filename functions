@@ -807,11 +807,12 @@ acvd() { # ac vpn disconnect
 }
 
 acwl() { # ac wol login
+local execution="$(curl -s "https://cas.artsoft-consult.ro:8443/cas/login?service=http%3A%2F%2Fwol.artsoft-consult.ro%2F&renew=true" | \grep -oP '<input[^>]*name="execution"[^>]*value="\K[^"]*')"
 curl --silent --show-error -c /home/kamui/.config/google-chrome/Default/cookie-wol \
     --location 'https://cas.artsoft-consult.ro:8443/cas/login?service=http://wol.artsoft-consult.ro/&renew=true' \
     --data-urlencode 'username=sandrinopatrulescu' \
     --data-urlencode "password=${SOGO_PASSWORD}" \
-    --data-urlencode "execution=$(cat /mnt/e/dotfiles-secrets/wolloginexecution)" \
+    --data-urlencode "execution=${execution}" \
     --data-urlencode '_eventId=submit' \
     -o /dev/null
 #    -w "%{http_code}\n"
