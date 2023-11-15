@@ -39,17 +39,47 @@ while [ true ]; do
     sleep 5s
 done
 
+function waitToBoot() {
+    local numberOfSeconds="$1"
+    local numberOfShownSeconds="$2"
+    echo "[LOG][$(fdateiso)] Waiting ${numberOfShownSeconds} seconds to boot...(til $(date -d "+${numberOfShownSeconds} seconds" +'%Y-%m-%dT%H:%M:%SZ'))"
+    sleep "${numberOfSeconds}s"
+}
+
 #  if not alive then try to wake it up
 [ "${isAlive}" = false ] && {
-    while [ true ]; do
+    while true; do
         echo "[LOG][$(fdateiso)] Trying to wake up WOL..."
         acww | ac::internal::ww_ok && break
         sleep 5s
     done
 
     bootWaitTime="${1:-60}" # 30 is too early, 34-70 ok
-    echo "[LOG][$(fdateiso)] Waiting ${bootWaitTime} seconds to boot...(til $(date -d "+${bootWaitTime} seconds" +'%Y-%m-%dT%H:%M:%SZ'))"
-    sleep "${bootWaitTime}s"
+
+    i="${bootWaitTime}"
+    step="$((bootWaitTime <= 25 ? 5 : 10))"
+    step="$((bootWaitTime <= 5 ? 1 : 5))"
+    while [ "$i" -gt 0 ]; do
+        echo "[LOG][$(fdateiso)] Waiting ${i} seconds to boot...(til $(date -d "+${i} seconds" +'%H:%M:%S'))"
+        modWithStep=$((i % step))
+        [ "${modWithStep}" -ne 0 ] && step="${modWithStep}"
+        sleep "${step}s"
+        i=$((i - step))
+        if [ "$i" -gt 25 ] && [ $((i % 10)) -eq 0 ]; then step=10; fi
+        if [ "$i" -le 25 ] && [ $((i % 5)) -eq 0 ]; then step=5; fi
+        [ "$i" -le 5 ] && step=1
+    done
+
+#    secondWaitTime=10
+#    secondWaitTimeThreshold=20
+#    bootWaitTimeReduced=false
+#    [ "${bootWaitTime}" -ge "${secondWaitTimeThreshold}" ] && {
+#        bootWaitTimeReduced=true
+#    }
+#    waitToBoot $((bootWaitTime - secondWaitTime)) "$bootWaitTime"
+#    [ "${bootWaitTimeReduced}" = true ] && {
+#        waitToBoot "${secondWaitTime}" "${secondWaitTime}"
+#    }
 }
 
 nohup remmina -c /home/kamui/.local/share/remmina/group_rdp_artsoft-172_10-79-254-172.remmina >/dev/null 2>&1 & # [1]
