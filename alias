@@ -97,6 +97,7 @@ alias findc="ls -1 **/*.{cpp,c,h,hpp}" # find C/C++ source/header files
 alias tmp="cd /tmp"
 alias tmpe="cd /e/tmp" # E tmp folder
 alias tmper="cd /e/prtmp" # real E tmp folder
+alias ttmp="t /tmp"
 alias others="cd /e/others"
 
 alias tomcatstart="/mnt/e/Programs/apache-tomcat-9.0.63/bin/startup.sh"

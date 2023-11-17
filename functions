@@ -865,7 +865,8 @@ localhost() {
 }
 
 sshaa5() {
-    ssh "kamui@$(localhost $AA5_HOSTNAME)"
+    ssh "kamui@192.168.8.165"
+#    ssh "kamui@$(localhost $AA5_HOSTNAME)"
 }
 
 # }}}
