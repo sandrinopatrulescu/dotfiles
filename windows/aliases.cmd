@@ -63,6 +63,7 @@ DOSKEY ~=cd /D %USERPROFILE%
 :: Programs - System dependent
 ::DOSKEY npp = "notepad++.exe" $* 
 DOSKEY python = E:\Programs\python-3.10.4-embed-amd64\python $*
+DOSKEY gbash = "%PROGRAMFILES%\Git\bin\sh.exe"
 
 
 :: TODO: refactor this - make it more manageable, efficient

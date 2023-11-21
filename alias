@@ -245,6 +245,8 @@ alias worzy="cd /mnt/e/work/1-ac/worzy"
 alias yt-dlp-update="pip install yt-dlp -U"
 
 alias mkdirp="mkdir -p"
+
+alias anaconda='eval "$(/home/kamui/anaconda3/bin/conda shell.bash hook)"'
 # }}}
 
 
