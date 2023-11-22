@@ -869,6 +869,14 @@ sshaa5() {
 #    ssh "kamui@$(localhost $AA5_HOSTNAME)"
 }
 
+shutdown1s() {
+    echo "Sleeping $1 seconds then shutting down"
+    sleep $1
+    pkill -15 -f firefox
+    pkill -15 -f chrome
+    cleanup
+    shutdown +0
+}
 # }}}
 
 psgrept() { # ps grep total
