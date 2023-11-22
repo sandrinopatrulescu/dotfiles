@@ -1,6 +1,4 @@
 #!/bin/bash
 teamviewer &
-sleep 1
+sleep 2
 wmctrl -r TeamViewer -t 3
-
-
