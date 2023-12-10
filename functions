@@ -440,7 +440,7 @@ highlight2() { # grep everything https://unix.stackexchange.com/questions/366/co
 
 
 ffmpeg_convert() { # to convert mkv to mp4, based on ffmpeg_template alias
-    ffmpeg -i $1 -c copy $2
+    /usr/bin/ffmpeg -i $1 -c copy $2
 }
 
 dpkg-log-status-installed() {
@@ -843,7 +843,8 @@ acd() { # artsoft consult disconnect, opposite to acc bin/ script
 }
 
 ytdlp() {
-    yt-dlp -P "${2:-/tmp}" "$1"
+    mkdir -p /tmp/{send,sent}
+    yt-dlp -P "${2:-/tmp/send}" "$1"
 }
 
 il1() {
@@ -867,6 +868,10 @@ localhost() {
 sshaa5() {
     ssh "kamui@192.168.8.165"
 #    ssh "kamui@$(localhost $AA5_HOSTNAME)"
+}
+
+pic() { # pi connect
+    ssh "repo@${PI_IP}"
 }
 
 shutdown1s() {
