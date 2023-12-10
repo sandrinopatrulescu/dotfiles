@@ -124,6 +124,7 @@ alias generate_viewform_links_old="/mnt/e/Scratch/CurlPython2/generate_viewform_
 alias complete_forms="/mnt/e/Scratch/CurlPython2/complete_forms.py"
 alias forticonnect="title forti && fortivpnc; fortivpns"
 alias remminac="remmina -c /home/kamui/.local/share/remmina/group_rdp_artsoft-172_192-168-1-182.remmina"
+alias accz="acc 0" # artsoft consult connect wait zero seconds
 
 alias systemctl="_ systemctl"
 
@@ -198,6 +199,7 @@ alias greek='printf "\
 "'
 
 alias dpkgi="sudo dpkg -i"
+alias dpkgu="sudo dpkg -P" # purge
 alias keys='awk "{s=s \$0} END{print s}" /home/kamui/Desktop/keys.txt' # alias awk https://superuser.com/questions/696411/how-to-alias-an-awk-command
 
 alias sudoi="sudo -i"
@@ -247,6 +249,8 @@ alias yt-dlp-update="pip install yt-dlp -U"
 alias mkdirp="mkdir -p"
 
 alias anaconda='eval "$(/home/kamui/anaconda3/bin/conda shell.bash hook)"'
+alias blank="echo 'ㅤ' | tee >(xargs echo -n | xclip -selection clipboard -i);"
+alias ts="thunar /tmp/send " # tmp send -> open /tmp/send
 # }}}
 
 
