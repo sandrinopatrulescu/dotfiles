@@ -16,7 +16,7 @@ while true; do
     step="10"
     while [ "$i" -gt 0 ]; do
         message="[LOG][$(fdateiso)] Waiting ${i} seconds to connect to VPN...(til $(date -d "+${i} seconds" +'%H:%M:%S'))"
-        echo "${message}"
+#        echo "${message}"
         [ "$i" -le 25 ] && notify-send "acc" "${message}"
         modWithStep=$((i % step))
         [ "${modWithStep}" -ne 0 ] && step="${modWithStep}"
@@ -75,7 +75,7 @@ function waitToBoot() {
     while [ "$i" -gt 0 ]; do
         message="[LOG][$(fdateiso)] Waiting ${i} seconds to boot...(til $(date -d "+${i} seconds" +'%H:%M:%S'))"
         echo "${message}"
-        [ "$i" -le 25 ] && notify-send "acc" "${message}"
+        notify-send "acc" "${message}"
         modWithStep=$((i % step))
         [ "${modWithStep}" -ne 0 ] && step="${modWithStep}"
         sleep "${step}s"
