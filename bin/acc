@@ -9,16 +9,29 @@ source /home/kamui/.alias
 #nohup remmina >/dev/null 2>&1 & sleep 0.2s && wmctrl -a 'kamui@an5: ~'
 
 # while not connected to the vpn keep trying with a timeout
-while [ true ]; do
+while true; do
     echo "!!! Open phone and approve the connection !!!"
     acvc && break
-    sleep 37s
+    i="40"
+    step="10"
+    while [ "$i" -gt 0 ]; do
+        message="[LOG][$(fdateiso)] Waiting ${i} seconds to connect to VPN...(til $(date -d "+${i} seconds" +'%H:%M:%S'))"
+        echo "${message}"
+        [ "$i" -le 25 ] && notify-send "acc" "${message}"
+        modWithStep=$((i % step))
+        [ "${modWithStep}" -ne 0 ] && step="${modWithStep}"
+        sleep "${step}s"
+        i=$((i - step))
+        if [ "$i" -gt 25 ] && [ $((i % 10)) -eq 0 ]; then step=10; fi
+        if [ "$i" -le 25 ] && [ $((i % 5)) -eq 0 ]; then step=5; fi
+        [ "$i" -le 5 ] && step=1
+    done
 done
 
 sleep 1s
 
 # login to wol
-while [ true ]; do
+while true; do
     echo "[LOG][$(fdateiso)] Trying to login to WOL..."
     acwl && ac::internal::wl_ok && break
     sleep 5s
@@ -60,7 +73,9 @@ function waitToBoot() {
     step="$((bootWaitTime <= 25 ? 5 : 10))"
     step="$((bootWaitTime <= 5 ? 1 : 5))"
     while [ "$i" -gt 0 ]; do
-        echo "[LOG][$(fdateiso)] Waiting ${i} seconds to boot...(til $(date -d "+${i} seconds" +'%H:%M:%S'))"
+        message="[LOG][$(fdateiso)] Waiting ${i} seconds to boot...(til $(date -d "+${i} seconds" +'%H:%M:%S'))"
+        echo "${message}"
+        [ "$i" -le 25 ] && notify-send "acc" "${message}"
         modWithStep=$((i % step))
         [ "${modWithStep}" -ne 0 ] && step="${modWithStep}"
         sleep "${step}s"
