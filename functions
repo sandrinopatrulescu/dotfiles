@@ -890,6 +890,13 @@ shutdown1s() {
     cleanup
     shutdown +0
 }
+
+
+ba() { # imogen băbăbăbăbăbăbăbă
+    seq ${1:-8} | awk '{printf "bă"} END {printf "\n"}' |  tee >(xargs echo -n | xclip -selection clipboard -i)
+}
+
+
 # }}}
 
 psgrept() { # ps grep total
