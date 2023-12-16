@@ -38,8 +38,6 @@ alias msdn="/usr/lib/dotnet/dotnet" # microsoft dotnet
 export SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS=0 # tf2 monitor keep focus https://github.com/ValveSoftware/steam-for-linux/issues/786
 
 
-export AA5_HOSTNAME="AcerAspireV5-552G"
-
 # idk?
 . "$DOTS"/linux/functions.sh
 

@@ -871,12 +871,8 @@ localhosts() {
 }
 
 localhost() {
-    localhosts | grep $1 | awk '{ print $1 }'
-}
-
-sshaa5() {
-    ssh "kamui@192.168.8.165"
-#    ssh "kamui@$(localhost $AA5_HOSTNAME)"
+    [ -n "$1" ] || { echo "usage: $FUNCNAME <hostname>"; return 1; }
+    localhosts | grep "$1" | awk '{ print $1 }'
 }
 
 pic() { # pi connect
