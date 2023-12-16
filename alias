@@ -251,6 +251,11 @@ alias mkdirp="mkdir -p"
 alias anaconda='eval "$(/home/kamui/anaconda3/bin/conda shell.bash hook)"'
 alias blank="echo 'ㅤ' | tee >(xargs echo -n | xclip -selection clipboard -i);"
 alias ts="thunar /tmp/send " # tmp send -> open /tmp/send
+
+alias aa5='ssh kamui@$(localhost $AA5_HOSTNAME)'
+alias aa51='ssh kamui@$AA5_IP'
+alias an5='ssh kamui@$(localhost $AN5_HOSTNAME)'
+alias an51='ssh kamui@$AN5_IP'
 # }}}
 
 
@@ -474,7 +479,8 @@ alias ~="cd ~"
 alias cd.='cd $(readlink -f .)' # [1] Go to real dir (i.e. if current dir is linked)
 
 alias dots='cd $(readlink -f $DOTS)'
-### }}} 
+alias dotss='cd $(readlink -f $DOTS_SECRETS)'
+### }}}
 
 ### Software {{{
 #alias javac="$JAVA_HOME/bin/javac"
