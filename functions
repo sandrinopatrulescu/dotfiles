@@ -848,6 +848,7 @@ acds() { # artsoft consult disconnect, w/o skype
 acd() { # artsoft consult disconnect, opposite to acc bin/ script
     killall -15 skypeforlinux
     acds
+    exit
 }
 
 ytdlp() {
@@ -1256,15 +1257,19 @@ big() { # display files/dirs sorted in reverse by size
     #  big <dir_followed_by_slash>
     #
     # !!! add / (slash) after directory
-    date
+    local start=`date +%s%N`
     du -sch ${1}{.[^.],}* | sort -h
+    local end=`date +%s%N`
+    echo "Execution time was $(echo "scale=9; ($end - $start) / 10^6" | bc | sed -E 's@(\.[0-9]{3}).*@\1@') miliseconds."
 }
 
 
 sbig() { # same as big() but using sudo
     # usage: same as for big()
-    date
+    local start=`date +%s%N`
     sudo du -sch ${1}{.[^.],}* | sort -h
+    local end=`date +%s%N`
+    echo "Execution time was $(echo "scale=9; ($end - $start) / 10^6" | bc | sed -E 's@(\.[0-9]{3}).*@\1@') miliseconds."
 }
 
 # example:
