@@ -103,8 +103,17 @@ __prompt_command() {
 
     [ $exitCode != 0 ] && exitCodeInPrompt=" ${Red}${exitCode}${RCol}"
 
+    # python virtual env, however it comes to be
+    if [ -z ${VIRTUAL_ENV+x} ]
+    then
+    VENV_NOTICE=""
+    else
+    VENV_NOTICE="\[\e[95m\]($(basename "$VIRTUAL_ENV"))\[\e[00m\] "
+    fi
+
+
     local branchName="\[\e[33m\]\$(__git_ps1)\[\e[00m\]"
-    PS1="\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\W\[\033[00m\]${branchName}${exitCodeInPrompt}\$ "
+    PS1="$VENV_NOTICE\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\W\[\033[00m\]${branchName}${exitCodeInPrompt}\$ "
 }
 
 export BROWSER=/usr/bin/google-chrome
