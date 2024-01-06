@@ -215,7 +215,6 @@ alias inximintforums="inxi -Fxxxrz"
 
 alias codec-audio="cat /proc/asound/card*/codec* | grep Codec"
 alias docker="sudo docker"
-alias python="python3"
 
 alias vir="vi -R"
 alias vis="sudo vi"
