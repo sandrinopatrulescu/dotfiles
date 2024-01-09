@@ -18,7 +18,7 @@ else
     cd "$DOTS" || { repeat 98 notify-send "dotfiles UPDATE" "COULD NOT FIND REPO PATH"; exit; }
     # check if the repository has changed
     #if true; then
-    if [[ $(git fetch --dry-run 2>&1 | grep -c -E '^\s*[a-zA-Z]') -gt 0 ]]; then
+    if [[ $(git fetch --dry-run 2>&1 | grep -v "X11 forwarding" | grep -c -E '^\s*[a-zA-Z]') -gt 0 ]]; then
         # if there are changes, display a notification
         # repeat command to update the notification
         repeat 98 notify-send "dotfiles UPDATE" "Git repository has changed\t\t\t"
