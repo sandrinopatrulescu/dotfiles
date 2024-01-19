@@ -255,6 +255,12 @@ alias aa5='ssh kamui@$(localhost $AA5_HOSTNAME)'
 alias aa51='ssh kamui@$AA5_IP'
 alias an5='ssh kamui@$(localhost $AN5_HOSTNAME)'
 alias an51='ssh kamui@$AN5_IP'
+
+alias battery='cat /sys/class/power_supply/BAT1/capacity' # battery percentage -> https://askubuntu.com/a/309146
+# while [ "$(battery)" -gt 4 ]; do echo "battery at $(battery)%. sleeping 60s"; sleep 60; done && shutdown now
+
+alias emulatorl='emulator -list-avds'
+alias emulator1='emulator @Small_Phone_API_30'
 # }}}
 
 
