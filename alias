@@ -261,6 +261,8 @@ alias battery='cat /sys/class/power_supply/BAT1/capacity' # battery percentage -
 
 alias emulatorl='emulator -list-avds'
 alias emulator1='emulator @Small_Phone_API_30'
+
+alias release="cat /etc/*release"
 # }}}
 
 
