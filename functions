@@ -894,6 +894,21 @@ ba() { # imogen băbăbăbăbăbăbăbă
 }
 
 
+
+git-commit-date() {
+    # git change commit date -> https://stackoverflow.com/a/454750/17299754
+    local revision="$1"
+    local date_="$2" # format: ISO or "2021-08-01 12:00:00" (https://git-scm.com/docs/git-commit#_date_formats)
+
+    local param="$(echo 'if [ $GIT_COMMIT = <REVISION> ]
+                                 then
+                                     export GIT_AUTHOR_DATE="<DATE>"
+                                     export GIT_COMMITTER_DATE="<DATE>"
+                                 fi' | sed -E "s@<REVISION>@$revision@g;s@<DATE>@$date_@g")"
+
+    echo $param
+    git filter-branch --env-filter "$param"
+}
 # }}}
 
 psgrept() { # ps grep total
