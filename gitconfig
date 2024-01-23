@@ -41,3 +41,5 @@
 ;       https://gist.github.com/jexchan/2351996?permalink_comment_id=991491#gistcomment-991491 ->
 ;       https://stackoverflow.com/questions/7927750/specify-an-ssh-key-for-git-push-for-a-given-domain ->
 ;       https://stackoverflow.com/a/58550269/17299754
+[safe]
+	directory = /home/andrei/andrei_thesis
