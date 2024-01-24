@@ -1787,8 +1787,8 @@ __gcfgu() {
       ;;
     esac
 
-## debug print
-#    for key in ${!__user[@]}
+    # debug print
+#    for key in "${!__user[@]}"
 #    do
 #      echo "${key}, ${__user[${key}]}"
 #    done
@@ -1796,14 +1796,15 @@ __gcfgu() {
 
 gcfgu() { # git config user local
     local -A user
-    __gcfgu $1 user || return $?
-    git config --local user.name user["username"]
-    git config --local user.email user["email"]
+    __gcfgu "$1" user || return $?
+
+    git config --local user.name "${user["username"]}"
+    git config --local user.email "${user["email"]}"
 }
 
 gcfgup() { # git config user local print
     local -A user
-    __gcfgu $1 user || return $?
+    __gcfgu "$1" user || return $?
     echo "git config --local user.name ${user["username"]}"
     echo "git config --local user.email ${user["email"]}"
 }
