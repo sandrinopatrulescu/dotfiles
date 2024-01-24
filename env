@@ -75,9 +75,12 @@ export HISTTIMEFORMAT="%F %T "          ## Adds time to history
 
 export DOTNET_CLI_TELEMETRY_OPTOUT=1 # for dotnet https://imgur.com/a/h2kpPcT
 
+
+# Switches
+export CLEANUP_ENABLED=false
+
+
 # Variables
-
-
 
 export EDITOR=vim
 export BROWSER=/usr/bin/google-chrome

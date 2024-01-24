@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.1
+Type=Application
+Name=emulator1
+Comment=
+Icon=
+Exec=/home/kamui/Android/Sdk/emulator/emulator @Small_Phone_API_30
+Actions=

@@ -4,5 +4,5 @@ Type=Application
 Name=scrcpy
 Comment=
 Icon=
-Exec=scrcpy -m1024
+Exec=scrcpy -m1024 -s L2N4C19712034847
 Actions=
