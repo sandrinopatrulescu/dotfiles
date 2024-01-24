@@ -48,7 +48,7 @@ dpkg -s vim &> /dev/null; [ $? -eq 0 ] || echo "WARNING: vim not installed";
 
 
 ### dircolors
-grep -q "LS_COLORS" ~/.env || { dircolors -b >> ~/.env && echo 'export LS_COLORS' >> ~/.env; }
+#grep -q "LS_COLORS" ~/.env || { dircolors -b >> ~/.env && echo 'export LS_COLORS' >> ~/.env; }
 
 ##
 

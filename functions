@@ -923,6 +923,7 @@ discord-update() {
     local basename="$(ls -1 "$location")"
     [ "$(echo "$basename" | wc -l)" -eq 1 ] || { echo "Error: more than one file in $location"; return 1; }
 
+    # NOTE that -R might be dangerous but this is the method that I found to work
     sudo dpkg -R -i "${location}"
 }
 
