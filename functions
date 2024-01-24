@@ -1518,6 +1518,7 @@ __cleanup-dir() {
 
 
 cleanup() { # remove temporary files
+  [ "$CLEANUP_ENABLED" = false ] && { echo "CLEANUP_ENABLED is false"; return;}
   # TODO: idea: export the multimap
   declare -A multimap
   local separator="|"

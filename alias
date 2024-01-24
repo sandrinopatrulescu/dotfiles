@@ -162,7 +162,7 @@ alias umount="sudo umount"
 
 alias earthrise="cd /e/Volunteering/Earthrise"
 alias hermes="cd /e/Volunteering/Hermes"
-alias scrcpy="scrcpy -m1024"
+alias scrcpy="scrcpy -m1024 -s L2N4C19712034847"
 alias realpath="realpath -e" # find path of file
 alias sfind="sudo find"
 alias sfindr="sudo find /"

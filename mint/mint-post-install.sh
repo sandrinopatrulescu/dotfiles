@@ -191,7 +191,8 @@ for dir in ./desktop-entries/*/; do
 
   dirname="$(basename "$dir")"
   xdg-desktop-menu install --novendor "$dir"/"$dirname".directory "$dir"/*.desktop
-  # one-liner: name="scrcpy"; dirname="main"; dir=/mnt/e/dotfiles/mint/desktop-entries/"$dirname"; xdg-desktop-menu install --novendor "$dir"/"$dirname".directory "$dir"/"$name".desktop
+  # one-liner:
+  # name="scrcpy"; dirname="main"; dir=/mnt/e/dotfiles/mint/desktop-entries/"$dirname"; xdg-desktop-menu install --novendor "$dir"/"$dirname".directory "$dir"/"$name".desktop
 done
 
 echo "# 3.10 create system restore point 2"
