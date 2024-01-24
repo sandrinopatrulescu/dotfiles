@@ -50,3 +50,15 @@ replace in functions java and javac with $JAVA_HOME/java...
 Fix assumings 
 
 Written @ 2022-01-10 22:05
+
+
+# .idea/vcs.xml
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../dotfiles-secrets" vcs="Git" />
+  </component>
+</project>
+```
