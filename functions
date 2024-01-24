@@ -909,6 +909,23 @@ git-commit-date() {
     echo $param
     git filter-branch --env-filter "$param"
 }
+
+discord-update() {
+    local url="https://discord.com/api/download/stable?platform=linux&format=deb"
+    local currentISODate="$(date -Ins | sed -E 's@.{6}$@@;s@,@.@g;s@:@-@g;s@T@_@')" # up to nanoseconds
+    local location="/tmp/$currentISODate"
+
+    echo "Downloading discord from $url to $location"
+
+    # wget default filename -> https://unix.stackexchange.com/a/453471/497730 -> --content-disposition
+    wget --content-disposition --directory-prefix "$location" "$url" || { echo "Error: wget failed"; return 1; }
+
+    local basename="$(ls -1 "$location")"
+    [ "$(echo "$basename" | wc -l)" -eq 1 ] || { echo "Error: more than one file in $location"; return 1; }
+
+    sudo dpkg -R -i "${location}"
+}
+
 # }}}
 
 psgrept() { # ps grep total
