@@ -150,6 +150,22 @@ try_git_clone() {
     echo "URL: $url"
     git clone "${url}"
 }
+
+btop() { # bachelor thesis open
+    # https://askubuntu.com/questions/41093/is-there-a-command-to-go-a-specific-workspace
+    wmctrl -s 1 && xfce4-terminal &&
+    (google-chrome-beta > /dev/null 2>&1 &)
+    sleep 0.25 && (code > /dev/null 2>&1 &)
+    (rider > /dev/null 2>&1 &)
+    sleep 4 && thunar "/e/torrents-downloads/Udemy-Complete.guide.to.building.an.app.with.Net.Core.and.React/"
+}
+
+btcl() { # bachelor thesis close
+    for window_id in $(wmctrl -l -x | awk -F' ' '$2 == 1 {print $1}'); do
+        echo "Closing window $window_id: $(xprop -id "$window_id" WM_NAME)"
+        wmctrl -ic "$window_id"
+    done
+}
 # }}}
 
     ### Uncategorized ### {{{
