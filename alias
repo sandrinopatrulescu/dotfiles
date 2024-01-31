@@ -268,6 +268,7 @@ alias release="cat /etc/*release"
 alias dots-clone="git clone https://github.com/sandrinopatrulescu/dotfiles"
 alias dotss-clone='git clone $DOTS_SECRETS_URL'
 alias cdgit="cd /e/git"
+alias tb="nc termbin.com 9999" # https://termbin.com/
 # }}}
 
 

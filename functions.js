@@ -140,3 +140,34 @@ function youtubePlayAllFromChannel() {
     var channelID = findVal(ytInitialData, 'browseId');
     window.location.replace("https://youtube.com/playlist?list=" + channelID.replace("UC", "UU"));
 }
+
+function exportPhoneChromeTabs() {
+    function exportArrayToFile(array) {
+        /*Create a Blob containing the array as text*/
+        const blob = new Blob([JSON.stringify(array, null, 4)], {type: 'text/plain'});
+
+        /*Create a link element to trigger the download*/
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+
+        /*NOTE that the date is UTC*/
+        const dateFormatted = new Date().toISOString()
+            .replace('T', '_')
+            .replace(new RegExp(":", "g"), '-');
+        link.download = `${dateFormatted}.json`;
+
+        /*Trigger a click event on the link to prompt the user to save the file*/
+        link.click();
+
+        /*Clean up by revoking the Blob URL*/
+        URL.revokeObjectURL(link.href);
+    }
+
+    const anchorNodeList = document.querySelector("#history-app").shadowRoot
+        .querySelector("#synced-devices").shadowRoot
+        .querySelector("#synced-device-list > history-synced-device-card:nth-child(1)").shadowRoot
+        .querySelector("#tab-item-list").querySelectorAll("a");
+    const anchorObjectArray = Array.from(anchorNodeList)
+        .map(a => new Object({title: a.title, href: a.href}));
+    exportArrayToFile(anchorObjectArray);
+}
