@@ -21,6 +21,7 @@ alias rsync="rsync -vh" # [1]
 
 # Miscellaneous
 alias speedtest="wget -O /dev/null http://speed.transip.nl/100mb.bin"
+alias speedtest1g="wget -O /dev/null http://speed.transip.nl/1000mb.bin"
 alias task="echo 'date; time <task> | tee --append \$SCRATCH/outputs/output\$(fdate).txt; date'"
 # file_var="$SCRATCH/outputs/output$(fdate).txt"; date >> "$file_var"; time <task> | tee --append "$file_var"; date >> "$file_var"
 #   note that output of time still isn't inside the text file; TODO: find a better method
@@ -119,8 +120,8 @@ alias fortivpn="/opt/forticlient/fortivpn"
 alias fortivpns="fortivpn status"
 alias fortivpnc="fortivpn connect artsoft_vpn -u sandrinopatrulescu -p -s -w"
 alias fortivpnd="fortivpn disconnect"
-alias generate_viewform_links="/mnt/e/Scratch/CurlPython2/generate_viewform_links.py"
-alias generate_viewform_links_old="/mnt/e/Scratch/CurlPython2/generate_viewform_links_old.py"
+alias generate_viewform_links="/mnt/e/git/ac-all/CurlPython2/generate_viewform_links.py"
+alias generate_viewform_links_old="/mnt/e/git/ac-all/CurlPython2/generate_viewform_links_old.py"
 alias complete_forms="/mnt/e/Scratch/CurlPython2/complete_forms.py"
 alias forticonnect="title forti && fortivpnc; fortivpns"
 alias remminac="remmina -c /home/kamui/.local/share/remmina/group_rdp_artsoft-172_192-168-1-182.remmina"

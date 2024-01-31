@@ -157,7 +157,7 @@ btop() { # bachelor thesis open
     (google-chrome-beta > /dev/null 2>&1 &)
     sleep 0.25 && (code > /dev/null 2>&1 &)
     (rider > /dev/null 2>&1 &)
-    sleep 4 && thunar "/e/torrents-downloads/Udemy-Complete.guide.to.building.an.app.with.Net.Core.and.React/"
+    sleep 5 && thunar "/e/torrents-downloads/Udemy-Complete.guide.to.building.an.app.with.Net.Core.and.React/"
 }
 
 btcl() { # bachelor thesis close
