@@ -7,7 +7,7 @@ source /home/kamui/.functions
 source /home/kamui/.alias
 
 #nohup remmina >/dev/null 2>&1 & sleep 0.2s && wmctrl -a 'kamui@an5: ~'
-skypeforlinux && sleep 2s && wmctrl -r 'Skype' -t 2
+skypeforlinux && sleep 2s && wmctrl -rF 'Skype' -t 2
 
 # while not connected to the vpn keep trying with a timeout
 while true; do
