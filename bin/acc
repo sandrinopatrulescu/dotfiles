@@ -6,8 +6,10 @@ shopt -s expand_aliases
 source /home/kamui/.functions
 source /home/kamui/.alias
 
+AC_WORKSPACE_INDEX=3
+
 #nohup remmina >/dev/null 2>&1 & sleep 0.2s && wmctrl -a 'kamui@an5: ~'
-skypeforlinux && sleep 2s && wmctrl -rF 'Skype' -t 2
+skypeforlinux && sleep 2s && wmctrl -rF 'Skype' -t $AC_WORKSPACE_INDEX
 
 # while not connected to the vpn keep trying with a timeout
 while true; do
@@ -98,8 +100,8 @@ function waitToBoot() {
 #    }
 }
 
-nohup remmina -c /home/kamui/.local/share/remmina/group_rdp_artsoft-172_10-79-254-172.remmina >/dev/null 2>&1 & # [1]
-sleep 3s && wmctrl -r 'Artsoft 172' -t 2
+nohup remmina -c /home/kamui/.local/share/remmina/group_rdp_artsoft-172_10-79-254-172.remmina `>/dev/null 2>&1` & # [1]
+sleep 3s && wmctrl -r 'Artsoft 172' -t $AC_WORKSPACE_INDEX
 
 
 # [1] https://stackoverflow.com/questions/9190151/how-to-run-a-command-in-the-background-and-get-no-output#comment133149106_29547803
