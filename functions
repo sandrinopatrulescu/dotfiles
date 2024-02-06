@@ -960,6 +960,10 @@ network-devices() {
 network-cards() {
     sudo lshw -C network
 }
+
+pare() { # panel restart
+    kill -15 $(pgrep xfce4-panel) && (xfce4-panel >/dev/null 2>&1 &)
+}
 # }}}
 
 psgrept() { # ps grep total
