@@ -102,6 +102,10 @@ concat-mp4() { # merge mp4 files using ffmpeg
 
 
 screen-brightness() {
+  [ "$#" -eq 0 ] && {
+      xrandr --verbose | grep -i brightness;
+      return
+  }
   pkill -9 redshift
     # source: linux cant change display brightness https://www.debugpoint.com/F2-ways-fix-laptop-brightness-problem-ubuntu-linux/
   xrandr --output eDP-1-1 --brightness $1
