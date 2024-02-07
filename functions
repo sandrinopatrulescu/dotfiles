@@ -155,20 +155,62 @@ try_git_clone() {
     git clone "${url}"
 }
 
+startonw() # start on workspace
+{
+    local workspaceIdx="$1"
+    local waitTime="$2"
+    local windowName="$3"
+    shift 3
+
+    ("$@" > /dev/null 2>&1 &)
+
+    local pid=$([ -n "$windowName" ] && wmctrl -lp | \grep "$windowName" | awk '{print $3}' | tail -1)
+    while [ -z "$pid" ]; do
+        if [ -n "$windowName" ]; then
+            pid=$(wmctrl -lp | \grep "$windowName" | awk '{print $3}' | tail -1)
+        else
+            for pid_candidate in $(pidof "$@" | tr ' ' '\n' | sort -n | head -1; ps wup "$(pgrep -f "$*")" | tail -1 | awk '{print $2}'); do
+                [ -n "$pid_candidate" ] && {
+                    pid="$pid_candidate"
+                    break 2
+                }
+            done
+        fi
+        sleep 1
+        echo "(while) $pid"
+    done
+
+    local windowNumber=$(wmctrl -lp | grep "$pid" | awk '{print $1}')
+    while [ -z "$windowNumber" ]; do
+        sleep 0.5
+        windowNumber=$(wmctrl -lp | grep "$pid" | awk '{print $1}')
+    done
+
+    sleep "$waitTime" && wmctrl -t $workspaceIdx -i -r $windowNumber
+}
+
 btop() { # bachelor thesis open
+    # test run w/: "src; set -x; btop; set +x"
+
     # https://askubuntu.com/questions/41093/is-there-a-command-to-go-a-specific-workspace
-    wmctrl -s 1 && xfce4-terminal &&
-    (google-chrome-beta > /dev/null 2>&1 &)
-    sleep 0.25 && (code > /dev/null 2>&1 &)
-    (rider > /dev/null 2>&1 &)
-    sleep 5 && thunar "/e/torrents-downloads/Udemy-Complete.guide.to.building.an.app.with.Net.Core.and.React/"
+
+    startonw 1 1.0 "" /usr/share/code/code
+    startonw 1 0.0 "Udemy-Complete.guide.to.building.an.app.with.Net.Core.and.React - Thunar" thunar "/e/torrents-downloads/Udemy-Complete.guide.to.building.an.app.with.Net.Core.and.React/"
+
+    startonw 4 0.5 "" /opt/google/chrome-beta/chrome
+
+    startonw 2 0.0 "Reactivities – /mnt/e/Scratch/bt/neil-dotnet-react/Reactivities/README.md" /bin/bash /home/kamui/.local/share/JetBrains/Toolbox/scripts/rider
+    startonw 2 0.0 "Udemy-Complete.guide.to.building.an.app.with.Net.Core.and.React - Thunar" thunar "/e/torrents-downloads/Udemy-Complete.guide.to.building.an.app.with.Net.Core.and.React/"
+
+    wmctrl -s 1
 }
 
 btcl() { # bachelor thesis close
-    for window_id in $(wmctrl -l -x | awk -F' ' '$2 == 1 {print $1}'); do
+    for window_id in $(wmctrl -l -x | awk -F' ' '$2 ~ /^[124]$/ {print $1}'); do
         echo "Closing window $window_id: $(xprop -id "$window_id" WM_NAME)"
         wmctrl -ic "$window_id"
     done
+    wmctrl -s 2
 }
 # }}}
 
@@ -962,7 +1004,8 @@ network-cards() {
 }
 
 pare() { # panel restart
-    kill -15 $(pgrep xfce4-panel) && (xfce4-panel >/dev/null 2>&1 &)
+    kill -15 "$(pgrep xfce4-panel)"
+    (xfce4-panel >/dev/null 2>&1 &)
 }
 # }}}
 
