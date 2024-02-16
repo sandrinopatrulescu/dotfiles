@@ -177,7 +177,6 @@ startonw() # start on workspace
             done
         fi
         sleep 1
-        echo "(while) $pid"
     done
 
     local windowNumber=$(wmctrl -lp | grep "$pid" | awk '{print $1}')
