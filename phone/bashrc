@@ -1,0 +1,12 @@
+
+
+alias src="source ~/.bashrc"
+alias srcu="curl -o .bashrc https://raw.githubusercontent.com/sandrinopatrulescu/dotfiles/main/phone/bashrc" # src update
+
+if [ ! -f "$HOME/.secrets" ]; then
+    echo "$HOME/.secrets file not found"
+else
+    source "$HOME/.secrets"
+    alias an5='ssh kamui@${AN5_IP}' # ssh an5
+    alias an5w='ssh -p ${SSH_PORT} kamui@${WAN_IP}' # ssh an5 WAN
+fi
