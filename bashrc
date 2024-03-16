@@ -120,7 +120,7 @@ fi
 
 # kamui
 
-for file in ~/dotfiles/{"secrets","env","alias","functions"};
+for file in ~/dotfiles/{"secrets","env","alias","functions","functions_cross"};
 do
     source ${file}
 done
