@@ -11,3 +11,16 @@ ln -s dotfiles-secrets/secrets .secrets
 
 git clone https://github.com/sandrinopatrulescu/dotfiles
 ln -s dotfiles/phone/bashrc .bashrc
+
+
+# auto start sshd
+# source: termux auto start sshd -> https://github.com/termux/termux-packages/discussions/9586
+bootFile="/data/data/com.termux/files/home/.termux/boot"
+
+if [ -f "$bootFile" ]; then
+    echo "Boot file already exists"
+else
+    echo '#!/data/data/com.termux/files/usr/bin/sh' > $bootFile
+    echo "termux-wake-lock" > $bootFile
+    echo "sshd" > $bootFile
+fi
