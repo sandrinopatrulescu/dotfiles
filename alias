@@ -135,6 +135,7 @@ alias gsettings-reset-mousepad='gsettings list-schemas | grep -i mousepad | xarg
 alias df1="df -h | grep -v tmpfs"
 
 alias phone="cd /run/user/1000/gvfs/mtp:host=HUAWEI_MAR-LX1A_L2N4C19712034847"
+alias phonessh='ssh -p ${PHONE_SSH_PORT} ${PHONE_USER}@${PHONE_IP}'
 
 alias scu="systemctl --machine=$USER@.host --user " # systemctl user
 alias pulseaudioc="pulseaudio --check" # pulseadio check

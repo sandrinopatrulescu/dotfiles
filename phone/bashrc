@@ -1,12 +1,17 @@
 
 
 alias src="source ~/.bashrc"
-alias srcu="curl -o .bashrc https://raw.githubusercontent.com/sandrinopatrulescu/dotfiles/main/phone/bashrc" # src update
 
-if [ ! -f "$HOME/.secrets" ]; then
-    echo "$HOME/.secrets file not found"
-else
-    source "$HOME/.secrets"
-    alias an5='ssh kamui@${AN5_IP}' # ssh an5
-    alias an5w='ssh -p ${SSH_PORT} kamui@${WAN_IP}' # ssh an5 WAN
-fi
+function srcu() {
+    cd dotfiles && git pull && cd ..
+    cd dotfiles-secrets && git pull && cd ..
+}
+
+source "$HOME/.secrets"
+source "$HOME/dotfiles/functions_cross"
+
+alias an5='ssh kamui@${AN5_IP}' # ssh an5
+alias an5w='ssh -p ${SSH_PORT} kamui@$(wan_ip)' # ssh an5 WAN
+
+alias ls='ls -A'
+alias ll='ls -l'

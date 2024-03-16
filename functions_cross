@@ -1,0 +1,9 @@
+
+
+function wan_ip() {
+    if $CAN_PORT_FORWARD; then
+        nslookup "harusame.ddns.net" | awk '/^Address: / {print $2}'
+    else
+        echo "$WAN_IP"
+    fi
+}
