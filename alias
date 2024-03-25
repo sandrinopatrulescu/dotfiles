@@ -111,7 +111,8 @@ alias compileandruncwiththreads="echo 'f=2; gcc -Wall -g -o \${f}.out \$f.c -lpt
 
 alias sl="cd /sl"
 
-alias ls="ls -v"
+alias ls="ls -vA"
+alias lsa="ls -A"
 alias lns="ln -s"
 
 
