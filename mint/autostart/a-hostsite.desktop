@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=a-hostsite
+Comment=
+Exec=/mnt/e/dotfiles/bin/hostsite.sh
+OnlyShowIn=XFCE;
+StartupNotify=false
+Terminal=false
+Hidden=false
+
