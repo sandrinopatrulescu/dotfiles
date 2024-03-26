@@ -274,6 +274,7 @@ alias cdgit="cd /e/git"
 alias tb="nc termbin.com 9999" # https://termbin.com/
 alias lock-keys-info="xset q" # linux terminal check whether caps lock is on -> https://askubuntu.com/questions/541784/check-lock-keys-state-from-command-line
 alias cal-row='for ((i = 1; i <= 12; i++)); do cal $i $(date "+%Y"); done' # current year's months on a column
+alias switchuser="dm-tool switch-to-greeter"
 # }}}
 
 
