@@ -266,7 +266,7 @@ alias battery='cat /sys/class/power_supply/BAT1/capacity' # battery percentage -
 alias emulatorl='emulator -list-avds'
 alias emulator1='emulator @Small_Phone_API_30'
 
-alias release="cat /etc/*release"
+alias release="echo -e '\t/etc/os-release'; cat /etc/os-release; echo -e '\n\t/etc/lsb-release'; cat /etc/lsb-release; echo -e '\n\t/etc/upstream-release/lsb-release'; cat /etc/upstream-release/lsb-release"
 
 alias dots-clone="git clone https://github.com/sandrinopatrulescu/dotfiles"
 alias dotss-clone='git clone $DOTS_SECRETS_URL'
