@@ -1006,6 +1006,11 @@ pare() { # panel restart
     kill -15 "$(pgrep xfce4-panel)"
     (xfce4-panel >/dev/null 2>&1 &)
 }
+
+hostfilestmp() {
+    [ -d /tmp/public ] || mkdir /tmp/public
+    hostfiles /tmp/public
+}
 # }}}
 
 psgrept() { # ps grep total
