@@ -949,6 +949,10 @@ shutdown1s() {
     shutdown +0
 }
 
+shutdown1m() {
+    shutdown1s $((60 * $1))
+}
+
 
 ba() { # imogen băbăbăbăbăbăbăbă
     seq ${1:-8} | awk '{printf "bă"} END {printf "\n"}' |  tee >(xargs echo -n | xclip -selection clipboard -i)
@@ -1010,6 +1014,22 @@ pare() { # panel restart
 hostfilestmp() {
     [ -d /tmp/public ] || mkdir /tmp/public
     hostfiles /tmp/public
+}
+
+screenlocktimetoggle() {
+    # monitoring changes: xfconf-query -mv -c xfce4-power-manager
+    # find current values: xfconf-query -cv xfce4-power-manager -l | grep blank
+    local enabled=$1
+
+    if [ "$enabled" = "true" ]; then
+        xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/blank-on-ac -s 5
+        xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/blank-on-battery -s 5
+    else
+        xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/blank-on-ac -s 0
+        xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/blank-on-battery -s 0
+        enabled=false
+    fi
+    echo "Screen lock time is now $enabled"
 }
 # }}}
 
