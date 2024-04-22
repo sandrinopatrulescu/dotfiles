@@ -123,7 +123,7 @@ __prompt_command() {
     # set the new prompt
     PS1="${VENV_NOTICE}${basePS1}${branchName}${exitCodeInPrompt}$ "
 
-    wmctrl -t $(($(xfconf-query -c xfwm4 -p /general/workspace_count) - 1)) -r "Passwords.kdbx - KeePassXC"
+    command -v wmctrl && wmctrl -t $(($(xfconf-query -c xfwm4 -p /general/workspace_count) - 1)) -r "Passwords.kdbx - KeePassXC"
     # reset xtrace to saved status
     eval "$setXStatus"
 }
