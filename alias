@@ -257,7 +257,7 @@ alias ts="thunar /tmp/send " # tmp send -> open /tmp/send
 alias aa5='ssh kamui@$(localhost $AA5_HOSTNAME)'
 alias aa51='ssh kamui@$AA5_IP'
 alias an5='ssh kamui@$(localhost $AN5_HOSTNAME)'
-alias an5w='ssh -p ${SSH_PORT} kamui@${WAN_IP}' # ssh an5 WAN
+alias an5w='ssh kamui@${WAN_IP}' # ssh an5 WAN
 alias an51='ssh kamui@$AN5_IP'
 
 alias battery='cat /sys/class/power_supply/BAT1/capacity' # battery percentage -> https://askubuntu.com/a/309146

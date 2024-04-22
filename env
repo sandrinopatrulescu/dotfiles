@@ -11,6 +11,8 @@ all_in_1="2lazy2dealwith Torrents Downloaded_Music_To_move_to_Phone_and_Mega_and
 export DISTRIBUTION=LL6_2022-07-24_00-34-23
 export DISTRIBUTION_PATH="/mnt/e/FSs/${DISTRIBUTION}"
 
+export FLYCTL_INSTALL="/home/kamui/.fly"
+export PATH="$FLYCTL_INSTALL/bin:$PATH"
 
 # Exports
 export DOTS="/mnt/e/dotfiles"
