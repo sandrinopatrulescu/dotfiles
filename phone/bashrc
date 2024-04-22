@@ -11,7 +11,9 @@ source "$HOME/.secrets"
 source "$HOME/dotfiles/functions_cross"
 
 alias an5='ssh kamui@${AN5_IP}' # ssh an5
+alias an5v='an5 -v' # ssh an5 verbose
 alias an5w='ssh kamui@$(wan_ip)' # ssh an5 WAN
+alias an5wv='an5w -v' # ssh an5 WAN verbose
 
 alias ls='ls -A'
 alias ll='ls -l'
