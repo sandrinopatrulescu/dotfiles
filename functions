@@ -1031,6 +1031,19 @@ screenlocktimetoggle() {
     fi
     echo "Screen lock time is now $enabled"
 }
+
+login-to-blomp() {
+    for line in $(cat "$SECRETS/$BLOMP_ACCOUNTS_BASENAME"); do
+        email=$(echo "$line" | cut -d, -f1)
+        password=$(echo "$line" | cut -d, -f2)
+        echo "Logging in as $email"
+        curl --location 'https://dashboard.blomp.com/authorize' \
+                 --header 'Content-Type: application/x-www-form-urlencoded' \
+                 --data-urlencode "email=$email" \
+                 --data-urlencode "password=$password" \
+                 --data-urlencode 'login=login'
+    done
+}
 # }}}
 
 psgrept() { # ps grep total
