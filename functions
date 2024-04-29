@@ -1034,7 +1034,6 @@ screenlocktimetoggle() {
 
 login-to-blomp() {
     # change to latest blomp dir: cd "/tmp/blomp/$(\ls /tmp/blomp/ | tail -1)"
-    # find succeeding: find /tmp/blomp/ -iname "*.html" -type f -size +0b -exec ls -l {} \;
     local timeStamp="$(date +%Y-%m-%d_%H-%M-%S)"
     local blompBaseDir="/tmp/blomp/${timeStamp}/"
     mkdir -p "${blompBaseDir}" || { echo "Error: failed to create directory ${blompBaseDir}"; return 1; }
@@ -1063,6 +1062,18 @@ login-to-blomp-retry() {
         echo "Sleeping for ${timeToSleep}"; echo; echo; echo
         sleep "${timeToSleep}"
     done
+}
+
+login-to-blomp-check() {
+    # run with: login-to-blomp-check s
+    #       to use test file
+    local checkTestFile="/tmp/blomp/check-test.html"
+    if [ "$1" == "s" ]; then
+        [ -s "${checkTestFile}" ] || echo 'hello' >> "${checkTestFile}"
+    else
+        [ -f "${checkTestFile}" ] && rm "${checkTestFile}"
+    fi
+    find /tmp/blomp/ -iname "*.html" -type f -size +0b -exec ls -l {} \;
 }
 
 # }}}
