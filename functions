@@ -1033,17 +1033,38 @@ screenlocktimetoggle() {
 }
 
 login-to-blomp() {
+    # change to latest blomp dir: cd "/tmp/blomp/$(\ls /tmp/blomp/ | tail -1)"
+    # find succeeding: find /tmp/blomp/ -iname "*.html" -type f -size +0b -exec ls -l {} \;
+    local timeStamp="$(date +%Y-%m-%d_%H-%M-%S)"
+    local blompBaseDir="/tmp/blomp/${timeStamp}/"
+    mkdir -p "${blompBaseDir}" || { echo "Error: failed to create directory ${blompBaseDir}"; return 1; }
+
     for line in $(cat "$SECRETS/$BLOMP_ACCOUNTS_BASENAME"); do
         email=$(echo "$line" | cut -d, -f1)
         password=$(echo "$line" | cut -d, -f2)
+        cookie="${blompBaseDir}/cookie_${email}.txt"
         echo "Logging in as $email"
-        curl --location 'https://dashboard.blomp.com/authorize' \
+
+        curl --cookie "${cookie}" --cookie-jar "${cookie}" \
+                 --location 'https://dashboard.blomp.com/authorize' \
                  --header 'Content-Type: application/x-www-form-urlencoded' \
                  --data-urlencode "email=$email" \
                  --data-urlencode "password=$password" \
-                 --data-urlencode 'login=login'
+                 --data-urlencode 'login=login' | tee -a "${blompBaseDir}/login_output_${email}.html"
     done
 }
+
+login-to-blomp-retry() {
+    local timeToSleep="${1:-30}m"
+    local retries=0
+    while :; do
+        echo "Retry #$((retries++))"
+        login-to-blomp
+        echo "Sleeping for ${timeToSleep}"; echo; echo; echo
+        sleep "${timeToSleep}"
+    done
+}
+
 # }}}
 
 psgrept() { # ps grep total
