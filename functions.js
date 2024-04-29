@@ -180,3 +180,9 @@ function changYoutubeVolume() {
     volume = volume == null ? defaultVolume : volume;
     document.querySelector(".html5-video-player").setVolume(volume);
 }
+
+function enablePaste() {
+    /*https://twitter.com/fireship_dev/status/1698438648549802104*/
+    const dontTreadOnMe = (e) => e.stopImmediatePropagation();
+    document.addEventListener('paste', dontTreadOnMe, true);
+}
