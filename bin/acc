@@ -100,7 +100,7 @@ function waitToBoot() {
 #    }
 }
 
-nohup remmina -c "/home/kamui/.local/share/remmina/group_rdp_artsoft-172_${SOGO_STATION_IP//./-}.remmina" `>/dev/null 2>&1` & # [1]
+nohup remmina -c "/home/kamui/.local/share/remmina/group_rdp_artsoft-172_${SOGO_STATION_IP//./-}.remmina" >/dev/null 2>&1 & # [1]
 sleep 3s && wmctrl -r 'Artsoft 172' -t $AC_WORKSPACE_INDEX
 
 
