@@ -176,9 +176,11 @@ function changYoutubeVolume() {
     /*https://www.google.com/search?q=programmatically+set+youtube+video+sound+level*/
     /*https://stackoverflow.com/questions/53154863/change-volume-of-a-youtube-video-while-playing*/
     const defaultVolume = 5;
-    let volume = prompt("Enter volume", `${defaultVolume}`);
+    const player = document.querySelector(".html5-video-player");
+
+    let volume = prompt(`Enter volume\nCurrent volume: ${player.getVolume()}`, `${defaultVolume}`);
     volume = volume == null ? defaultVolume : volume;
-    document.querySelector(".html5-video-player").setVolume(volume);
+    player.setVolume(volume);
 }
 
 function enablePaste() {
