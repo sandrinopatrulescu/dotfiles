@@ -1032,17 +1032,40 @@ screenlocktimetoggle() {
     echo "Screen lock time is now $enabled"
 }
 
+# shellcheck disable=SC2120
 login-to-blomp() {
     # change to latest blomp dir: cd "/tmp/blomp/$(\ls /tmp/blomp/ | tail -1)"
+    local lines
+    local isFirst=true
     local timeStamp="$(date +%Y-%m-%d_%H-%M-%S)"
     local blompBaseDir="/tmp/blomp/${timeStamp}/"
     mkdir -p "${blompBaseDir}" || { echo "Error: failed to create directory ${blompBaseDir}"; return 1; }
 
-    for line in $(cat "$SECRETS/$BLOMP_ACCOUNTS_BASENAME"); do
+    if [ $# -eq 0 ]; then
+        lines=$(cat "$SECRETS/$BLOMP_ACCOUNTS_BASENAME")
+    elif [ $# -eq 1 ]; then
+        lines="$1"
+    elif [ $# -eq 2 ]; then
+        lines="$1,$2"
+    else
+        echo "Error: invalid number of arguments"; return 1
+    fi
+
+    for line in $lines; do
         email=$(echo "$line" | cut -d, -f1)
         password=$(echo "$line" | cut -d, -f2)
         cookie="${blompBaseDir}/cookie_${email}.txt"
-        echo "Logging in as $email"
+        echo -n "Logging in as $email"
+
+        if [ "$isFirst" == true ]; then
+            isFirst=false
+            echo
+        else
+            echo " and sleeping for 5 seconds"
+            sleep 5
+        fi
+
+        continue # for debugging
 
         curl --cookie "${cookie}" --cookie-jar "${cookie}" \
                  --location 'https://dashboard.blomp.com/authorize' \

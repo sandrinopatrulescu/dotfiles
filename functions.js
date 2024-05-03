@@ -172,7 +172,7 @@ function exportPhoneChromeTabs() {
     exportArrayToFile(anchorObjectArray);
 }
 
-function changYoutubeVolume() {
+function changeYoutubeVolume() {
     /*https://www.google.com/search?q=programmatically+set+youtube+video+sound+level*/
     /*https://stackoverflow.com/questions/53154863/change-volume-of-a-youtube-video-while-playing*/
     const defaultVolume = 5;
