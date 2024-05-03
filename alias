@@ -32,7 +32,6 @@ alias cs="clear; src" # clear the screen and print the new terminal message
 alias c="clear" # clear the terminal
 alias f="firefox "
 alias f2="(firefox -P GDrive2 &)"
-alias restart="shutdown -r +0"
 alias cp="cp -v"
 alias cpr="cp -vr"
 alias ffmpeg_template="ffmpeg -i foobar.mkv -c copy ../Captures/S4foobar.mp4" # source: https://linuxhint.com/convert-mkv-mp4-ubuntu-ffmpeg/
@@ -413,9 +412,8 @@ alias cal="ncal -wbM"
 ### Navigation {{{ 
 
 alias shutdownn="shutdown +0"
-alias shutdown1="slay firefox; slay chrome; cleanup; shutdown +0"
-alias shutdown1s120="sleep 120; shutdown1"
-alias restart1='slay firefox; slay chrome; cleanup; shutdown -r +0'
+alias restart="shutdown -r +0"
+alias shutdown1s120="shutdown1 120s"
 
 
 
