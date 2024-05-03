@@ -940,19 +940,31 @@ pic() { # pi connect
     ssh "repo@${PI_IP}"
 }
 
-shutdown1s() {
-    echo "Sleeping $1 seconds then shutting down"
-    sleep $1
-    pkill -15 -f firefox
-    pkill -15 -f chrome
-    cleanup
+__shutdown1_base() {
+    local operation="$1"
+    shift 2
+    [ $# -gt 0 ] && {
+        echo "Sleeping $* then doing ${operation}"
+        sleep "$@"
+    }
+        pkill -15 -f firefox
+        pkill -15 -f chrome
+        cleanup
+}
+
+shutdown1() {
+    # example: shutdown1 3m 15s
+    __shutdown1_base "${FUNCNAME[0]}" "$@"
+#    echo "dry run" && return
     shutdown +0
 }
 
-shutdown1m() {
-    shutdown1s $((60 * $1))
+restart1() {
+    # example: restart1 3m 15s
+    __shutdown1_base "${FUNCNAME[0]}" "$@"
+#    echo "dry run" && return
+    shutdown +0 -r
 }
-
 
 ba() { # imogen băbăbăbăbăbăbăbă
     seq ${1:-8} | awk '{printf "bă"} END {printf "\n"}' |  tee >(xargs echo -n | xclip -selection clipboard -i)
