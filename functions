@@ -940,30 +940,42 @@ pic() { # pi connect
     ssh "repo@${PI_IP}"
 }
 
-__shutdown1_base() {
-    local operation="$1"
-    shift 2
+__shutdown1_restart1_base() {
+    # test: src; fdatei; restart1 -d 5s; fdatei
+    local operation="${FUNCNAME[1]}"
+    local restartFlag="$(echo "$operation" | grep -q "restart" && echo '-r')"
+    local dryrunFlag="$([ "$1" == "-d" ] && echo '-k')"
+    local flags="$restartFlag $dryrunFlag"
+
+    [ "$dryrunFlag" ] && shift
+
     [ $# -gt 0 ] && {
+        # https://www.google.com/search?q=linux+sleep+for+both+minutes+and+seconds
+        # -> https://askubuntu.com/questions/1064484/use-sleep-with-minutes-and-seconds
+        # WARNING: the sleep command with multiple arguments is not POSIX compliant
         echo "Sleeping $* then doing ${operation}"
         sleep "$@"
     }
-        pkill -15 -f firefox
-        pkill -15 -f chrome
-        cleanup
+
+    pkill -15 -f chrome
+    pkill -15 -f firefox
+    cleanup
+
+    shutdown $flags +0
 }
 
 shutdown1() {
+    # example: shutdown1 15s
     # example: shutdown1 3m 15s
-    __shutdown1_base "${FUNCNAME[0]}" "$@"
-#    echo "dry run" && return
-    shutdown +0
+    # example: shutdown1 -d 3m 15s
+    __shutdown1_restart1_base $@
 }
 
 restart1() {
+    # example: restart1 15s
     # example: restart1 3m 15s
-    __shutdown1_base "${FUNCNAME[0]}" "$@"
-#    echo "dry run" && return
-    shutdown +0 -r
+    # example: restart1 -d 3m 15s
+    __shutdown1_restart1_base $@
 }
 
 ba() { # imogen băbăbăbăbăbăbăbă
@@ -1077,7 +1089,7 @@ login-to-blomp() {
             sleep 5
         fi
 
-        continue # for debugging
+#        continue # for debugging
 
         curl --cookie "${cookie}" --cookie-jar "${cookie}" \
                  --location 'https://dashboard.blomp.com/authorize' \
