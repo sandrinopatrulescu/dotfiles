@@ -1085,8 +1085,9 @@ login-to-blomp() {
             isFirst=false
             echo
         else
-            echo " and sleeping for 5 seconds"
-            sleep 5
+            local sleepTime="120s"
+            echo " and sleeping for ${sleepTime} seconds"
+            sleep "${sleepTime}"
         fi
 
 #        continue # for debugging
