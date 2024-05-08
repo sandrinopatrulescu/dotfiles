@@ -152,7 +152,8 @@ alias mirror-screen="xrandr --output eDP --output HDMI-0 --same-as eDP" # ubuntu
 alias bl2savedata="echo ~/.local/share/aspyr-media/borderlands 2/willowgame/savedata"
 alias blre="systemctl restart bluetooth.service" # bluetooth restart
 
-alias df="df -x tmpfs" # skip tmpfs df https://serverfault.com/questions/1002671/how-to-hide-tempfs-from-the-df-output-on-centos-7-in-ssh 
+# https://unix.stackexchange.com/questions/267562/show-only-physical-disks-when-using-df-and-mount
+alias df="df -x tmpfs -x efivarfs" # skip tmpfs df https://serverfault.com/questions/1002671/how-to-hide-tempfs-from-the-df-output-on-centos-7-in-ssh
 alias dfh="df -h"
 
 alias dmesg="sudo dmesg"
