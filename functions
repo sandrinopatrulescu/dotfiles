@@ -1124,6 +1124,46 @@ login-to-blomp-check() {
     find /tmp/blomp/ -iname "*.html" -type f -size +0b -exec ls -l {} \;
 }
 
+cleanup-ubuntu() {
+    cat <<'EOF'
+# https://askubuntu.com/a/58003/1547353
+Run: sudo apt-get clean
+
+# https://askubuntu.com/a/1417955/1547353
+List other kernels: dpkg --list | egrep -i --color 'linux-image|linux-headers|linux-modules' | awk '{ print $2 }' | grep -v $(uname -r)
+Remove them using: cat /mnt/e/trash/unused-kernels.txt | xargs sudo apt purge -y
+
+# https://askubuntu.com/a/1404824/1547353
+List docker usage: docker system df
+Remove docker content: docker system prune -af --volumes
+
+# https://askubuntu.com/a/513399/1547353
+Show largest packages: dpkg-query --show --showformat='${Package;-50}\t${Installed-Size}\n' | sort -k 2 -n | grep -v deinstall | awk '{printf "%.3f MB \t %s\n", $2/(1024), $1}'
+
+# https://askubuntu.com/a/1161181/1547353
+Remove snap cache: rm -f /var/lib/snapd/cache/*
+
+# https://askubuntu.com/a/535930/1547353
+# https://askubuntu.com/questions/1039230/how-to-restrict-the-find-command-to-a-physical-drive
+# findmnt # to show all partitions
+sudo find / -xdev -type f -size +50M -exec du -h {} \; | sort -n
+
+# https://itsfoss.com/free-up-space-ubuntu-linux/#:~:text=lib/snapd/snaps-,6.%20Clean%20the%20thumbnail%20cache,-%5BIntermediate%20knowledge%5D
+Show thumbnail cache: du -sh ~/.cache/thumbnails
+Remove thumbnail cache: rm -rf ~/.cache/thumbnails/*
+
+# TODO: /var & logs
+Show journalctl usage: journalctl --disk-usage
+Remove journalctl logs older than 3 days: sudo journalctl --vacuum-time=3d
+
+# https://askubuntu.com/a/58000/1547353
+sudo apt autoclean
+sudo apt autoremove
+sudo shutdown -rf
+
+EOF
+}
+
 # }}}
 
 psgrept() { # ps grep total
