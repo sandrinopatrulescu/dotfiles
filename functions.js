@@ -177,10 +177,13 @@ function changeYoutubeVolume() {
     /*https://stackoverflow.com/questions/53154863/change-volume-of-a-youtube-video-while-playing*/
     const defaultVolume = 5;
     const player = document.querySelector(".html5-video-player");
+    const currentVolume = player.getVolume();
 
-    let volume = prompt(`Enter volume\nCurrent volume: ${player.getVolume()}`, `${defaultVolume}`);
-    volume = volume == null ? defaultVolume : volume;
-    player.setVolume(volume);
+    let volume = prompt(`Enter volume\nCurrent volume: ${currentVolume}`, `${defaultVolume}`);
+    if (volume !== null && String(currentVolume) !== volume) {
+        console.log(`[${new Date().toISOString()}] Setting volume from ${currentVolume} to ${volume}`);
+        player.setVolume(volume);
+    }
 }
 
 function enablePaste() {
