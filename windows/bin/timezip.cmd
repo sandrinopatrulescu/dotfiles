@@ -9,3 +9,5 @@ zip -r %zip_name% %1
 
 :: cleanup
 SET "zip_name="
+
+ECHO "WARN: It is NOT working for .git/ dirs"
