@@ -1124,6 +1124,10 @@ login-to-blomp-check() {
     find /tmp/blomp/ -iname "*.html" -type f -size +0b -exec ls -l {} \;
 }
 
+login-to-blomp-count() {
+    grep "." "$SECRETS/$BLOMP_ACCOUNTS_BASENAME" -c
+}
+
 cleanup-ubuntu() {
     cat <<'EOF'
 # https://askubuntu.com/a/58003/1547353
