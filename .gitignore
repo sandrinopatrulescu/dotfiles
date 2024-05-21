@@ -3,3 +3,4 @@ external-tools
 *.iml
 
 secrets
+.fuse_hidden*
