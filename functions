@@ -1058,6 +1058,7 @@ screenlocktimetoggle() {
 
 # shellcheck disable=SC2120
 login-to-blomp() {
+    echo "BLOMP_DRYRUN=$BLOMP_DRYRUN" # BLOMP_DRYRUN=1 login-to-blomp
     # change to latest blomp dir: cd "/tmp/blomp/$(\ls /tmp/blomp/ | tail -1)"
     local lines
     local isFirst=true
@@ -1067,30 +1068,36 @@ login-to-blomp() {
 
     if [ $# -eq 0 ]; then
         lines=$(cat "$SECRETS/$BLOMP_ACCOUNTS_BASENAME")
-    elif [ $# -eq 1 ]; then
-        lines="$1"
     elif [ $# -eq 2 ]; then
-        lines="$1,$2"
+        local startLine="$1"
+        local endLine="$2"
+        lines=$(sed -n "${startLine},${endLine}p" "$SECRETS/$BLOMP_ACCOUNTS_BASENAME")
     else
         echo "Error: invalid number of arguments"; return 1
     fi
+
+    local totalLinesCount="$(echo "${lines}" | wc -l)"
+    local nonEmptyLinesCount="$(echo "${lines}" | grep -Ev "^$" -c)"
+    echo "$(echo "${lines}" | wc -l) total lines = ${nonEmptyLinesCount} non-empty + $((totalLinesCount - nonEmptyLinesCount)) empty"
+    local index=1
 
     for line in $lines; do
         email=$(echo "$line" | cut -d, -f1)
         password=$(echo "$line" | cut -d, -f2)
         cookie="${blompBaseDir}/cookie_${email}.txt"
-        echo -n "Logging in as $email"
+        echo -n "[${index}/${nonEmptyLinesCount}] Logging in as $email"
+        ((index++))
 
         if [ "$isFirst" == true ]; then
             isFirst=false
             echo
         else
             local sleepTime="120s"
-            echo " and sleeping for ${sleepTime} seconds"
-            sleep "${sleepTime}"
+            echo " after ${sleepTime} seconds"
+            [ -z "${BLOMP_DRYRUN}" ] && sleep "${sleepTime}"
         fi
 
-#        continue # for debugging
+        [ -n "${BLOMP_DRYRUN}" ] && continue
 
         curl --cookie "${cookie}" --cookie-jar "${cookie}" \
                  --location 'https://dashboard.blomp.com/authorize' \
@@ -1112,7 +1119,7 @@ login-to-blomp-retry() {
     done
 }
 
-login-to-blomp-check() {
+login-to-blomp-check1() {
     # run with: login-to-blomp-check s
     #       to use test file
     local checkTestFile="/tmp/blomp/check-test.html"
@@ -1124,7 +1131,11 @@ login-to-blomp-check() {
     find /tmp/blomp/ -iname "*.html" -type f -size +0b -exec ls -l {} \;
 }
 
-login-to-blomp-count() {
+login-to-blomp-check2() {
+    grep -iRn "insufficient" /tmp/blomp
+}
+
+login-to-blomp-count() { # # of non-empty lines
     grep "." "$SECRETS/$BLOMP_ACCOUNTS_BASENAME" -c
 }
 
