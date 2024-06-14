@@ -16,7 +16,7 @@ cp -r "${latestTakeout}/YouTube and YouTube Music/"* "$gitDir"
 
 customDir="$gitDir/custom"
 cd "$customDir"
-yt-playlist-to-csv.sh -a
+yt-playlist-to-csv.sh
 
 
 # git add commit and push
