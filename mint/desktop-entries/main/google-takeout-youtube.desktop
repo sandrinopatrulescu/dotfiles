@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.1
+Type=Application
+Name=google-takeout-youtube
+Comment=Open google-takeout-youtube directory in IntelliJ
+Icon=intellij
+Exec=idea /mnt/e/git/sp-backups-z/google-takeout-youtube
+Actions=
