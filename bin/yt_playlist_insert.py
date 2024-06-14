@@ -52,6 +52,10 @@ def create_request(youtube, playlist_id, video_id):
     )
 
 
+def strip_trailing_newline(string):
+    return string[:-1] if string[-1] == '\n' else string
+
+
 def test_unavailability(video_id):
     command = f"yt-dlp -s https://www.youtube.com/watch?v={video_id}"
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -60,7 +64,8 @@ def test_unavailability(video_id):
     exit_code = process.returncode
 
     if exit_code != 0:
-        raise Exception(f"yt-dlp failed with exit code {exit_code} and stderr {stderr.decode('utf-8')}")
+        stderr_without_trailing_newline = strip_trailing_newline(stderr.decode('utf-8'))
+        raise Exception(f"yt-dlp failed with exit code {exit_code} and stderr {stderr_without_trailing_newline}")
 
 
 def main(playlist_id, videos_file_path):
@@ -76,6 +81,10 @@ def main(playlist_id, videos_file_path):
         print(string, end='')
         log_file.write(string)
 
+    print_and_log(f"Playlist URL: https://www.youtube.com/playlist?list={playlist_id}\n")
+    print_and_log(f"Videos file path: {videos_file_path}\n")
+    print_and_log(f"Log file path: {log_file.name}\n")
+
     if not do_request:
         print_and_log('\n')
         print_and_log('!!! RUNNING IN DRY RUN !!!\n')
@@ -87,7 +96,7 @@ def main(playlist_id, videos_file_path):
 
         try:
             if title in ['Deleted video', 'Private video']:
-                raise Exception(f'title is {title}')
+                raise Exception(title)
 
             test_unavailability(video_id)
 
@@ -98,11 +107,12 @@ def main(playlist_id, videos_file_path):
             else:
                 print_and_log('OK DRY RUN\n')
         except Exception as e:
-            print_and_log(f"\nError: {e}\n")
+            print_and_log(f"\n\tError: {e}\n")
 
-            print('waiting for input=continue')
+            next_keyword = "go"
+            print(f'\nType {{{next_keyword}}} to go the next video.')
             while True:
-                if input() == 'continue':
+                if input() == next_keyword:
                     break
 
 
