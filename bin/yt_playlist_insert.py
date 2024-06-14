@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import datetime
 import os
+import subprocess
 import sys
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
@@ -51,8 +52,19 @@ def create_request(youtube, playlist_id, video_id):
     )
 
 
+def test_unavailability(video_id):
+    command = f"yt-dlp -s https://www.youtube.com/watch?v={video_id}"
+    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    _, stderr = process.communicate()
+    exit_code = process.returncode
+
+    if exit_code != 0:
+        raise Exception(f"yt-dlp failed with exit code {exit_code} and stderr {stderr.decode('utf-8')}")
+
+
 def main(playlist_id, videos_file_path):
-    do_request = True
+    do_request = False
     video_list = read_file(videos_file_path)
     datetime_str = datetime.datetime.now().__str__().replace(":", "-").replace(' ', '_')
     log_file = open(os.path.join(os.path.abspath(os.sep), 'mnt', 'e', 'logs', f'yt_playlist_insert_{datetime_str}.log'),
@@ -64,22 +76,29 @@ def main(playlist_id, videos_file_path):
         print(string, end='')
         log_file.write(string)
 
+    if not do_request:
+        print_and_log('\n')
+        print_and_log('!!! RUNNING IN DRY RUN !!!\n')
+        print_and_log('\n')
+
     for i, [video_id, title, *_] in enumerate(video_list):
         prefix = f"{i + 1}/{len(video_list)} {video_id} {title} "
         print_and_log(prefix)
 
-        if not do_request:
-            print('OK DRY RUN')
-            continue
-
         try:
             if title in ['Deleted video', 'Private video']:
                 raise Exception(f'title is {title}')
-            request = create_request(youtube, playlist_id, video_id)
-            request.execute()
-            print_and_log('OK\n')
+
+            test_unavailability(video_id)
+
+            if do_request:
+                request = create_request(youtube, playlist_id, video_id)
+                request.execute()
+                print_and_log('OK\n')
+            else:
+                print_and_log('OK DRY RUN\n')
         except Exception as e:
-            print_and_log(f"Error: {e}\n")
+            print_and_log(f"\nError: {e}\n")
 
             print('waiting for input=continue')
             while True:
@@ -88,4 +107,7 @@ def main(playlist_id, videos_file_path):
 
 
 if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print(f"Usage: {sys.argv[0]} <playlist_id> <videos_file_path>")
+        sys.exit(1)
     main(sys.argv[1], sys.argv[2])
