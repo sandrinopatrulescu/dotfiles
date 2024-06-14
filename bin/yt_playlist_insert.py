@@ -69,7 +69,7 @@ def test_unavailability(video_id):
 
 
 def main(playlist_id, videos_file_path):
-    do_request = False
+    do_request = True
     video_list = read_file(videos_file_path)
     datetime_str = datetime.datetime.now().__str__().replace(":", "-").replace(' ', '_')
     log_file = open(os.path.join(os.path.abspath(os.sep), 'mnt', 'e', 'logs', f'yt_playlist_insert_{datetime_str}.log'),
@@ -77,22 +77,19 @@ def main(playlist_id, videos_file_path):
     if do_request:
         youtube = get_youtube()
 
-    def print_and_log(string):
-        print(string, end='')
+    def print_and_log(string, end='\n'):
+        print(string, end=end)
         log_file.write(string)
 
-    print_and_log(f'Playlist URL: https://www.youtube.com/playlist?list={playlist_id}\n')
-    print_and_log(f'Videos file path: {videos_file_path}\n')
-    print_and_log(f'Log file path: {log_file.name}\n')
+    print_and_log(f'Playlist URL: https://www.youtube.com/playlist?list={playlist_id}')
+    print_and_log(f'Videos file path: {videos_file_path}')
+    print_and_log(f'Log file path: {log_file.name}')
 
     if not do_request:
-        print_and_log('\n')
-        print_and_log('!!! RUNNING IN DRY RUN !!!\n')
-        print_and_log('\n')
+        print_and_log('\n!!! RUNNING IN DRY RUN !!!\n')
 
     for i, [video_id, title, *_] in enumerate(video_list):
-        prefix = f'{i + 1}/{len(video_list)} {video_id} {title}'
-        print_and_log(prefix)
+        print_and_log(f'{i + 1}/{len(video_list)} {video_id} {title}', end=' ')
 
         try:
             if title in ['Deleted video', 'Private video']:
@@ -103,11 +100,11 @@ def main(playlist_id, videos_file_path):
             if do_request:
                 request = create_request(youtube, playlist_id, video_id)
                 request.execute()
-                print_and_log('OK\n')
+                print_and_log('OK')
             else:
-                print_and_log('OK DRY RUN\n')
+                print_and_log('OK DRY RUN')
         except Exception as e:
-            print_and_log(f'\n\tError: {e}\n')
+            print_and_log(f'\n\tError: {e}')
 
             next_keyword = "go"
             print(f'\nType {{{next_keyword}}} to go the next video.')
