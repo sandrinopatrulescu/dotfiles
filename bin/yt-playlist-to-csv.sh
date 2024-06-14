@@ -3,6 +3,7 @@
 PLAYLIST_ID="PLqRTNdk3LL2hwXxYAW_-KY5kHH4V0U_EL"
 OUTPUT_FILE="" # default is PLAYLIST_NAME.csv (where PLAYLIST_NAME will be replaced from the response)
 COMPACT=""
+INCLUDE_AVAILABILITY=""
 
 # https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
 POSITIONAL_ARGS=()
@@ -27,6 +28,10 @@ while [[ $# -gt 0 ]]; do
             COMPACT="--compat-options no-youtube-unavailable-videos"
             shift # past argument
             ;;
+        -a)
+            INCLUDE_AVAILABILITY="yes"
+            shift # past argument
+            ;;
         -*)
             echo "Unknown option $1"
             exit 1
@@ -44,7 +49,6 @@ function join_by { # https://stackoverflow.com/questions/1527049/how-can-i-join-
     local d=${1-} f=${2-}
     if shift 2; then
         printf "%s" "$f" "${@/#/$d}"
-        echo
     fi
 }
 
@@ -60,19 +64,40 @@ delimiter=";"
 playlistName=""
 
 while read -r json; do
-    if [ -z "$playlistName" ]; then
+    if [ -z "${playlistName}" ]; then
         playlistName=$(jq -r .playlist <<< "$json")
-        join_by $delimiter "${fields[@]}" | tee -a "${OUTPUT_FILE:-$playlistName.csv}"
+        headerRow="$(join_by $delimiter "${fields[@]}")"
+
+        if [ -n "$INCLUDE_AVAILABILITY" ]; then
+            extra_fields=("available" "unavailability reason")
+            headerRow="$(join_by $delimiter "$headerRow" "${extra_fields[@]}")"
+        fi
+
+        echo "$headerRow" | tee -a "${OUTPUT_FILE:-${playlistName}.csv}"
     fi
 
     line=""
 
     for field in "${fields[@]}"; do
         column=$(jq -r ."$field" <<< "$json")
-        line="$line$delimiter$column"
+        line="$(join_by $delimiter "$line" "$column")"
     done
 
-    line="${line:1}" # remove first delimiter
+    if [ -n "$INCLUDE_AVAILABILITY" ]; then
+        available="yes"
+        unavailabilityReason=""
 
-    echo "$line" | tee -a "${OUTPUT_FILE:-$playlistName.csv}"
+        url=$(jq -r .url <<< "$json")
+        stderr="$(yt-dlp -s "$url" 2>&1 >/dev/null)"
+
+        if [ $? -ne 0 ]; then
+            available="no"
+            unavailabilityReason="$stderr"
+        fi
+
+        line="$(join_by $delimiter "$line" "$available" "$unavailabilityReason")"
+    fi
+
+    line="${line:1}" # remove first delimiter
+    echo "$line" | tee -a "${OUTPUT_FILE:-${playlistName}.csv}"
 done <<< "$($command)"
