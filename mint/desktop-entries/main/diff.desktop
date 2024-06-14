@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.1
+Type=Application
+Name=diff
+Comment=Open diff directory in IntelliJ
+Icon=intellij
+Exec=idea /mnt/e/git/all/diff
+Actions=
