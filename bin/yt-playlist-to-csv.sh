@@ -63,7 +63,9 @@ delimiter=";"
 
 playlistName=""
 
-while read -r json; do
+# read from file descriptor 3 to avoid collision with the other read
+# (How to read input inside a while loop while reading from a file?) https://stackoverflow.com/questions/46373633/how-to-read-input-inside-a-while-loop-while-reading-from-a-file
+while read -r -u 3 json; do
     if [ -z "${playlistName}" ]; then
         playlistName=$(jq -r .playlist <<< "$json")
         headerRow="$(join_by $delimiter "${fields[@]}")"
@@ -71,6 +73,18 @@ while read -r json; do
         if [ -n "$INCLUDE_AVAILABILITY" ]; then
             extra_fields=("available" "unavailability reason")
             headerRow="$(join_by $delimiter "$headerRow" "${extra_fields[@]}")"
+        fi
+
+        if [ -s "${OUTPUT_FILE:-${playlistName}.csv}" ]; then
+            echo "File ${OUTPUT_FILE:-${playlistName}.csv} already exists. Overwrite? [y/*]"
+            read -r overwrite
+
+            if [ "$overwrite" != "y" ]; then
+                echo "Exiting"
+                exit 0
+            else
+                truncate -s 0 "${OUTPUT_FILE:-${playlistName}.csv}"
+            fi
         fi
 
         echo "$headerRow" | tee -a "${OUTPUT_FILE:-${playlistName}.csv}"
@@ -100,4 +114,4 @@ while read -r json; do
 
     line="${line:1}" # remove first delimiter
     echo "$line" | tee -a "${OUTPUT_FILE:-${playlistName}.csv}"
-done <<< "$($command)"
+done 3<<< "$($command)"
