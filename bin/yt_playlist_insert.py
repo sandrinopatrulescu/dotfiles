@@ -57,7 +57,7 @@ def strip_trailing_newline(string):
 
 
 def test_unavailability(video_id):
-    command = f"yt-dlp -s https://www.youtube.com/watch?v={video_id}"
+    command = f'yt-dlp -s https://www.youtube.com/watch?v={video_id}'
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     _, stderr = process.communicate()
@@ -65,7 +65,7 @@ def test_unavailability(video_id):
 
     if exit_code != 0:
         stderr_without_trailing_newline = strip_trailing_newline(stderr.decode('utf-8'))
-        raise Exception(f"yt-dlp failed with exit code {exit_code} and stderr {stderr_without_trailing_newline}")
+        raise Exception(f'yt-dlp failed with exit code {exit_code} and stderr {stderr_without_trailing_newline}')
 
 
 def main(playlist_id, videos_file_path):
@@ -81,9 +81,9 @@ def main(playlist_id, videos_file_path):
         print(string, end='')
         log_file.write(string)
 
-    print_and_log(f"Playlist URL: https://www.youtube.com/playlist?list={playlist_id}\n")
-    print_and_log(f"Videos file path: {videos_file_path}\n")
-    print_and_log(f"Log file path: {log_file.name}\n")
+    print_and_log(f'Playlist URL: https://www.youtube.com/playlist?list={playlist_id}\n')
+    print_and_log(f'Videos file path: {videos_file_path}\n')
+    print_and_log(f'Log file path: {log_file.name}\n')
 
     if not do_request:
         print_and_log('\n')
@@ -91,7 +91,7 @@ def main(playlist_id, videos_file_path):
         print_and_log('\n')
 
     for i, [video_id, title, *_] in enumerate(video_list):
-        prefix = f"{i + 1}/{len(video_list)} {video_id} {title} "
+        prefix = f'{i + 1}/{len(video_list)} {video_id} {title}'
         print_and_log(prefix)
 
         try:
@@ -107,7 +107,7 @@ def main(playlist_id, videos_file_path):
             else:
                 print_and_log('OK DRY RUN\n')
         except Exception as e:
-            print_and_log(f"\n\tError: {e}\n")
+            print_and_log(f'\n\tError: {e}\n')
 
             next_keyword = "go"
             print(f'\nType {{{next_keyword}}} to go the next video.')
@@ -118,6 +118,6 @@ def main(playlist_id, videos_file_path):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print(f"Usage: {sys.argv[0]} <playlist_id> <videos_file_path>")
+        print(f'Usage: {sys.argv[0]} <playlist_id> <videos_file_path>')
         sys.exit(1)
     main(sys.argv[1], sys.argv[2])
