@@ -79,7 +79,9 @@ def main(playlist_id, videos_file_path):
 
     def print_and_log(string, end='\n'):
         print(string, end=end)
-        log_file.write(string)
+        log_file.write(string + end)
+        if end == '\n':
+            log_file.flush()
 
     print_and_log(f'Playlist URL: https://www.youtube.com/playlist?list={playlist_id}')
     print_and_log(f'Videos file path: {videos_file_path}')
@@ -89,7 +91,8 @@ def main(playlist_id, videos_file_path):
         print_and_log('\n!!! RUNNING IN DRY RUN !!!\n')
 
     for i, [video_id, title, *_] in enumerate(video_list):
-        print_and_log(f'{i + 1}/{len(video_list)} {video_id} {title}', end=' ')
+        timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        print_and_log(f'[{timestamp}] {i + 1}/{len(video_list)} {video_id} {title}', end=' ')
 
         try:
             if title in ['Deleted video', 'Private video']:
