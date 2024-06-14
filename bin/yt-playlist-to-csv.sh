@@ -62,14 +62,17 @@ playlistName=""
 while read -r json; do
     if [ -z "$playlistName" ]; then
         playlistName=$(jq -r .playlist <<< "$json")
-        join_by $delimiter "index" "${fields[@]}" | tee -a "${OUTPUT_FILE:-$playlistName.csv}"
+        join_by $delimiter "${fields[@]}" | tee -a "${OUTPUT_FILE:-$playlistName.csv}"
     fi
-    line=$(jq -r .playlist_index <<< "$json")
+
+    line=""
 
     for field in "${fields[@]}"; do
         column=$(jq -r ."$field" <<< "$json")
         line="$line$delimiter$column"
     done
+
+    line="${line:1}" # remove first delimiter
 
     echo "$line" | tee -a "${OUTPUT_FILE:-$playlistName.csv}"
 done <<< "$($command)"
