@@ -83,12 +83,17 @@ def main(playlist_id, videos_file_path):
         if end == '\n':
             log_file.flush()
 
+    print_and_log(f'YOUTUBE_API_OAUTH: {os.environ["YOUTUBE_API_OAUTH"]}')
     print_and_log(f'Playlist URL: https://www.youtube.com/playlist?list={playlist_id}')
     print_and_log(f'Videos file path: {videos_file_path}')
     print_and_log(f'Log file path: {log_file.name}')
 
     if not do_request:
         print_and_log('\n!!! RUNNING IN DRY RUN !!!\n')
+
+    ok_word = 'ok'
+    if input(f'Type "{ok_word}" to continue: ') != ok_word:
+        sys.exit(1)
 
     for i, [video_id, title, *_] in enumerate(video_list):
         timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
