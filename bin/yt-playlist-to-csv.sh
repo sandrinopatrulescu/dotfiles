@@ -80,15 +80,18 @@ while read -r -u 3 json; do
             headerRow="$(join_by $delimiter "$headerRow" "${extra_fields[@]}")"
         fi
 
-        if [ -s "${OUTPUT_FILE:-${playlistName}.csv}" ] && [ -z "$OVERWRITE" ]; then
-            echo "File ${OUTPUT_FILE:-${playlistName}.csv} already exists. Overwrite? [y/*]"
-            read -r overwrite
-
-            if [ "$overwrite" != "y" ]; then
-                echo "Exiting"
-                exit 0
-            else
+        if [ -s "${OUTPUT_FILE:-${playlistName}.csv}" ]; then
+            if [ -n "$OVERWRITE" ]; then
                 truncate -s 0 "${OUTPUT_FILE:-${playlistName}.csv}"
+            else
+                read -r -p "File ${OUTPUT_FILE:-${playlistName}.csv} already exists. Overwrite? [y/*]: " overwrite
+
+                if [ "$overwrite" != "y" ]; then
+                    echo "Exiting"
+                    exit 0
+                else
+                    truncate -s 0 "${OUTPUT_FILE:-${playlistName}.csv}"
+                fi
             fi
         fi
 
