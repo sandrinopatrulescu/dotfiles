@@ -16,7 +16,11 @@ cp -r "${latestTakeout}/YouTube and YouTube Music/"* "$gitDir"
 
 customDir="$gitDir/custom"
 cd "$customDir"
-yt-playlist-to-csv.sh
+yt-playlist-to-csv.sh # 2 add queue re
+yt-playlist-to-csv.sh -pi "PLqRTNdk3LL2gfqnoHdfns2pJi13pwPIpO" # 2 add queue v2
+# use compact mode, since availability would take too long
+yt-playlist-to-csv.sh --compact -o "2 add queue re COMPACT.csv" # 2 add queue re
+yt-playlist-to-csv.sh --compact -pi "PLqRTNdk3LL2gfqnoHdfns2pJi13pwPIpO" -o "2 add queue v2 COMPACT.csv" # 2 add queue v2
 
 
 # git add commit and push
