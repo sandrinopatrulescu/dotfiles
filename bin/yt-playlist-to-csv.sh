@@ -4,6 +4,7 @@ PLAYLIST_ID="PLqRTNdk3LL2hwXxYAW_-KY5kHH4V0U_EL"
 OUTPUT_FILE="" # default is PLAYLIST_NAME.csv (where PLAYLIST_NAME will be replaced from the response)
 COMPACT=""
 INCLUDE_AVAILABILITY=""
+OVERWRITE=""
 
 # https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
 POSITIONAL_ARGS=()
@@ -26,6 +27,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --compact)
             COMPACT="--compat-options no-youtube-unavailable-videos"
+            shift # past argument
+            ;;
+        --overwrite)
+            OVERWRITE="yes"
             shift # past argument
             ;;
         -a)
@@ -75,7 +80,7 @@ while read -r -u 3 json; do
             headerRow="$(join_by $delimiter "$headerRow" "${extra_fields[@]}")"
         fi
 
-        if [ -s "${OUTPUT_FILE:-${playlistName}.csv}" ]; then
+        if [ -s "${OUTPUT_FILE:-${playlistName}.csv}" ] && [ -z "$OVERWRITE" ]; then
             echo "File ${OUTPUT_FILE:-${playlistName}.csv} already exists. Overwrite? [y/*]"
             read -r overwrite
 
