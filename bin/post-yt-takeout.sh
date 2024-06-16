@@ -28,3 +28,5 @@ cd "$gitDir"
 git add .
 git commit -m "takeout of $timestamp"
 git push
+
+wc -l custom/"2 add queue "*.csv
