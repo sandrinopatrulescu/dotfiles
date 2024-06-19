@@ -4,3 +4,4 @@ external-tools
 
 secrets
 .fuse_hidden*
+__pycache__

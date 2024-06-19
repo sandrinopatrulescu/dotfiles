@@ -22,6 +22,7 @@ yt-playlist-to-csv.sh --overwrite -pi "PLqRTNdk3LL2gfqnoHdfns2pJi13pwPIpO" # 2 a
 yt-playlist-to-csv.sh --overwrite --compact -o "2 add queue re COMPACT.csv" # 2 add queue re
 yt-playlist-to-csv.sh --overwrite --compact -pi "PLqRTNdk3LL2gfqnoHdfns2pJi13pwPIpO" -o "2 add queue v2 COMPACT.csv" # 2 add queue v2
 
+# yt_playlist_list.py "PLqRTNdk3LL2hwXxYAW_-KY5kHH4V0U_EL" "2 add queue re LIST"
 
 # git add commit and push
 cd "$gitDir"
