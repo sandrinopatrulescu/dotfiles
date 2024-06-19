@@ -5,6 +5,7 @@ OUTPUT_FILE="" # default is PLAYLIST_NAME.csv (where PLAYLIST_NAME will be repla
 COMPACT=""
 INCLUDE_AVAILABILITY=""
 OVERWRITE=""
+COOKIES=""
 
 # https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
 POSITIONAL_ARGS=()
@@ -33,6 +34,10 @@ while [[ $# -gt 0 ]]; do
             OVERWRITE="yes"
             shift # past argument
             ;;
+        --cookies)
+            COOKIES="--cookies-from-browser chrome:Default"
+            shift # past argument
+            ;;
         -a)
             INCLUDE_AVAILABILITY="yes"
             shift # past argument
@@ -59,7 +64,7 @@ function join_by { # https://stackoverflow.com/questions/1527049/how-can-i-join-
 
 # playlist entry: https://pastebin.com/dry0Tz1G
 playlist_url="https://www.youtube.com/playlist?list=$PLAYLIST_ID"
-command="yt-dlp $COMPACT --flat-playlist -j $playlist_url "
+command="yt-dlp $COOKIES $COMPACT --flat-playlist -j $playlist_url "
 
 echo "running: $command"
 
