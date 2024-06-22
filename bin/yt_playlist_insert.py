@@ -95,7 +95,8 @@ def main(playlist_id, videos_file_path):
     if input(f'Type "{ok_word}" to continue: ') != ok_word:
         sys.exit(1)
 
-    for i, [video_id, title, *_] in enumerate(video_list):
+    for i, [video_id_or_url, title, *_] in enumerate(video_list):
+        video_id = video_id_or_url.split('=')[-1]
         timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         print_and_log(f'[{timestamp}] {i + 1}/{len(video_list)} {video_id} {title}', end=' ')
 
