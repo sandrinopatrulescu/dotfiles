@@ -278,6 +278,8 @@ alias cal-row='for ((i = 1; i <= 12; i++)); do cal $i $(date "+%Y"); done' # cur
 alias switchuser="dm-tool switch-to-greeter"
 alias npm="npm -ddd --loglevel verbose"
 alias npmi="npm i"
+
+alias tail-follow-latest='tail -f $(ls -1t | head -n1)'
 # }}}
 
 
