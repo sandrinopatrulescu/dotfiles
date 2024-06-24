@@ -11,10 +11,19 @@ from telegram import Update, User
 from telegram.ext import ApplicationBuilder, ContextTypes, MessageHandler, filters
 from yt_dlp import YoutubeDL
 
+
+def getenv_or_raise(name: str) -> str:
+    value = os.getenv(name)
+    if value is None:
+        raise ValueError(f'{name} environment variable is not set')
+    return value
+
+
 # region environment variables
-LOGS = os.getenv('LOGS')
-BOT_TOKEN = os.getenv('YT_DLP_TELEGRAM_BOT_BOT_TOKEN')
+LOGS = getenv_or_raise('LOGS')
+BOT_TOKEN = getenv_or_raise('YT_DLP_TELEGRAM_BOT_BOT_TOKEN')
 WHITELIST_FILE = os.getenv('YT_DLP_TELEGRAM_BOT_WHITELIST_FILE')
+LOG_LEVEL = os.getenv('LOG_LEVEL', logging.INFO)
 # endregion
 
 
@@ -30,7 +39,7 @@ def setup_logger():
 
     # Create a custom logger
     logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)  # Set the logging level
+    logger.setLevel(LOG_LEVEL)
 
     # Create handlers
     file_handler = logging.FileHandler(log_filename)
