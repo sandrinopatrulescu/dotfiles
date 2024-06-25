@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """
 https://core.telegram.org/bots/tutorial -> https://gitlab.com/Athamaxy/telegram-bot-tutorial/-/blob/main/TutorialBot.py
+
+kill -15 $(pgrep -f 'python3 /mnt/e/dotfiles/bin/yt_dlp_telegram_bot.py') && \
+    xfce4-terminal -e 'bash -i -c "python3 /mnt/e/dotfiles/bin/yt_dlp_telegram_bot.py &"' && \
+    sleep 1 && cd $LOGS && tail-follow-latest
 """
 import logging
 import os
@@ -9,7 +13,7 @@ from datetime import datetime
 
 from telegram import Update, User
 from telegram.ext import ApplicationBuilder, ContextTypes, MessageHandler, filters
-from yt_dlp import YoutubeDL
+from yt_dlp import YoutubeDL, DownloadError
 
 
 def getenv_or_raise(name: str) -> str:
@@ -48,7 +52,7 @@ def setup_logger():
     console_handler.setLevel(logging.DEBUG)
 
     # Create formatters and add them to handlers
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    formatter = logging.Formatter('%(asctime)s - %(thread)d - %(name)s - %(levelname)s - %(message)s')
     file_handler.setFormatter(formatter)
     console_handler.setFormatter(formatter)
 
@@ -74,7 +78,8 @@ def can_user_access(user_id: int) -> bool:
 def download_video(url: str, name: str) -> str:
     # https://github.com/yt-dlp/yt-dlp/#embedding-yt-dlp
     video_format = 'mp4'
-    ydl_options = {'paths': {'home': videos_dir}, 'format': video_format, 'outtmpl': {'default': f'{name}.%(ext)s'}}
+    ydl_options = {'paths': {'home': videos_dir}, 'format': video_format, 'outtmpl': {'default': f'{name}.%(ext)s'},
+                   'logger': log, 'no_warnings': True}
 
     with YoutubeDL(ydl_options) as ydl:
         return_code = ydl.download(url)
@@ -101,9 +106,11 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         await context.bot.send_document(chat_id=chat_id, document=open(video_path, 'rb'))
         log.info(f'{trace_id} Sent video {video_path}')
     except Exception as e:
-        log.error(f'{trace_id} {e}')
-        text = f'Failed to send video {update.message.text}: {e}'
-        await context.bot.send_message(chat_id=chat_id, text=text)
+        if isinstance(e, DownloadError):
+            pass
+        else:
+            log.exception(f'{trace_id}')
+        await context.bot.send_message(chat_id=chat_id, text=f'Failed to send video {update.message.text}\n{e}')
 
 
 log = setup_logger()
