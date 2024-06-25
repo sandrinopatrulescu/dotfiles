@@ -71,22 +71,22 @@ def can_user_access(user_id: int) -> bool:
     return any(str(user_id) in line.split(',')[0] for line in whitelist)
 
 
-def download_video(url: str) -> str:
-    ydl_hook_dict = {}
-    ydl_options = {'paths': {'home': videos_dir}, "progress_hooks": [lambda x: ydl_hook_dict.update(x)]}
+def download_video(url: str, name: str) -> str:
+    # https://github.com/yt-dlp/yt-dlp/#embedding-yt-dlp
+    video_format = 'mp4'
+    ydl_options = {'paths': {'home': videos_dir}, 'format': video_format, 'outtmpl': {'default': f'{name}.%(ext)s'}}
 
     with YoutubeDL(ydl_options) as ydl:
         return_code = ydl.download(url)
         if return_code != 0:
-            log.error('ydl_hook_dict: ' + str(ydl_hook_dict))
             raise Exception(f'Returned code {return_code}')
-        # https://stackoverflow.com/questions/74157935/getting-the-file-name-of-downloaded-video-using-yt-dlp
-        return ydl_hook_dict['info_dict']['_filename']
+        return os.path.join(videos_dir, f'{name}.{video_format}')
 
 
 async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_id = update.message.from_user.id
-    trace_id = (str(update.message.date.astimezone()).split('+')[0], user_id)
+    trace_id_date = str(update.message.date.astimezone()).split('+')[0].replace(':', '-').replace(' ', '_')
+    trace_id = f'{trace_id_date}_{user_id}'
     chat_id = update.effective_chat.id
 
     log.info(f'{trace_id} {get_user_info(update.message.from_user)} wrote {update.message.text}')
@@ -97,7 +97,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         return
 
     try:
-        video_path = download_video(update.message.text)
+        video_path = download_video(update.message.text, trace_id)
         await context.bot.send_document(chat_id=chat_id, document=open(video_path, 'rb'))
         log.info(f'{trace_id} Sent video {video_path}')
     except Exception as e:
