@@ -280,6 +280,9 @@ alias npm="npm -ddd --loglevel verbose"
 alias npmi="npm i"
 
 alias tail-follow-latest='tail -f $(ls -1t | head -n1)'
+
+alias logs='cd $LOGS'
+alias py='python3'
 # }}}
 
 
