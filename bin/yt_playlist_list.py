@@ -47,6 +47,6 @@ def main(playlist_id, file_name):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print(f'Usage: {sys.argv[0]} <playlist_id> <filename>')
+        print(f'Usage: {sys.argv[0]} <playlist_id> <out basename root>')
         sys.exit(1)
     main(sys.argv[1], sys.argv[2])
