@@ -1180,6 +1180,11 @@ sudo shutdown -rf
 EOF
 }
 
+mkcds() { # mk cd scratch
+    [ -z "$1" ] && { echo "usage: $FUNCNAME <detailed name>"; return 1; }
+    mkcd "${SCRATCH}/$(fdatei)_${1}"
+}
+
 # }}}
 
 psgrept() { # ps grep total
