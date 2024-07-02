@@ -1185,13 +1185,16 @@ mkcds() { # mk cd scratch
     mkcd "${SCRATCH}/$(fdatei)_${1}"
 }
 
-# }}}
-
 psgrept() { # ps grep total
   # linux print mb in human format https://unix.stackexchange.com/questions/44040/a-standard-tool-to-convert-a-byte-count-into-human-kib-mib-etc-like-du-ls1
   echo "$1 memory usage: ~$(ps wup $(pgrep -f "$1") | awk '{sum += $6} END {print sum}' | numfmt --to=iec-i --suffix=B --from-unit=1000)"
 }
 
+findIn2AddQueueRe() {
+    grepi -Rn "$1" "/mnt/e/git/sp-backups-z/google-takeout-youtube/custom/2 add queue re.csv"
+}
+
+# }}}
 
 
     ### COMPILE ### ------------------------------ {{{
