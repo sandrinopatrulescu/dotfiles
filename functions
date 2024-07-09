@@ -211,6 +211,19 @@ btcl() { # bachelor thesis close
     done
     wmctrl -s 2
 }
+
+btb() { # bachelor thesis backup
+    (
+        cd /mnt/e/UBB_IE_2020-2023 || exit 1
+        timestamp="$(fdatei)"
+        echo "$timestamp"
+        rsync -avP bachelor-thesis/ bachelor-thesis_"$timestamp" --exclude='bin' --exclude='obj' --exclude='node_modules'
+        zip -r bachelor-thesis_"$timestamp".zip bachelor-thesis_"$timestamp"
+        rclone copy bachelor-thesis_"$timestamp".zip "drive-main:/tmp/bachelor-thesis"
+        curl bashupload.com -T bachelor-thesis_"$timestamp".zip
+        beep 1
+    )
+}
 # }}}
 
     ### Uncategorized ### {{{
@@ -1382,7 +1395,7 @@ jfxr() { # Compile and run JavaFX programs
     # echo -e "$USAGE" # without quotes, it would convert the whitespaces into a single one, since it would be giving different arguments to echo
      
     # test if JAVAFX_ARGS is set
-    if [ -z ${JAVAFX_ARGS+x} ]; then err 64 "JAVAFX_ARGS is unset$usage"; return; fi # check if a variable is set https://stackoverflow.com/a/13864829/17299754 
+    if [ -z ${JAVAFX_ARGS+x} ]; then err 64 "JAVAFX_ARGS is unset$usage"; return; fi # check if a variable is set https://stackoverflow.com/a/13864829/17299754
     
     local compile_args
     local run_args
