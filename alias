@@ -265,7 +265,7 @@ alias battery='cat /sys/class/power_supply/BAT1/capacity' # battery percentage -
 # while [ "$(battery)" -gt 4 ]; do echo "battery at $(battery)%. sleeping 60s"; sleep 60; done && shutdown now
 
 alias emulatorl='emulator -list-avds'
-alias emulator1='emulator @Small_Phone_API_30'
+alias emulator1='emulator @Pixel_8_Pro_API_34'
 
 alias release="echo -e '\t/etc/os-release'; cat /etc/os-release; echo -e '\n\t/etc/lsb-release'; cat /etc/lsb-release; echo -e '\n\t/etc/upstream-release/lsb-release'; cat /etc/upstream-release/lsb-release"
 
