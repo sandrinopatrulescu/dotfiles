@@ -281,8 +281,11 @@ alias npmi="npm i"
 
 alias tail-follow-latest='tail -f $(ls -1t | head -n1)'
 
-alias logs='cd $LOGS'
 alias py='python3'
+
+alias logs='cd $LOGS'
+alias google-takeout-youtube='cd /mnt/e/git/sp-backups-z/google-takeout-youtube'
+alias wallpapers='cd /mnt/e/media/wallpapers'
 # }}}
 
 
@@ -346,6 +349,8 @@ alias grs="git remote set-url origin"
 alias ga="git add"
 alias ga.="git add ."
 alias gc="git commit"
+alias gca="git commit --amend"
+alias gcan="git commit --amend --no-edit"
 
 alias gf="fdatei; git fetch"
 alias gpl="fdatei; git pull"

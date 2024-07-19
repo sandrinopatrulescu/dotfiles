@@ -39,8 +39,8 @@ yt_playlist_list.py "PLqRTNdk3LL2hwXxYAW_-KY5kHH4V0U_EL" "2 add queue re LIST"
 yt-playlist-to-csv.sh --overwrite
 yt-playlist-to-csv.sh --overwrite --compact -o "2 add queue re COMPACT.csv"
 # 2 add queue v2
-yt-playlist-to-csv.sh --overwrite -pi "PLqRTNdk3LL2gfqnoHdfns2pJi13pwPIpO"
-yt-playlist-to-csv.sh --overwrite --compact -pi "PLqRTNdk3LL2gfqnoHdfns2pJi13pwPIpO" -o "2 add queue v2 COMPACT.csv"
+#yt-playlist-to-csv.sh --overwrite -pi "PLqRTNdk3LL2gfqnoHdfns2pJi13pwPIpO"
+#yt-playlist-to-csv.sh --overwrite --compact -pi "PLqRTNdk3LL2gfqnoHdfns2pJi13pwPIpO" -o "2 add queue v2 COMPACT.csv"
 #endregion
 
 
