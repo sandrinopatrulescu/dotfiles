@@ -1207,6 +1207,10 @@ findIn2AddQueueRe() {
     grepi -Rn "$1" "/mnt/e/git/sp-backups-z/google-takeout-youtube/custom/2 add queue re.csv"
 }
 
+copy () { # copy contents to clipboard
+    echo -n "$@" | xclip -selection clipboard
+}
+
 # }}}
 
 
