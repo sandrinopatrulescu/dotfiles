@@ -222,6 +222,7 @@ btb() { # bachelor thesis backup
         rclone copy bachelor-thesis_"$timestamp".zip "drive-main:/tmp/bachelor-thesis"
         curl bashupload.com -T bachelor-thesis_"$timestamp".zip | tee -a "$LOGS/btb_${timestamp}.log"
         backups_telegram_bot.py bachelor-thesis_"$timestamp".zip
+        backups_telegram_bot.py -m "bachelor-thesis_$timestamp$(cat "$LOGS/btb_${timestamp}.log")"
         beep 1
     )
 }
