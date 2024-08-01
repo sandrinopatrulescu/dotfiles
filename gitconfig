@@ -23,7 +23,14 @@
 	autocrlf = input
 	editor = vim
 	filemode = false
+	excludesFile = ~/.gitignore
 [alias]
+	s = status
+	l = log
+	c = commit
+	ca = commit --amend
+	can = commit --amend --no-edit
+
     cfg = config --list --show-origin --show-scope
 
     hide = update-index --skip-worktree
