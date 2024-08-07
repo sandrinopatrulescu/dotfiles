@@ -43,11 +43,14 @@ yt-playlist-to-csv.sh --overwrite --compact -o "2 add queue re COMPACT.csv"
 #yt-playlist-to-csv.sh --overwrite --compact -pi "PLqRTNdk3LL2gfqnoHdfns2pJi13pwPIpO" -o "2 add queue v2 COMPACT.csv"
 #endregion
 
+# check if 2 add queue re is incomplete
+commitMessageSuffix=""
+[ $(($(wc -l < custom/"2 add queue re.csv") - $(wc -l < custom/"2 add queue re COMPACT.csv"))) -eq 0 ] || commitMessageSuffix=" [2aqr INCOMPLETE]"
 
 # git add commit and push
 cd "$gitDir"
 git add .
-git commit -m "takeout of $timestamp"
+git commit -m "takeout of ${timestamp}${commitMessageSuffix}"
 #git push
 
 # upload to "cloud"
@@ -62,7 +65,9 @@ backups_telegram_bot.py -m "$(curl bashupload.com -T "${gitDirZip}")"
 cd - # cd to gitDir
 
 # diff
-wc -l custom/"2 add queue "*.csv
+wc -l custom/"2 add queue re"*.csv
+echo "commitMessageSuffix: |$commitMessageSuffix| (|| <=> 2 add queue re is complete)"
+echo "Is 2 add queue re complete?: $([ -z "$commitMessageSuffix" ] && echo "yes" || echo "no")"
 
 end=$(date +%s)
 echo Execution time was $(("$end" - "$start")) seconds.
