@@ -48,9 +48,22 @@ yt-playlist-to-csv.sh --overwrite --compact -o "2 add queue re COMPACT.csv"
 cd "$gitDir"
 git add .
 git commit -m "takeout of $timestamp"
-git push
+#git push
 
+# upload to "cloud"
+backups_telegram_bot.py -m "$latestTakeoutZip"
+backups_telegram_bot.py "$latestTakeoutZip"
+cd .. # cd to parent of gitDir
+gitDirBasename="$(basename $gitDir)"
+gitDirZip="${gitDirBasename}_$(date +%Y-%m-%d_%H-%M-%S).zip"
+zip -r "${gitDirZip}" "${gitDirBasename}"
+# backups_telegram_bot.py "${gitDirZip}" # CAN'T DO OVER 50 MB (https://core.telegram.org/bots/api#sending-files)
+backups_telegram_bot.py -m "$(curl bashupload.com -T "${gitDirZip}")"
+cd - # cd to gitDir
+
+# diff
 wc -l custom/"2 add queue "*.csv
 
 end=$(date +%s)
-echo Execution time was `expr $end - $start` seconds.
+echo Execution time was $(("$end" - "$start")) seconds.
+espeak "Finished post YouTube takeout."

@@ -906,6 +906,7 @@ curl --silent --show-error -b /home/kamui/.config/google-chrome/Default/cookie-w
 acww() { # ac wol wake
 curl --silent --show-error -b /home/kamui/.config/google-chrome/Default/cookie-wol \
     --location 'https://wol.artsoft-consult.ro/wake' \
+    --data '{}' \
     -w "\n%{http_code}\n"
 }
 
