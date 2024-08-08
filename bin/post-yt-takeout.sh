@@ -45,7 +45,7 @@ yt-playlist-to-csv.sh --overwrite --compact -o "2 add queue re COMPACT.csv"
 
 # check if 2 add queue re is incomplete
 commitMessageSuffix=""
-[ $(($(wc -l < custom/"2 add queue re.csv") - $(wc -l < custom/"2 add queue re COMPACT.csv"))) -eq 0 ] || commitMessageSuffix=" [2aqr INCOMPLETE]"
+[ $(($(wc -l < custom/"2 add queue re.csv") - $(wc -l < custom/"2 add queue re COMPACT.csv"))) -eq 0 ] && commitMessageSuffix=" [2aqr COMPLETE]" || commitMessageSuffix=" [2aqr INCOMPLETE]"
 
 # git add commit and push
 cd "$gitDir"
@@ -66,8 +66,7 @@ cd - # cd to gitDir
 
 # diff
 wc -l custom/"2 add queue re"*.csv
-echo "commitMessageSuffix: |$commitMessageSuffix| (|| <=> 2 add queue re is complete)"
-echo "Is 2 add queue re complete?: $([ -z "$commitMessageSuffix" ] && echo "yes" || echo "no")"
+echo "Is 2 add queue re complete?: $([ "$commitMessageSuffix" == " [2aqr COMPLETE]" ] && echo "yes" || echo "no")"
 
 end=$(date +%s)
 echo Execution time was $(("$end" - "$start")) seconds.
