@@ -23,7 +23,7 @@ echo "timestamp: $timestamp"
 #endregion
 
 
-unzip "$latestTakeoutZip"
+unzip -q "$latestTakeoutZip"
 mv "Takeout" "$latestTakeout"
 cp -r "${latestTakeout}/YouTube and YouTube Music/"* "$gitDir"
 
@@ -43,12 +43,14 @@ yt-playlist-to-csv.sh --overwrite --compact -o "2 add queue re COMPACT.csv"
 #yt-playlist-to-csv.sh --overwrite --compact -pi "PLqRTNdk3LL2gfqnoHdfns2pJi13pwPIpO" -o "2 add queue v2 COMPACT.csv"
 #endregion
 
+
+cd "$gitDir"
+
 # check if 2 add queue re is incomplete
 commitMessageSuffix=""
 [ $(($(wc -l < custom/"2 add queue re.csv") - $(wc -l < custom/"2 add queue re COMPACT.csv"))) -eq 0 ] && commitMessageSuffix=" [2aqr COMPLETE]" || commitMessageSuffix=" [2aqr INCOMPLETE]"
 
 # git add commit and push
-cd "$gitDir"
 git add .
 git commit -m "takeout of ${timestamp}${commitMessageSuffix}"
 #git push
@@ -59,7 +61,7 @@ backups_telegram_bot.py "$latestTakeoutZip"
 cd .. # cd to parent of gitDir
 gitDirBasename="$(basename $gitDir)"
 gitDirZip="${gitDirBasename}_$(date +%Y-%m-%d_%H-%M-%S).zip"
-zip -r "${gitDirZip}" "${gitDirBasename}"
+zip -rq "${gitDirZip}" "${gitDirBasename}"
 # backups_telegram_bot.py "${gitDirZip}" # CAN'T DO OVER 50 MB (https://core.telegram.org/bots/api#sending-files)
 backups_telegram_bot.py -m "$(curl bashupload.com -T "${gitDirZip}")"
 cd - # cd to gitDir
