@@ -216,11 +216,16 @@ btb() { # bachelor thesis backup
     (
         cd /mnt/e/UBB_IE_2020-2023 || exit 1
         timestamp="$(fdatei)"
-        echo "$timestamp"
-        rsync -avP bachelor-thesis/ bachelor-thesis_"$timestamp" --exclude='bin' --exclude='obj' --exclude='node_modules'
-        zip -r bachelor-thesis_"$timestamp".zip bachelor-thesis_"$timestamp"
+        echo "timestamp = $timestamp"
+        echo "Copying..."
+        rsync -aqP bachelor-thesis/ bachelor-thesis_"$timestamp" --exclude='bin' --exclude='obj' --exclude='node_modules'
+        echo "Zipping..."
+        zip -rq bachelor-thesis_"$timestamp".zip bachelor-thesis_"$timestamp"
+        echo "Uploading to drive..."
         rclone copy bachelor-thesis_"$timestamp".zip "drive-main:/tmp/bachelor-thesis"
-        curl bashupload.com -T bachelor-thesis_"$timestamp".zip | tee -a "$LOGS/btb_${timestamp}.log"
+        echo "Uploading to bashupload.com..."
+        curl -sS bashupload.com -T bachelor-thesis_"$timestamp".zip > "$LOGS/btb_${timestamp}.log"
+        echo "Sending to telegram..."
         backups_telegram_bot.py bachelor-thesis_"$timestamp".zip
         backups_telegram_bot.py -m "bachelor-thesis_$timestamp$(cat "$LOGS/btb_${timestamp}.log")"
         beep 1
