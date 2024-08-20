@@ -204,6 +204,34 @@ btop() { # bachelor thesis open
     wmctrl -s 1
 }
 
+btop2() {
+    # linux open program from terminal without blocking -> https://askubuntu.com/questions/287350/start-a-new-process-without-blocking-the-terminal -> https://askubuntu.com/a/453356/1547353
+    nohup /opt/google/chrome-beta/chrome > /dev/null &
+    nohup rider > /dev/null &
+    nohup webstorm > /dev/null &
+
+    for window_id in $(wmctrl -l -x | awk -F' ' '$2 ~ /rider|webstorm|beta/ {print $1}'); do
+            echo "Moving window $window_id: $(xprop -id "$window_id" WM_NAME)"
+            wmctrl -t 1 -i -r "$window_id"
+    done
+
+    wmctrl -s 1
+    xfce4-terminal
+    echo
+}
+
+btcl2() { # call from terminal on workspace 2nd
+    wmctrl -s 0
+    kill -15 "$(pgrep -f /opt/google/chrome-beta/chrome | sort | head -1)" && sleep 1
+    slay rider
+    slay webstorm
+    for window_id in $(wmctrl -l -x | awk -F' ' '$2 ~ /^1$/ {print $1}'); do
+            echo "Closing window $window_id: $(xprop -id "$window_id" WM_NAME)"
+            wmctrl -ic "$window_id"
+    done
+    exit
+}
+
 btcl() { # bachelor thesis close
     for window_id in $(wmctrl -l -x | awk -F' ' '$2 ~ /^[124]$/ {print $1}'); do
         echo "Closing window $window_id: $(xprop -id "$window_id" WM_NAME)"
