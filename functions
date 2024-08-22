@@ -1108,6 +1108,19 @@ screenlocktimetoggle() {
 
 # shellcheck disable=SC2120
 login-to-blomp() {
+: <<'END_COMMENT'
+
+login-to-blomp # or login-to-blomp 1 15 && beep 3
+# wait
+login-to-blomp 18 28 # or: sleep 1h && login-to-blomp 16 30 && beep 3
+
+# ------------------------
+
+login-to-blomp-check1
+login-to-blomp-check2
+
+END_COMMENT
+
     echo "BLOMP_DRYRUN=$BLOMP_DRYRUN" # BLOMP_DRYRUN=1 login-to-blomp
     # change to latest blomp dir: cd "/tmp/blomp/$(\ls /tmp/blomp/ | tail -1)"
     local lines
@@ -1135,7 +1148,7 @@ login-to-blomp() {
         email=$(echo "$line" | cut -d, -f1)
         password=$(echo "$line" | cut -d, -f2)
         cookie="${blompBaseDir}/cookie_${email}.txt"
-        echo -n "[${index}/${nonEmptyLinesCount}] Logging in as $email"
+        echo -n "[$(date +%Y-%m-%d_%H-%M-%S)] [${index}/${nonEmptyLinesCount}] Logging in as $email"
         ((index++))
 
         if [ "$isFirst" == true ]; then
