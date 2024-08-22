@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import datetime
 import os
 import subprocess
 from getpass import getpass
@@ -61,7 +62,7 @@ if __name__ == '__main__':
     driver.get(mega_login_link)
 
     for index, (username, password, has_cloud_full) in enumerate(user_pass_list):
-        print(f"Processing entry {index + 1}/{len(user_pass_list)}: {username}")
+        print(f"[{datetime.datetime.now().isoformat()}] [entry {index + 1}/{len(user_pass_list)}: {username}]: start processing")
         # print(f"Logging in with username: {username} and password: {password}")
 
         login_input = WebDriverWait(driver, WEBDRIVER_WAIT_TIMEOUT).until(
@@ -83,6 +84,8 @@ if __name__ == '__main__':
         # test the XPATH in browser, through selenium by using:
         # driver.execute_script("""console.log(document.evaluate("XPATH", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue)""")
         # driver.execute_script("console.log('hello')")
+
+        print(f"[{datetime.datetime.now().isoformat()}] [entry {index + 1}/{len(user_pass_list)}: {username}]: found 'Create folder' span")
 
         if has_cloud_full:
             try:
@@ -140,3 +143,5 @@ if __name__ == '__main__':
             except TimeoutException as e:
                 print("Failed to get confirm logout button")
                 continue
+
+        print(f"[{datetime.datetime.now().isoformat()}] [entry {index + 1}/{len(user_pass_list)}: {username}]: logged out")
