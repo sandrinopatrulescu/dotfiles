@@ -2,6 +2,7 @@
 " Folding -------------------------------------------------------------- {{{
 " zo - unfold under the cursor
 " zc - fold under the cursor
+
 " zR - unfold all
 " zM - fold all
 
@@ -56,7 +57,7 @@ cmap w!! w !sudo tee > /dev/null %
 
 " Colors
 syntax enable " enable syntax processing [5]
-colo slate" line 
+colo ron
 
 " Space & Tabs
 set tabstop=4 " number of visual spaces per TAB [5]
@@ -108,6 +109,8 @@ set history=1000
 
 "### Part 4: Color List
 
+" All colors -------------------------------------------------------------- {{{
+
 "blue
 "darkblue 2
 "default 2
@@ -127,6 +130,21 @@ set history=1000
 "torte
 "zellner
 
+" }}}
+
+" Good colors -------------------------------------------------------------- {{{
+" ron
+" 
+" delek (but it's hard to read variables and options)
+" desert (but it's hard to read variables)
+" elflord (but it's hard to read command substitutions and options)
+" pablo (but comments are too transparent)
+" peachpuff ((but it's hard to read variables and options)
+" slate (but it's too much red)
+" zellner (but it's hard to make distinction between tokens)
+" koehler (but it's hard to read variables)
+
+" }}}
 
 "### Part n: To test
 
