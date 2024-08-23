@@ -247,6 +247,7 @@ btb() { # bachelor thesis backup
         echo "timestamp = $timestamp"
         echo "Copying..."
         rsync -aqP bachelor-thesis/ bachelor-thesis_"$timestamp" --exclude='bin' --exclude='obj' --exclude='node_modules'
+        echo "Copied to $(realpath bachelor-thesis_"$timestamp")"
         echo "Zipping..."
         zip -rq bachelor-thesis_"$timestamp".zip bachelor-thesis_"$timestamp"
         echo "Uploading to drive..."
@@ -1108,19 +1109,6 @@ screenlocktimetoggle() {
 
 # shellcheck disable=SC2120
 login-to-blomp() {
-: <<'END_COMMENT'
-
-login-to-blomp # or login-to-blomp 1 15 && beep 3
-# wait
-login-to-blomp 18 28 # or: sleep 1h && login-to-blomp 16 30 && beep 3
-
-# ------------------------
-
-login-to-blomp-check1
-login-to-blomp-check2
-
-END_COMMENT
-
     echo "BLOMP_DRYRUN=$BLOMP_DRYRUN" # BLOMP_DRYRUN=1 login-to-blomp
     # change to latest blomp dir: cd "/tmp/blomp/$(\ls /tmp/blomp/ | tail -1)"
     local lines
@@ -1128,6 +1116,8 @@ END_COMMENT
     local timeStamp="$(date +%Y-%m-%d_%H-%M-%S)"
     local blompBaseDir="/tmp/blomp/${timeStamp}/"
     mkdir -p "${blompBaseDir}" || { echo "Error: failed to create directory ${blompBaseDir}"; return 1; }
+
+    echo "Starting at $timeStamp and blomp dir is ${blompBaseDir}"
 
     if [ $# -eq 0 ]; then
         lines=$(cat "$SECRETS/$BLOMP_ACCOUNTS_BASENAME")
@@ -1169,6 +1159,11 @@ END_COMMENT
                  --data-urlencode "password=$password" \
                  --data-urlencode 'login=login' | tee -a "${blompBaseDir}/login_output_${email}.html"
     done
+
+    echo "blomp dir is ${blompBaseDir}"
+    echo "------------------------"
+    echo " Started at $timeStamp"
+    echo "Finished at $(date +%Y-%m-%d_%H-%M-%S)"
 }
 
 login-to-blomp-retry() {
@@ -1182,20 +1177,85 @@ login-to-blomp-retry() {
     done
 }
 
-login-to-blomp-check1() {
+login-to-blomp-check-missing() {
     # run with: login-to-blomp-check s
     #       to use test file
-    local checkTestFile="/tmp/blomp/check-test.html"
+    local checkTestFile="/tmp/blomp/login_output_test@example.com.html"
+
     if [ "$1" == "s" ]; then
         [ -s "${checkTestFile}" ] || echo 'hello' >> "${checkTestFile}"
     else
         [ -f "${checkTestFile}" ] && rm "${checkTestFile}"
     fi
-    find /tmp/blomp/ -iname "*.html" -type f -size +0b -exec ls -l {} \;
+
+    local timestamp="$(date +%Y-%m-%d_%H-%M-%S)"
+
+    
+
+    local expected="/tmp/blomp-expected_${timestamp}"
+    local computed="/tmp/blomp-computed_${timestamp}"
+    awk -F, '$1 ~ /./ {print $1}' "$SECRETS/$BLOMP_ACCOUNTS_BASENAME" | sort > $expected
+    find /tmp/blomp/ -iname "*.html" -type f -size +0b -exec ls -l {} \; | sed 's@.*output_(.*).html@\1@' | sort > $computed
+
+    #if diff -q $expected $expected > /dev/null; then # togle this for testing
+    if diff -q $expected $computed > /dev/null; then
+        echo "OK (all ...EMAIL.html are present and of non-zero size)"
+    else
+        echo "ERROR: login failed for some accounts. See diff of expected and actual (red means missing from actual):"
+        diff $expected $computed
+        
+        echo; echo 'Run: login-to-blomp-entries-raw | grep "tiho" # to check line numbers and run manually for them'
+    fi
 }
 
-login-to-blomp-check2() {
-    grep -iRn "insufficient" /tmp/blomp
+login-to-blomp-check-insufficient() {
+    # produce test data using:
+    #   rm /tmp/blomp/login_output_test@example.com.html || echo 'insufficient' > /tmp/blomp/login_output_test@example.com.html
+
+    echo "HTML files of accounts with insufficient storage:"
+    grep -iRn "insufficient" /tmp/blomp || echo -e "\tNone"
+
+    echo
+    echo "Accounts with insufficient storage:"
+    { grep -iRn "insufficient" /tmp/blomp -l || echo -e "\tNone"; } | sed -E 's@.*output_(.*).html@\1@' 
+}
+
+login-to-blomp-check-all() {
+    echo; echo; echo "### phase 1: check if any ...EMAIL.html file is missing ###"; echo
+    login-to-blomp-check-missing
+
+    echo; echo; echo "### phase 2: find accounts w/ insufficient storage ###"; echo
+    login-to-blomp-check-insufficient
+}
+
+login-to-blomp-full() {
+    # takes ~2h
+    local sleepTime="1h"
+    local announceCount=3
+    announce() { espeak "login-to-blomp finished" && beep; }
+
+    echo "[$(date +%Y-%m-%d_%H-%M-%S)] started  login-to-blomp 1 15"
+    login-to-blomp 1 15 # takes ~30m
+    echo "[$(date +%Y-%m-%d_%H-%M-%S)] finished login-to-blomp 1 15"
+
+    echo "[$(date +%Y-%m-%d_%H-%M-%S)] started  sleeping ${sleepTime}"
+    sleep $sleepTime
+    echo "[$(date +%Y-%m-%d_%H-%M-%S)] finished sleeping ${sleepTime}"
+
+    echo "[$(date +%Y-%m-%d_%H-%M-%S)] started  login-to-blomp 16 30"
+    login-to-blomp 16 30 && repeat $announceCount announce # takes ~20m
+    echo "[$(date +%Y-%m-%d_%H-%M-%S)] finished login-to-blomp 16 30"
+
+    echo; echo; echo "### CHECKING ###"
+    login-to-blomp-check-all
+}
+
+login-to-blomp-entries-raw() {
+    cat -n "$SECRETS/$BLOMP_ACCOUNTS_BASENAME"
+}
+
+login-to-blom-entries() {
+    awk -F, '$1 ~ /./ {print $1}' "$SECRETS/$BLOMP_ACCOUNTS_BASENAME" | cat -n
 }
 
 login-to-blomp-count() { # # of non-empty lines

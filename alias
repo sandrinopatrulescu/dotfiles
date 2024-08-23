@@ -286,6 +286,8 @@ alias py='python3'
 alias logs='cd $LOGS'
 alias google-takeout-youtube='cd /mnt/e/git/sp-backups-z/google-takeout-youtube'
 alias wallpapers='cd /mnt/e/media/wallpapers'
+
+alias vim-colors='ls /usr/share/vim/vim??/colors/*.vim | sed -E "s@.*(colors/)(.*).vim@\2@"'
 # }}}
 
 
@@ -370,7 +372,7 @@ alias anbox="EGL_PLATFORM=x11 anbox.appmgr"
 ### Command options
 
 ###### Audio
-alias espeak="espeak -v ro"
+alias espeakr="espeak -v ro"
 ######
 
 
