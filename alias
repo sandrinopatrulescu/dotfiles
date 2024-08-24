@@ -493,6 +493,12 @@ alias HCS="cd /mnt/e/UBB_IE_2020-2023/S6.HCS/"
 alias TDT="cd /mnt/e/UBB_IE_2020-2023/S6.TDT/"
 alias BE="cd /mnt/e/UBB_IE_2020-2023/S6.BE/"
 
+# linux open chrome with a particular profile -> https://askubuntu.com/questions/1256695/open-new-chrome-window-with-different-profile-from-command-line -> https://superuser.com/questions/377186/how-do-i-start-chrome-using-a-specified-user-profile/377195#377195
+alias google-chrome-bt-paper='nohup google-chrome --profile-directory="Profile 8" > /dev/null &'
+alias google-chrome-default='nohup google-chrome --profile-directory="Default" > /dev/null &'
+
+## end of uni
+
 alias sshtestgithub="ssh -vT git@github.com"
 alias sa="ssh-add" # ssh add
 alias sal="ssh-add -l" # ssh add list
