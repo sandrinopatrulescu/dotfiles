@@ -260,6 +260,29 @@ btb() { # bachelor thesis backup
         beep 1
     )
 }
+
+btpb() { # bachelor thesis paper backup
+    [ -n "$1" ] || { echo "usage: $FUNCNAME <commit message>"; return 1; }
+    export BTPB_GIT_MESSAGE="$1"
+    (
+        cd ~/bachelor-thesis-paper || exit 1
+        \rm -r Attractions/
+        unzip -q Attractions.zip -d Attractions
+        git add .
+        git commit -m "$BTPB_GIT_MESSAGE"
+        ssh-add ~/.ssh/id_ed25519_gh_uni && git push
+        timestamp="$(fdatei)"
+        echo "timestamp = $timestamp"
+        echo "Uploading to drive..."
+        rclone copy Attractions.zip "drive-main:/tmp/bachelor-thesis/Attractions_$timestamp.zip"
+        echo "Uploading to bashupload.com..."
+        curl -sS bashupload.com -T Attractions.zip > "$LOGS/btpb_${timestamp}.log"
+        echo "Sending to telegram..."
+        backups_telegram_bot.py Attractions.zip
+        backups_telegram_bot.py -m "Attractions_$timestamp.zip$(cat "$LOGS/btpb_${timestamp}.log")"
+        beep 1
+    )
+}
 # }}}
 
     ### Uncategorized ### {{{
