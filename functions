@@ -283,6 +283,21 @@ btpb() { # bachelor thesis paper backup
         beep 1
     )
 }
+
+btpa() { # bachelor thesis prepare app
+    # example: /e/UBB_IE_2020-2023/bachelor-thesis_2024-08-27_21-08-48
+    [ -n "$1" ] || { echo "usage: $FUNCNAME <path to latest backup dir>"; return 1; }
+    local forEnrollDir="${1}_for-thesis-enroll"
+    rsync -aqP "${1}/" "$forEnrollDir" --exclude='bin' --exclude='obj' --exclude='node_modules' --exclude='.git' --exclude='.idea' --exclude='appsettings.Development.json'
+    local backupDir="/e/UBB_IE_2020-2023/S6.BE/inscriere_2024-09/2_cs.ubbcluj.ro-apps-lucrari/App_$(fdatei)"
+    mkdir "$backupDir"
+    mv "/e/UBB_IE_2020-2023/S6.BE/inscriere_2024-09/2_cs.ubbcluj.ro-apps-lucrari/App"{,.zip} "$backupDir"
+    rsync -aqP "${forEnrollDir}/" "/e/UBB_IE_2020-2023/S6.BE/inscriere_2024-09/2_cs.ubbcluj.ro-apps-lucrari/App"
+    mkdir "/e/UBB_IE_2020-2023/S6.BE/inscriere_2024-09/2_cs.ubbcluj.ro-apps-lucrari/App/Anexe/"
+    cp "/e/UBB_IE_2020-2023/S6.BE/inscriere_2024-09/2_cs.ubbcluj.ro-apps-lucrari/anexa5-declaratie-autenticitate-licenta-diseratatie-2024_final.pdf" "/e/UBB_IE_2020-2023/S6.BE/inscriere_2024-09/2_cs.ubbcluj.ro-apps-lucrari/App/Anexe/"
+    zip -rq App.zip "/e/UBB_IE_2020-2023/S6.BE/inscriere_2024-09/2_cs.ubbcluj.ro-apps-lucrari/App"
+    mv App.zip "/e/UBB_IE_2020-2023/S6.BE/inscriere_2024-09/2_cs.ubbcluj.ro-apps-lucrari/"
+}
 # }}}
 
     ### Uncategorized ### {{{
