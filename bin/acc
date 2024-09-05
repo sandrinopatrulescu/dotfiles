@@ -8,6 +8,7 @@ source /home/kamui/.alias
 
 AC_WORKSPACE_INDEX=3
 
+slay transmission-gtk
 #nohup remmina >/dev/null 2>&1 & sleep 0.2s && wmctrl -a 'kamui@an5: ~'
 skypeforlinux && sleep 2s && wmctrl -rF 'Skype' -t $AC_WORKSPACE_INDEX
 

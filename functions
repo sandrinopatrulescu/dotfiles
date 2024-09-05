@@ -1000,6 +1000,7 @@ acrd() { # ac remmina disconnect
 acds() { # artsoft consult disconnect, w/o skype
     acrd
     acvd
+    transmission-autostart.sh
 }
 
 acd() { # artsoft consult disconnect, opposite to acc bin/ script
