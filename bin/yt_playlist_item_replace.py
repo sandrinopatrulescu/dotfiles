@@ -8,7 +8,7 @@ from typing import List, Tuple, Dict, Any
 
 from yt_dlp import YoutubeDL
 
-from bin.yt_playlist_insert import get_youtube
+from yt_playlist_insert import get_youtube
 
 """
 NOTE: ref := id/url
@@ -23,6 +23,7 @@ def format_datetime():
 youtube = get_youtube()
 ydl_opts = {'quiet': True, 'no_warnings': True}
 ydl = YoutubeDL(ydl_opts)
+video_id_to_title: Dict[str, str] = {}
 
 script_basename = os.path.basename(__file__)
 basename_root = os.path.splitext(script_basename)[0]
@@ -60,8 +61,7 @@ def replace_videos(playlist_id: str, tuple_list: List[Tuple[str, int, str, str]]
     # input: [playlist id/url] ([new video id/url] [position to insert] [old video playlist item id])
 
     for i, (new_video_id, position, old_video_playlist_item_id, name) in enumerate(tuple_list):
-        title = ydl.extract_info(f"https://www.youtube.com/watch?v={new_video_id}", download=False)['title']
-        log(f'DOING {i + 1}/{len(tuple_list)}: {new_video_id} {position} {old_video_playlist_item_id}: {name} -> {title}')
+        log(f'DOING {i + 1}/{len(tuple_list)}: {new_video_id} {position} {old_video_playlist_item_id}: {name} -> {video_id_to_title[new_video_id]}')
 
         try:
             # add video
@@ -89,15 +89,19 @@ def replace_videos(playlist_id: str, tuple_list: List[Tuple[str, int, str, str]]
 
 
 def main(args: list[str]):
-    # TODO: program or something to extract missing videos with their titles
     # input: [playlist id/url] [LIST file path] [csv file with format: old video id/url,name,new video id/url]
 
     log('START')
+    log(f'Using csv file {args[3]}')
     playlist_id = ref_to_id(args[1])
     csvreader = csv.reader(open(args[3]), delimiter=';')
     old_and_new_video_id_tuples = [(ref_to_id(row[0]), row[1], ref_to_id(row[2])) for row in csvreader]
     old_video_ids = {old_and_new_video_id_tuple[0]: None for old_and_new_video_id_tuple in old_and_new_video_id_tuples}
     old_video_id_to_playlist_item_dict = search_existing_videos(args[2], old_video_ids)
+
+    for _, _, new_video_id in old_and_new_video_id_tuples:
+        title = ydl.extract_info(f"https://www.youtube.com/watch?v={new_video_id}", download=False)['title']
+        video_id_to_title[new_video_id] = title
 
     tuple_list = [(
         new_video_id,
@@ -105,6 +109,16 @@ def main(args: list[str]):
         old_video_id_to_playlist_item_dict[old_video_id]['id'],
         name
     ) for old_video_id, name, new_video_id in old_and_new_video_id_tuples]
+
+    log('The following videos will be replaced:')
+
+    for i, (new_video_id, position, old_video_playlist_item_id, name) in enumerate(tuple_list):
+        log(f'{i + 1}/{len(tuple_list)}: {new_video_id} {position} {old_video_playlist_item_id}: {name} -> {video_id_to_title[new_video_id]}')
+
+    # prompt user for confirmation
+    if input('Type "ok" to continue (otherwise operation is aborted): ') != 'ok':
+        log('ABORT')
+        sys.exit(1)
 
     replace_videos(playlist_id, tuple_list)
     log('END')
