@@ -288,6 +288,8 @@ alias google-takeout-youtube='cd /mnt/e/git/sp-backups-z/google-takeout-youtube'
 alias wallpapers='cd /mnt/e/media/wallpapers'
 
 alias vim-colors='ls /usr/share/vim/vim??/colors/*.vim | sed -E "s@.*(colors/)(.*).vim@\2@"'
+
+alias yt-dlp-h264="yt-dlp -S vcodec:h264"
 # }}}
 
 
