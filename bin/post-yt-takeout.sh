@@ -41,6 +41,11 @@ yt-playlist-to-csv.sh --overwrite --compact -o "2 add queue re COMPACT.csv"
 # 2 add queue v2
 #yt-playlist-to-csv.sh --overwrite -pi "PLqRTNdk3LL2gfqnoHdfns2pJi13pwPIpO"
 #yt-playlist-to-csv.sh --overwrite --compact -pi "PLqRTNdk3LL2gfqnoHdfns2pJi13pwPIpO" -o "2 add queue v2 COMPACT.csv"
+
+# on repeat songs list
+yt_playlist_list.py "PLqRTNdk3LL2iuUlcxsYbsXB6F0mn5MxkM" "on repeat songs list LIST"
+yt-playlist-to-csv.sh -pi "PLqRTNdk3LL2iuUlcxsYbsXB6F0mn5MxkM" --overwrite
+yt-playlist-to-csv.sh -pi "PLqRTNdk3LL2iuUlcxsYbsXB6F0mn5MxkM" --overwrite --compact -o "on repeat songs list COMPACT.csv"
 #endregion
 
 
