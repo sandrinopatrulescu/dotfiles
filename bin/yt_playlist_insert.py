@@ -3,9 +3,12 @@ import datetime
 import os
 import subprocess
 import sys
+
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import googleapiclient.errors
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
 
 
 def read_file(videos_file_path):
@@ -28,11 +31,21 @@ def get_youtube():
     api_service_name = "youtube"
     api_version = "v3"
     client_secrets_file = os.path.join(os.environ['DOTS_SECRETS'], os.environ['YOUTUBE_API_OAUTH'])
+    credentials_file_path = os.environ['YOUTUBE_API_CREDENTIALS_FILE_PATH']
 
-    # Get credentials and create an API client
-    flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
-        client_secrets_file, scopes)
-    credentials = flow.run_local_server()
+    # google_auth_oauthlib store credentials -> https://stackoverflow.com/questions/73485981/in-python-is-there-any-way-i-can-store-a-resource-object-so-i-can-use-it-late
+    credentials = None
+    if os.path.exists(credentials_file_path):
+        credentials = Credentials.from_authorized_user_file(credentials_file_path, scopes)
+    if not credentials or not credentials.valid:
+        if credentials and credentials.expired and credentials.refresh_token:
+            credentials.refresh(Request())
+        else:
+            flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(client_secrets_file, scopes)
+            credentials = flow.run_local_server()
+
+        credentials_file = open(credentials_file_path, 'w')
+        credentials_file.write(credentials.to_json())
 
     return googleapiclient.discovery.build(api_service_name, api_version, credentials=credentials)
 
