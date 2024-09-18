@@ -1366,6 +1366,31 @@ copy () { # copy contents to clipboard
     echo -n "$@" | xclip -selection clipboard
 }
 
+dev-info() {
+    set +o noclobber
+    sudo inxi -Fxxxrz > inxi-Fxxxrz.txt
+    sudo inxi -v7 > inxi-v7.txt
+    sudo inxi -v7z > inxi-v7z.txt
+    sudo cat /proc/cpuinfo > cat-proc-cpuinfo.txt
+    sudo lscpu > lscpu.txt
+    sudo lshw > lshw.txt
+    sudo lshw -businfo > lshw-businfo.txt
+    sudo lspci > lspci.txt
+    sudo lspci -v > lspci-v.txt
+    sudo lsusb > lsusb.txt
+    sudo lsusb -v > lsusb-v.txt
+    sudo dmidecode > dmidecode.txt
+    sudo lsblk -o "NAME,MAJ:MIN,RM,SIZE,RO,TYPE,FSTYPE,MOUNTPOINT,UUID" > lsblk-custom.txt
+    sudo df -h > df-h.txt
+    sudo fdisk -l > fdisk-l.txt
+    sudo hwinfo > hwinfo.txt
+    sudo ifconfig > ifconfig.txt
+
+    sudo hw-probe -all -check -dump-acpi -decode-acpi
+    [ -d hw.info ] && sudo rm -rf hw.info
+    sudo cp -r /root/HW_PROBE/LATEST/hw.info .
+}
+
 # }}}
 
 
