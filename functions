@@ -1133,7 +1133,10 @@ pare() { # panel restart
 }
 
 hostfilestmp() {
-    [ -d /tmp/public ] || mkdir /tmp/public
+    [ -d /tmp/public ] || {
+        mkdir /tmp/public;
+        echo "<a href=\"${PUBLIC_DOC}\">${PUBLIC_DOC}</a>" > /tmp/public/index.html;
+    }
     hostfiles /tmp/public
 }
 

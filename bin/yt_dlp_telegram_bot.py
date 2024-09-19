@@ -2,6 +2,8 @@
 """
 https://core.telegram.org/bots/tutorial -> https://gitlab.com/Athamaxy/telegram-bot-tutorial/-/blob/main/TutorialBot.py
 
+command for autostart: xfce4-terminal -e 'bash -i -c "python3 /mnt/e/dotfiles/bin/yt_dlp_telegram_bot.py &"'
+
 kill -15 $(pgrep -f 'python3 /mnt/e/dotfiles/bin/yt_dlp_telegram_bot.py') && \
     xfce4-terminal -e 'bash -i -c "python3 /mnt/e/dotfiles/bin/yt_dlp_telegram_bot.py &"' && \
     sleep 1 && cd $LOGS && tail-follow-latest
