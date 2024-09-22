@@ -1097,6 +1097,7 @@ git-commit-date() {
 }
 
 discord-update() {
+    sudo true || { echo "Error: sudo failed"; return 1; }
     local url="https://discord.com/api/download/stable?platform=linux&format=deb"
     local currentISODate="$(date -Ins | sed -E 's@.{6}$@@;s@,@.@g;s@:@-@g;s@T@_@')" # up to nanoseconds
     local location="/tmp/$currentISODate"
