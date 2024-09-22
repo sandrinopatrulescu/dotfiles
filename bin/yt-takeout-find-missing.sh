@@ -55,3 +55,5 @@ echo -ne "$content_of_replace_csv" > "$replace_csv_path"
 
 echo "[$(basename "$0")] Created .csv file for replace at:"
 echo "$replace_csv_path"
+
+echo "Edit .csv file then run alias: yt-playlist-item-replace-2aqr"

@@ -191,3 +191,11 @@ function enablePaste() {
     const dontTreadOnMe = (e) => e.stopImmediatePropagation();
     document.addEventListener('paste', dontTreadOnMe, true);
 }
+
+function extractImdbMovieGenres() {
+    const nodes = document.querySelector('.ipc-chip-list__scroller').querySelectorAll('a');
+    const texts = Array.from(nodes).map(x => x.querySelector('span').innerHTML);
+    const textsAsString = texts.reduce((a, e) => `${a}, ${e}`);
+    navigator.clipboard.writeText(textsAsString);
+    alert("Copied to clipboard:\n" + textsAsString);
+}
