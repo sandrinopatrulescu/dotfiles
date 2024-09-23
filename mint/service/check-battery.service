@@ -1,0 +1,12 @@
+[Unit]
+Description=Checks battery and notifies on telegram
+Wants=check-battery.timer
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bash -i -c "/mnt/e/dotfiles/bin/check-battery.sh"
+User=kamui
+Group=kamui
+
+[Install]
+WantedBy=multi-user.target
