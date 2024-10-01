@@ -141,6 +141,19 @@ function youtubePlayAllFromChannel() {
     window.location.replace("https://youtube.com/playlist?list=" + channelID.replace("UC", "UU"));
 }
 
+/**
+ * Runs from  a video page (watch?v)
+ */
+function youtubePlayAllFromChannelOldestFirst() {
+    const regex = /^https:\/\/www\.youtube\.com\/watch\?v=.{11}$/;
+    if (regex.test(window.location.href)) {
+        /* from How to watch all videos of a channel in chronological order -> https://www.reddit.com/r/youtube/comments/iqse6g/comment/gqb6v0h/ */
+        window.location.replace(window.location.href + "&list=ULcxqQ59vzyTk");
+    } else {
+        alert("This function is not meant to be run from this page.");
+    }
+}
+
 function exportPhoneChromeTabs() {
     function exportArrayToFile(array) {
         /*Create a Blob containing the array as text*/
