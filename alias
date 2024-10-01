@@ -521,6 +521,7 @@ alias ~="cd ~"
 alias cd.='cd $(readlink -f .)' # [1] Go to real dir (i.e. if current dir is linked)
 
 alias dots='cd $(readlink -f $DOTS)'
+alias dotsb='cd $(readlink -f $DOTS/bin)'
 alias dotss='cd $(readlink -f $DOTS_SECRETS)'
 ### }}}
 
