@@ -124,7 +124,12 @@ __prompt_command() {
     # set the new prompt
     PS1="${VENV_NOTICE}${basePS1}${branchName}${exitCodeInPrompt}$ "
 
-    command -v wmctrl > /dev/null && wmctrl -t $(($(xfconf-query -c xfwm4 -p /general/workspace_count) - 1)) -r "Passwords.kdbx - KeePassXC"
+    # move keepass to last workspace on graphical interfaces
+    if command -v wmctrl > /dev/null && [[  $XDG_SESSION_TYPE =~ x11 ]]; then
+        workspace_count="$(xfconf-query -c xfwm4 -p /general/workspace_count)"
+        last_workspace="$((workspace_count - 1))"
+        wmctrl -t ${last_workspace} -r "Passwords.kdbx - KeePassXC"
+    fi
     # reset xtrace to saved status
     eval "$setXStatus"
 }
