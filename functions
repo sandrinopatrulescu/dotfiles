@@ -1411,6 +1411,17 @@ install-system-service() {
     sudo systemctl status "${serviceFileBasename}"
 }
 
+update-root-bashrc() {
+    timestamp="$(date +%Y-%m-%d_%H-%M-%S)"
+    # generate new bashrc
+    sudo awk '/# kamui/{exit} {print}' ~root/.bashrc > /tmp/bashrc_new_"${timestamp}" # first half
+    sed -n '/# kamui/,$p' "$DOTS/bashrc" >> /tmp/bashrc_new_"${timestamp}" # second half
+
+    # replace the old bashrc
+    sudo cp ~root/.bashrc ~root/.bashrc_"${timestamp}"
+    sudo cp /tmp/bashrc_new_"${timestamp}" ~root/.bashrc
+}
+
 # }}}
 
 
