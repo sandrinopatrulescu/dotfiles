@@ -1,0 +1,8 @@
+[Unit]
+Description=Runs the minecraft server
+
+[Service]
+ExecStart=/usr/bin/bash -i -c "bash $MINECRAFT_SERVER/run.sh"
+
+[Install]
+WantedBy=multi-user.target

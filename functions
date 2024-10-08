@@ -1395,6 +1395,22 @@ dev-info() {
     sudo cp -r /root/HW_PROBE/LATEST/hw.info .
 }
 
+install-system-service() {
+    serviceFilePath="$1"
+
+    [ -z "${serviceFilePath}" ] && { echo "usage: $FUNCNAME <service path> [<-s for start>]"; return 1; }
+
+    serviceFileBasename="$(basename "${serviceFilePath}")"
+    targetDir="/etc/systemd/system"
+
+    [ -f "${targetDir}/${serviceFileBasename}" ] && sudo rm "${targetDir}/${serviceFileBasename}"
+    sudo cp "${serviceFilePath}" "${targetDir}"
+    sudo systemctl daemon-reload
+    sudo systemctl enable "${serviceFileBasename}"
+    [ "$2" = "-s" ] && sudo systemctl start "${serviceFileBasename}"
+    sudo systemctl status "${serviceFileBasename}"
+}
+
 # }}}
 
 
