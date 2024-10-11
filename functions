@@ -744,16 +744,28 @@ psgrep() { # ps grep
   ps wup $(pgrep -f "$1")
 }
 
+work_pc_ip() {
+    grep -E "^server=" "${MAIN_USER_HOME}/.local/share/remmina/${REMMINA_FILE}" | cut -d= -f2
+}
+
+work_username() {
+    grep -E "^username=" "${MAIN_USER_HOME}/.local/share/remmina/${REMMINA_FILE}" | cut -d= -f2
+}
+
+work_password() {
+    echo "$(work_password)"
+}
+
 xfracf() { # XFreeRDP Artsoft Consult Fullscreen
-  xfreerdp /v:"${SOGO_STATION_IP}" /u:"${SOGO_USERNAME}" /p:"${SOGO_PASSWORD}" /f
+  xfreerdp /v:"$(work_pc_ip)" /u:"$(work_username)" /p:"$(work_password)" /f
 }
 
 xfracm() { # XFreeRDP Artsoft Consult Multimonitor
-  xfreerdp /v:"${SOGO_STATION_IP}" /u:"${SOGO_USERNAME}" /p:"${SOGO_PASSWORD}" /multimon
+  xfreerdp /v:"$(work_pc_ip)" /u:"$(work_username)" /p:"$(work_password)" /multimon
 }
 
 xfracfm() { # XFreeRDP Artsoft Consult Fullscreen Multimonitor
-  xfreerdp /v:"${SOGO_STATION_IP}" /u:"${SOGO_USERNAME}" /p:"${SOGO_PASSWORD}" /f /multimon
+  xfreerdp /v:"$(work_pc_ip)" /u:"$(work_username)" /p:"$(work_password)" /f /multimon
 }
 
 fix-camera() {
@@ -967,7 +979,7 @@ local execution="$(curl -s "https://cas.artsoft-consult.ro:8443/cas/login?servic
 curl --silent --show-error -c /home/kamui/.config/google-chrome/Default/cookie-wol \
     --location 'https://cas.artsoft-consult.ro:8443/cas/login?service=http://wol.artsoft-consult.ro/&renew=true' \
     --data-urlencode 'username=sandrinopatrulescu' \
-    --data-urlencode "password=${SOGO_PASSWORD}" \
+    --data-urlencode "password=$(work_password)" \
     --data-urlencode "execution=${execution}" \
     --data-urlencode '_eventId=submit' \
     -o /dev/null
@@ -990,7 +1002,8 @@ curl --silent --show-error -b /home/kamui/.config/google-chrome/Default/cookie-w
 }
 
 acrc() { # ac remmina connect
-    remmina -c "/home/kamui/.local/share/remmina/group_rdp_artsoft-172_${SOGO_STATION_IP//./-}.remmina" >/dev/null 2>&1 &
+    # https://stackoverflow.com/questions/9190151/how-to-run-a-command-in-the-background-and-get-no-output#comment133149106_29547803
+    nohup remmina -c "${MAIN_USER_HOME}/.local/share/remmina/${REMMINA_FILE}" >/dev/null 2>&1 &
 }
 
 acrd() { # ac remmina disconnect
@@ -1420,6 +1433,16 @@ update-root-bashrc() {
     # replace the old bashrc
     sudo cp ~root/.bashrc ~root/.bashrc_"${timestamp}"
     sudo cp /tmp/bashrc_new_"${timestamp}" ~root/.bashrc
+}
+
+set-x-toggle() {
+    if [[ $- == *x* ]]; then
+        echo "xtrace is now off"
+        set +x
+    else
+        echo "xtrace is now on"
+        set -x
+    fi
 }
 
 # }}}
