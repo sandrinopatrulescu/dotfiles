@@ -1,7 +1,7 @@
 [Unit]
 Description=Stop Minecraft server when GUI is started
-After=graphical.target
-Wants=graphical.target
+After=graphical-session.target
+Wants=graphical-session.target
 
 [Service]
 Type=oneshot
@@ -9,4 +9,4 @@ ExecStart=/usr/bin/bash -i -c "minecraft-server-stop-on-gui.sh"
 Restart=on-failure
 
 [Install]
-WantedBy=graphical.target
+WantedBy=graphical-session.target

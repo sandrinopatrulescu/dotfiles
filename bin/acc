@@ -43,7 +43,7 @@ done
 
 # ping wol
 isAlive=false
-while [ true ]; do
+while true; do
     echo "[LOG][$(fdateiso)] Trying to ping WOL..."
     response="$(acwp)"
     echo "response: $response"
@@ -101,8 +101,5 @@ function waitToBoot() {
 #    }
 }
 
-nohup remmina -c "/home/kamui/.local/share/remmina/group_rdp_artsoft-172_${SOGO_STATION_IP//./-}.remmina" >/dev/null 2>&1 & # [1]
-sleep 3s && wmctrl -r 'Artsoft 172' -t $AC_WORKSPACE_INDEX
-
-
-# [1] https://stackoverflow.com/questions/9190151/how-to-run-a-command-in-the-background-and-get-no-output#comment133149106_29547803
+acrc # connect to rdp
+sleep 3s && wmctrl -r 'Artsoft' -t $AC_WORKSPACE_INDEX

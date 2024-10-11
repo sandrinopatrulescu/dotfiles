@@ -46,7 +46,7 @@ set timeout -1
 spawn /opt/forticlient/fortivpn connect artsoft_vpn -u sandrinopatrulescu -p -s -w
 match_max 100000
 expect -exact "password:"
-send -- "$::env(SOGO_PASSWORD)\r"
+send -- "$::env(WORK_PASSWORD)\r"
 expect -exact "\r
 Connect VPN: artsoft_vpn\r
 Status: Connecting...\r
