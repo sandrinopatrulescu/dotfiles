@@ -1384,6 +1384,11 @@ copy () { # copy contents to clipboard
 }
 
 dev-info() {
+    command -v hw-probe || {
+        sudo apt install hw-probe -y
+        command -v hw-probe || { echo "Failed to install hw-probe"; return 1; }
+    }
+
     set +o noclobber
     sudo inxi -Fxxxrz > inxi-Fxxxrz.txt
     sudo inxi -v7 > inxi-v7.txt
@@ -1443,6 +1448,20 @@ set-x-toggle() {
         echo "xtrace is now on"
         set -x
     fi
+}
+
+backup-dotfiles() {
+    local timestamp
+
+    timestamp="$(fdatei)"
+    \cp -r "$DOTS" /tmp/dotfiles_"${timestamp}"
+    cd /tmp || return 1
+    zip -rq dotfiles_"${timestamp}".zip dotfiles_"${timestamp}"
+    bashUploadResult="$(curl -sS bashupload.com -T dotfiles_"${timestamp}".zip)"
+    backups_telegram_bot.py -m "dotfiles backup ${timestamp}:\n${bashUploadResult}"
+    backups_telegram_bot.py dotfiles_"${timestamp}".zip
+    echo "Finished backing up dotfiles"
+    cd - || return 1
 }
 
 # }}}
