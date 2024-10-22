@@ -16,11 +16,11 @@ fi
 
 $isVerbose && echo -e "\nDiff:\n$diff_result"
 
-ids="$(echo "${diff_result}" | awk -F';' '$1 ~ /(Deleted|Private) video/ {split($2,a,"="); print a[2]}')"
+ids="$(echo "${diff_result}" | awk -F';' '$1 ~ /^< / {split($2,a,"="); print a[2]}')"
 $isVerbose && echo -e "\nIds:\n$ids"
 
 if [ -z "$ids" ]; then
-    echo "[$(basename "$0")] No /(Deleted|Private) video/ found"
+    echo "[$(basename "$0")] No /(Deleted|Private) video/ or removed found"
     exit 0
 fi
 
