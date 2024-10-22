@@ -753,7 +753,7 @@ work_username() {
 }
 
 work_password() {
-    echo "$(work_password)"
+    echo "${WORK_PASSWORD}"
 }
 
 xfracf() { # XFreeRDP Artsoft Consult Fullscreen
@@ -1295,7 +1295,7 @@ login-to-blomp-full() {
     # takes ~2h
     local sleepTime="1h"
     local announceCount=3
-    announce() { espeak "login-to-blomp finished" && beep; }
+    announce() { [[  $XDG_SESSION_TYPE =~ x11 ]] && espeak "login-to-blomp finished" && beep; }
 
     echo "[$(date +%Y-%m-%d_%H-%M-%S)] started  login-to-blomp 1 15"
     login-to-blomp 1 15 # takes ~30m
