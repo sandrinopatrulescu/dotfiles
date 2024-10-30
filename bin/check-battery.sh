@@ -15,7 +15,10 @@ status="$(cat /sys/class/power_supply/BAT1/status)"
 echo "${timestamp},${capacity},${status}" >> "$LOGS/battery-status.log"
 
 if [ "$capacity" -lt 30 ] && [ "$status" == "Discharging" ]; then
-    /mnt/e/dotfiles/bin/notify_telegram_bot.py -m "[${timestamp}] $(hostname) battery low: $capacity%"
+    notify_telegram_bot.py -m "[${timestamp}] $(hostname) battery low: $capacity%"
+    [[  $XDG_SESSION_TYPE =~ x11 ]] && {
+        espeak "Battery low: $capacity percent"
+    }
 fi
 
 exit 0
