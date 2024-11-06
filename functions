@@ -1464,6 +1464,36 @@ backup-dotfiles() {
     cd - || return 1
 }
 
+backup4() {
+    local timestamp
+    local target
+    local target_basename
+    local target_realpath
+
+    target="${1}"
+
+    timestamp="$(fdatei)"
+    target_basename="$(basename "${target}")"
+    target_realpath="$(realpath -e "${target}")"
+    cd /tmp || { echo "Error: failed to cd to /tmp"; return 1; }
+    \cp -r "${target_realpath}" /tmp/"${target_basename}"_"${timestamp}"
+    echo "Copied content to /tmp/${target_basename}_${timestamp}"
+    zip -rq "${target_basename}"_"${timestamp}".zip "${target_basename}"_"${timestamp}"
+    echo "Zipped content to /tmp/${target_basename}_${timestamp}.zip"
+    bashUploadResult="$(curl -sS bashupload.com -T "${target_basename}"_"${timestamp}".zip)"
+    echo "Uploaded to bashupload.com"
+    backups_telegram_bot.py -m "${target_basename} backup ${timestamp}:\n${bashUploadResult}"
+    echo "Sent name to telegram"
+    backups_telegram_bot.py "${target_basename}"_"${timestamp}".zip
+    echo "Sent file to telegram"
+    echo "Finished backing up ${target_basename}"
+    cd - || { echo "Error: failed to cd back"; return 1; }
+}
+
+function int-div() {
+    echo "$(($1 / $2)) remainder $(($1 % $2))"
+}
+
 # }}}
 
 
