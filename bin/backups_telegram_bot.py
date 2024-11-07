@@ -17,7 +17,21 @@ async def run():
     else:
         for _ in range(RETRIES + 1):
             try:
-                await bot.send_document(chat_id=CHAT_ID, document=open(sys.argv[1], 'rb'))
+                file = sys.argv[1]
+
+                # https://core.telegram.org/bots/faq#how-do-i-upload-a-large-file
+                # see test-telegram-bot-file-limit() for details (tested limit is between 52428400b and 52428600b)
+                byte_limit = 50 * (1024 ** 2)
+                file_size = os.path.getsize(file)
+
+                if file_size > byte_limit:
+                    file_path = os.path.abspath(file)
+                    message=f"[{file_path}] File size is {file_size} bytes, which is greater than the limit of {byte_limit} bytes. Please download it from the server."
+                    await bot.send_message(chat_id=CHAT_ID, text=message)
+                    print(message)
+                    exit(1)
+
+                await bot.send_document(chat_id=CHAT_ID, document=open(file, 'rb'))
                 return
             except telegram.error.TelegramError as e:
                 if _ == RETRIES:
