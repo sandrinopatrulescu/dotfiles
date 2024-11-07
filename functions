@@ -1494,6 +1494,21 @@ function int-div() {
     echo "$(($1 / $2)) remainder $(($1 % $2))"
 }
 
+function int-div-64() {
+    int-div "$1" 64
+}
+
+function test-telegram-bot-file-limit() {
+    # EDIT: fucking use: fallocate -l BYTES FILENAME
+    local bytes="$1" # extra size in bytes
+
+    # for 50 MiB: dd if=/dev/zero of=50mib bs=1M count=50 # binary
+    # for 50 MB : dd if=/dev/zero of=50mb bs=1MB count=50 # decimal
+    dd if=/dev/zero of="${bytes}b" bs=1 count="${bytes}"
+    cat 50mb "${bytes}"b > 50mb+"${bytes}"b
+    backups_telegram_bot.py 50mb+"${bytes}"b
+}
+
 # }}}
 
 
