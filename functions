@@ -1472,7 +1472,7 @@ backup4() {
 
     target="${1}"
 
-    timestamp="$(fdatei)"
+    timestamp="$(date +%Y-%m-%d_%H-%M-%S)"
     target_basename="$(basename "${target}")"
     target_realpath="$(realpath -e "${target}")"
     cd /tmp || { echo "Error: failed to cd to /tmp"; return 1; }
