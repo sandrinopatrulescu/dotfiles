@@ -1509,6 +1509,14 @@ function test-telegram-bot-file-limit() {
     backups_telegram_bot.py 50mb+"${bytes}"b
 }
 
+function clock() {
+    watch -t -n 1 'printf "%s" "$(date +%R:%S)"'
+}
+
+function clock-right() {
+    watch -t -n 1 'printf "\t\t%s" "$(date +%R:%S)"'
+}
+
 # }}}
 
 
