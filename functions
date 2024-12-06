@@ -1517,6 +1517,10 @@ function clock-right() {
     watch -t -n 1 'printf "\t\t%s" "$(date +%R:%S)"'
 }
 
+function google-chrome-profile() {
+    nohup google-chrome --profile-directory="$1" > /dev/null &
+}
+
 # }}}
 
 
