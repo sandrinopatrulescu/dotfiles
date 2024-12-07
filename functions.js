@@ -212,3 +212,33 @@ function extractImdbMovieGenres() {
     navigator.clipboard.writeText(textsAsString);
     alert("Copied to clipboard:\n" + textsAsString);
 }
+
+
+function lenostubeYouTubePlaylistLengthCalculator_SortDescending() {
+    /* https://www.lenostube.com/en/youtube-playlist-length-calculator/ */
+    const tableRows = Array.from(document.getElementById("playlist-table").querySelectorAll('tr'));
+
+    const sortedRows = tableRows.sort((a, b) => {
+        function tdToSeconds(td = a) {
+            const cell = Array.from(td.querySelectorAll('td'))[2];
+            const text = cell.textContent.trim();
+
+            // Parse the "4m 11s" format
+            const match = text.match(/(\d+)m\s*(\d+)?s?/);
+            if (match) {
+                const minutes = parseInt(match[1], 10) || 0;
+                const seconds = parseInt(match[2], 10) || 0;
+                return minutes * 60 + seconds;
+            }
+
+            return 0; // Default to 0 if format doesn't match
+        }
+
+        const durationA = tdToSeconds(a);
+        const durationB = tdToSeconds(b);
+
+        return durationB - durationA;
+    });
+
+    console.log(sortedRows);
+}
