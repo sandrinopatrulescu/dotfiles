@@ -61,14 +61,14 @@ git commit -m "takeout of ${timestamp}${commitMessageSuffix}"
 #git push
 
 # upload to "cloud"
-backups_telegram_bot.py -m "$latestTakeoutZip"
-backups_telegram_bot.py "$latestTakeoutZip"
+backups_telegram_bot.py -m "$latestTakeoutZip" || { echo "[WARN] Failed to send name to telegram"; }
+backups_telegram_bot.py "$latestTakeoutZip" || { echo "[WARN] Failed to send file to telegram"; }
 cd .. # cd to parent of gitDir
 gitDirBasename="$(basename $gitDir)"
 gitDirZip="${gitDirBasename}_$(date +%Y-%m-%d_%H-%M-%S).zip"
 zip -rq "${gitDirZip}" "${gitDirBasename}"
 # backups_telegram_bot.py "${gitDirZip}" # CAN'T DO OVER 50 MB (https://core.telegram.org/bots/api#sending-files)
-backups_telegram_bot.py -m "$(curl bashupload.com -T "${gitDirZip}")"
+backups_telegram_bot.py -m "$(curl bashupload.com -T "${gitDirZip}")" || { echo "[WARN] Failed to send bashupload.com result to telegram"; }
 cd - # cd to gitDir
 
 # diff
