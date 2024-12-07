@@ -223,8 +223,12 @@ function lenostubeYouTubePlaylistLengthCalculator_SortDescending() {
             const cell = Array.from(td.querySelectorAll('td'))[2];
             const text = cell.textContent.trim();
 
+            if (text.includes("Total Duration:")) {
+                return Number.POSITIVE_INFINITY;
+            }
+
             // Parse the "4m 11s" format
-            const match = text.match(/(\d+)m\s*(\d+)?s?/);
+            const match = text.match(/(?:(\d+)m)?\s*(\d+)?s?/);
             if (match) {
                 const minutes = parseInt(match[1], 10) || 0;
                 const seconds = parseInt(match[2], 10) || 0;
@@ -240,5 +244,10 @@ function lenostubeYouTubePlaylistLengthCalculator_SortDescending() {
         return durationB - durationA;
     });
 
-    console.log(sortedRows);
+    const rowsAsString = sortedRows.map(tr => {
+        const cells = Array.from(tr.querySelectorAll('td'));
+        return cells.map(cell => cell.textContent).reduce((acc, el) => acc + "," + el);
+    });
+
+    console.log(rowsAsString.join("\n"));
 }
