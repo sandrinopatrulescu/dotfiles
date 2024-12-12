@@ -770,7 +770,7 @@ xfracfm() { # XFreeRDP Artsoft Consult Fullscreen Multimonitor
 
 fix-camera() {
   # usage: fix-camera <patch file>
-  # source: https://askubuntu.com/questions/1264173/how-to-fix-camera-on-ubuntu-20-04
+  # source: https://bugs.launchpad.net/ubuntu/+source/linux/+bug/2000947/
 
   # how to create .patch files?
   # git diff --no-index uvc_driver.c uvc_driver.c.1 | sed -E 's@\<(uvc_driver.c)[^ ]+\>@\1@g' >| /mnt/e/dotfiles/linux-patches/uvc_driver-for-Quanta-HD-User-Facing-0x0408-0x4035_5.15.0-58-generic.patch
