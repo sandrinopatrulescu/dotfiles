@@ -314,8 +314,8 @@ alias functionsa="functions | sort -k 2 | sed 's@ \{@@'" # display the user-defi
 alias fcats="grep -nT \"###\" $DOTS/functions" # function categories
 alias paths='echo -e ${PATH//:/\\n}' # show all the PATH locations on different lines
 
-alias livemic="arecord -f cd | aplay"
-alias livemic2="arecord -f cd | aplay -D hw:1,0"
+alias livemicbuiltin="arecord -f cd -D hw:1,6 | aplay" # device no. for "DMIC" found in `arecord --list-devices`
+alias livemicexternalanalog="arecord -f cd -D hw:1,0 | aplay" # device no. for "HDA Analog" found in `arecord --list-devices`
 alias livecam="ffplay -f v4l2 -i /dev/video0"
 # wmctrl -G -l | grep "Chrome" | awk '{print "google-chrome --new-window --window-position="$3","$4" --window-size="$5","$6}' FS=' ' OFS=' '
 alias wmctrll="wmctrl -lGp"
