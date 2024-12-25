@@ -84,10 +84,11 @@ async def save_to_wayback_machine(position: int, title: str, url: str):
         retries = 5
         for _ in range(retries):
             try:
-                print('Calling Wayback Machine API')
+                print('Calling Wayback Machine API', end='...')
                 request = requests.get(wayback_machine_save_url)
                 if request.status_code != 200:
                     raise Exception(f"wayback machine api returned status code: {request.status_code}")
+                print(f'Result: {request.url}')
                 return
             except Exception as e:
                 if _ == retries - 1:
