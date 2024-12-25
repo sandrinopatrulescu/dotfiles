@@ -10,6 +10,7 @@ from typing import Optional
 import requests
 import telegram
 from ratelimiter import RateLimiter
+from telegram.request import HTTPXRequest
 from yt_dlp import YoutubeDL
 
 TELEGRAM_BOT_TOKEN = os.getenv("YT_PLAYLIST_ARCHIVE_TELEGRAM_BOT_TOKEN")
@@ -19,7 +20,8 @@ WAYBACK_MACHINE_COOLDOWN_SECONDS = 10 * 60
 videos_dir = tempfile.gettempdir()
 failed_ones = []
 
-telegram_bot = telegram.Bot(token=TELEGRAM_BOT_TOKEN)
+telegram_request = HTTPXRequest(connection_pool_size=20)
+telegram_bot = telegram.Bot(token=TELEGRAM_BOT_TOKEN, request=telegram_request)
 rate_limiter = RateLimiter(max_calls=10, period=WAYBACK_MACHINE_COOLDOWN_SECONDS)
 
 
