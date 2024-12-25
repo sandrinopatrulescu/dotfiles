@@ -57,7 +57,7 @@ async def send_video_to_telegram(position: int, title: str, url: str):
 
         if file_size > byte_limit:
             # TODO: split in 50MiB chunks
-            failed_ones.append((position, title, url, f"file too big ({file_size} bytes)"))
+            failed_ones.append((position, title, url, f"file too big - {file_size} bytes"))
             return
 
         # send to telegram

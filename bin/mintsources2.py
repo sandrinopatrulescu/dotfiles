@@ -2,12 +2,11 @@
 
 
 import argparse
+import os
 import subprocess
+import sys
 
 import argcomplete
-import os
-import shutil
-import sys
 
 # Import Application class from mintSources module
 sys.path.append('/usr/lib/linuxmint/mintSources/')
