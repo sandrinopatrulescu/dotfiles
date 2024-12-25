@@ -79,7 +79,6 @@ async def send_video_to_telegram(position: int, title: str, url: str):
 async def save_to_wayback_machine(position: int, title: str, url: str):
     wayback_machine_save_url = f"https://web.archive.org/save/{url}"
 
-
     retries = 5
     for _ in range(retries):
         try:
@@ -134,10 +133,11 @@ async def read_and_process_csv(playlist_csv_file: str, start_position: Optional[
             print(position, row)
             await process_video(position, title, url)
 
-    # print and send failed_ones
-    failed_ones_as_string = "Failed ones:\n" + "\n".join(map(lambda x: str(x), failed_ones))
-    print("\n" + failed_ones_as_string)
-    await send_telegram_message(failed_ones_as_string)
+    # print and send result
+    post_message_if_any_failed = "Failed ones:\n" + "\n".join(map(lambda x: str(x), failed_ones))
+    post_message = "Success" if len(failed_ones) == 0 else post_message_if_any_failed
+    print("\n" + post_message)
+    await send_telegram_message(post_message)
 
 
 async def main():
