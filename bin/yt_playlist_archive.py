@@ -32,7 +32,7 @@ def validate_natural_number(value):
     return int_value
 
 
-async def send_to_telegram(position: int, title: str, url: str):
+async def send_video_to_telegram(position: int, title: str, url: str):
     # download using yt-dlp
 
     # https://github.com/yt-dlp/yt-dlp/#embedding-yt-dlp
@@ -96,30 +96,20 @@ async def save_to_wayback_machine(position: int, title: str, url: str):
                     return
 
 
-def process_video(position: int, title: str, url: str):
+async def process_video(position: int, title: str, url: str):
     # git grep "Private video" $(git rev-list --all -- custom/"2 add queue re.csv") -- custom/"2 add queue re.csv"
     if title in ["[Deleted video]", "[Private video]"]:
         failed_ones.append((position, title, url, "video is deleted/private"))
         return
 
-    async def run_tasks():
-        await asyncio.gather(send_to_telegram(position, title, url), save_to_wayback_machine(position, title, url))
-
-    asyncio.run(run_tasks())
+    await asyncio.gather(send_video_to_telegram(position, title, url), save_to_wayback_machine(position, title, url))
 
 
-def send_telegram_message(text: str):
-    async def async_send():
-        await telegram_bot.send_message(TELEGRAM_CHAT_ID, text)
-
-    asyncio.run(async_send())
+async def send_telegram_message(text: str):
+    await telegram_bot.send_message(TELEGRAM_CHAT_ID, text)
 
 
-def read_and_process_csv(playlist_csv_file: str, start_position: Optional[int], end_position: Optional[int]):
-    async def send_file_name_to_telegram():
-        text = f"Processing {playlist_csv_file} from position {start_position} to {end_position}"
-        await telegram_bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=text)
-
+async def read_and_process_csv(playlist_csv_file: str, start_position: Optional[int], end_position: Optional[int]):
     with open(playlist_csv_file, mode="r", newline="", encoding="utf-8") as file:
         reader = csv.reader(file, delimiter=";")
         sent_file_name = False
@@ -134,21 +124,22 @@ def read_and_process_csv(playlist_csv_file: str, start_position: Optional[int], 
                 break
 
             if not sent_file_name:
-                asyncio.run(send_file_name_to_telegram())
+                text = f"Processing {playlist_csv_file} from position {start_position} to {end_position}"
+                await send_telegram_message(text)
                 sent_file_name = True
 
             title = row[0]
             url = row[1]
             print(position, row)
-            process_video(position, title, url)
+            await process_video(position, title, url)
 
     # print and send failed_ones
     failed_ones_as_string = "Failed ones:\n" + "\n".join(map(lambda x: str(x), failed_ones))
     print("\n" + failed_ones_as_string)
-    send_telegram_message(failed_ones_as_string)
+    await send_telegram_message(failed_ones_as_string)
 
 
-def main():
+async def main():
     parser = argparse.ArgumentParser(description="Process a playlist reference with optional start and end positions.")
 
     # Required argument
@@ -181,8 +172,8 @@ def main():
     if args.end_position:
         print(f"End Position: {args.end_position}")
 
-    read_and_process_csv(args.playlist_csv, args.start_position, args.end_position)
+    await read_and_process_csv(args.playlist_csv, args.start_position, args.end_position)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
