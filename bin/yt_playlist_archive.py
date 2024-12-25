@@ -56,6 +56,7 @@ async def send_video_to_telegram(position: int, title: str, url: str):
         file_size = os.path.getsize(file_path)
 
         if file_size > byte_limit:
+            # TODO: split in 50MiB chunks
             failed_ones.append((position, title, url, f"file too big ({file_size} bytes)"))
             return
 
@@ -77,13 +78,13 @@ async def send_video_to_telegram(position: int, title: str, url: str):
 
 
 async def save_to_wayback_machine(position: int, title: str, url: str):
+    # !!! NOTE this doesn't save the video itself, just the metadata
     wayback_machine_save_url = f"https://web.archive.org/save/{url}"
 
     retries = 5
     for _ in range(retries):
         try:
             print('Calling Wayback Machine API', end='...')
-            # async with rate_limiter:
             with rate_limiter:
                 request = requests.get(wayback_machine_save_url)
                 if request.status_code != 200:
