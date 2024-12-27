@@ -22,7 +22,8 @@ LOG_LEVEL = os.getenv('LOG_LEVEL', logging.INFO)
 
 TELEGRAM_BOT_TOKEN = os.getenv("YT_PLAYLIST_ARCHIVE_TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("YT_PLAYLIST_ARCHIVE_TELEGRAM_BOT_CHAT_ID")
-WAYBACK_MACHINE_COOLDOWN_SECONDS = 10 * 60
+WAYBACK_MACHINE_COOLDOWN_REQUESTS = 15
+WAYBACK_MACHINE_COOLDOWN_SECONDS = 1 * 60
 
 script_basename = os.path.basename(__file__)
 basename_root = os.path.splitext(script_basename)[0]
@@ -69,7 +70,8 @@ def rate_limiter_callback(until):
     log.info('Rate limited, sleeping for {:d} seconds'.format(duration) + till_string)
 
 
-rate_limiter = RateLimiter(max_calls=10, period=WAYBACK_MACHINE_COOLDOWN_SECONDS, callback=rate_limiter_callback)
+rate_limiter = RateLimiter(max_calls=WAYBACK_MACHINE_COOLDOWN_REQUESTS, period=WAYBACK_MACHINE_COOLDOWN_SECONDS,
+                           callback=rate_limiter_callback)
 
 
 def validate_natural_number(value):
@@ -99,7 +101,7 @@ def split_file(file_path: str, split_size_in_bytes: int, output_dir: str):
 
 
 async def send_file_to_telegram(file_path: str, caption: str, on_failure: Callable[[Exception], None]):
-    retries = 5
+    retries = 10
     delete_file = lambda: Path(file_path).unlink(missing_ok=True)
 
     for _ in range(retries):
