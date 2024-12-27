@@ -62,12 +62,13 @@ def setup_logger():
 log = setup_logger()
 
 
-def limited(until):
+def rate_limiter_callback(until):
     duration = int(round(until - time.time()))
-    log.info('Rate limited, sleeping for {:d} seconds'.format(duration))  # TODO: + f'(till {datetime.fromtimestamp(until).strftime('%Y-%m-%d_%H-%M-%S')})'
+    till_string = f" (till {datetime.fromtimestamp(until).strftime('%Y-%m-%d_%H-%M-%S')})"
+    log.info('Rate limited, sleeping for {:d} seconds'.format(duration) + till_string)
 
 
-rate_limiter = RateLimiter(max_calls=10, period=WAYBACK_MACHINE_COOLDOWN_SECONDS, callback=limited)
+rate_limiter = RateLimiter(max_calls=10, period=WAYBACK_MACHINE_COOLDOWN_SECONDS, callback=rate_limiter_callback)
 
 
 def validate_natural_number(value):
