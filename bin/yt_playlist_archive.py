@@ -172,21 +172,29 @@ async def save_to_wayback_machine(position: int, title: str, url: str):
                 return
 
 
-async def process_video(position: int, title: str, url: str):
+async def process_video(mode: str, position: int, title: str, url: str):
     # git grep "Private video" $(git rev-list --all -- custom/"2 add queue re.csv") -- custom/"2 add queue re.csv"
     if title in ["[Deleted video]", "[Private video]"]:
         failed_ones.append((position, title, url, "video is deleted/private"))
         return
 
-    await asyncio.gather(download_video_and_send_to_telegram(position, title, url),
-                         save_to_wayback_machine(position, title, url))
+    if mode == 'telegram':
+        await download_video_and_send_to_telegram(position, title, url)
+    elif mode == 'wayback-machine':
+        await save_to_wayback_machine(position, title, url)
+    elif mode == 'both':
+        await asyncio.gather(download_video_and_send_to_telegram(position, title, url),
+                             save_to_wayback_machine(position, title, url))
+    else:
+        raise Exception("Unknown mode")
 
 
 async def send_telegram_message(text: str):
     await telegram_bot.send_message(TELEGRAM_CHAT_ID, text)
 
 
-async def read_and_process_csv(playlist_csv_file: str, start_position: Optional[int], end_position: Optional[int]):
+async def read_and_process_csv(mode: str, playlist_csv_file: str, start_position: Optional[int],
+                               end_position: Optional[int]):
     with open(playlist_csv_file, mode="r", newline="", encoding="utf-8") as file:
         reader = csv.reader(file, delimiter=";")
         sent_file_name = False
@@ -201,14 +209,14 @@ async def read_and_process_csv(playlist_csv_file: str, start_position: Optional[
                 break
 
             if not sent_file_name:
-                text = f"Processing {playlist_csv_file} from position {start_position} to {end_position}"
+                text = f"Processing {playlist_csv_file} in mode {mode} from position {start_position} to {end_position}"
                 await send_telegram_message(text)
                 sent_file_name = True
 
             title = row[0]
             url = row[1]
             log.info(f'{position}. {title} ({url})')
-            await process_video(position, title, url)
+            await process_video(mode, position, title, url)
 
     # print and send result
     post_message_if_any_failed = "Failed ones:\n" + "\n".join(map(lambda x: str(x), failed_ones))
@@ -220,7 +228,15 @@ async def read_and_process_csv(playlist_csv_file: str, start_position: Optional[
 async def main():
     parser = argparse.ArgumentParser(description="Process a playlist reference with optional start and end positions.")
 
-    # Required argument
+    # Required arguments
+    mode_list = ['telegram', 'wayback-machine', 'both']
+    parser.add_argument(
+        'mode',
+        type=str,
+        choices=mode_list,
+        help=f"Action to perform. Must be one of: {mode_list}"
+    )
+
     parser.add_argument("playlist_csv", type=str,
                         help="Path to a CSV file that contains the videos in the format: title;url (ex: created by yt-playlist-to-csv.sh)")
 
@@ -244,13 +260,14 @@ async def main():
         if args.start_position > args.end_position:
             parser.error("start_position must be less than or equal to end_position.")
 
+    log.info(f"mode: {args.mode}")
     log.info(f"playlist_csv: {args.playlist_csv}")
     if args.start_position:
         log.info(f"Start Position: {args.start_position}")
     if args.end_position:
         log.info(f"End Position: {args.end_position}")
 
-    await read_and_process_csv(args.playlist_csv, args.start_position, args.end_position)
+    await read_and_process_csv(args.mode, args.playlist_csv, args.start_position, args.end_position)
 
 
 if __name__ == "__main__":
