@@ -2,8 +2,11 @@
 import argparse
 import asyncio
 import csv
+import logging
 import os
 import tempfile
+import time
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
@@ -13,16 +16,58 @@ from ratelimiter import RateLimiter
 from telegram.request import HTTPXRequest
 from yt_dlp import YoutubeDL
 
+LOGS_DIR = os.getenv('LOGS')
+LOG_LEVEL = os.getenv('LOG_LEVEL', logging.INFO)
+
 TELEGRAM_BOT_TOKEN = os.getenv("YT_PLAYLIST_ARCHIVE_TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("YT_PLAYLIST_ARCHIVE_TELEGRAM_BOT_CHAT_ID")
 WAYBACK_MACHINE_COOLDOWN_SECONDS = 10 * 60
 
-videos_dir = tempfile.gettempdir()
+script_basename = os.path.basename(__file__)
+basename_root = os.path.splitext(script_basename)[0]
+videos_dir = os.path.join(tempfile.gettempdir(), basename_root, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+
 failed_ones = []
 
 telegram_request = HTTPXRequest(connection_pool_size=20)
 telegram_bot = telegram.Bot(token=TELEGRAM_BOT_TOKEN, request=telegram_request)
-rate_limiter = RateLimiter(max_calls=10, period=WAYBACK_MACHINE_COOLDOWN_SECONDS)
+
+
+def setup_logger():
+    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    log_filename = os.path.join(LOGS_DIR, f'{basename_root}_{timestamp}.log')
+
+    # Create a custom logger
+    logger = logging.getLogger(__name__)
+    logger.setLevel(LOG_LEVEL)
+
+    # Create handlers
+    file_handler = logging.FileHandler(log_filename)
+    file_handler.setLevel(logging.DEBUG)
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.DEBUG)
+
+    # Create formatters and add them to handlers
+    formatter = logging.Formatter('%(asctime)s - %(thread)d - %(name)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(formatter)
+    console_handler.setFormatter(formatter)
+
+    # Add handlers to the logger
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
+
+    return logger
+
+
+log = setup_logger()
+
+
+def limited(until):
+    duration = int(round(until - time.time()))
+    log.info('Rate limited, sleeping for {:d} seconds'.format(duration))  # TODO: + f'(till {datetime.fromtimestamp(until).strftime('%Y-%m-%d_%H-%M-%S')})'
+
+
+rate_limiter = RateLimiter(max_calls=10, period=WAYBACK_MACHINE_COOLDOWN_SECONDS, callback=limited)
 
 
 def validate_natural_number(value):
@@ -38,7 +83,7 @@ async def send_video_to_telegram(position: int, title: str, url: str):
     # https://github.com/yt-dlp/yt-dlp/#embedding-yt-dlp
     video_format = 'mp4'
     ydl_options = {'paths': {'home': videos_dir}, 'format': video_format, 'outtmpl': {'default': f'{title}.%(ext)s'},
-                   'no_warnings': True}
+                   'no_warnings': True, 'retries': 50}
 
     with YoutubeDL(ydl_options) as ydl:
         return_code = ydl.download(url)
@@ -84,12 +129,13 @@ async def save_to_wayback_machine(position: int, title: str, url: str):
     retries = 5
     for _ in range(retries):
         try:
-            print('Calling Wayback Machine API', end='...')
+            log.info('Before rate_limiter')
             with rate_limiter:
+                log.info('Calling Wayback Machine API')
                 request = requests.get(wayback_machine_save_url)
                 if request.status_code != 200:
                     raise Exception(f"wayback machine api returned status code: {request.status_code}")
-                print(f'Result: {request.url}')
+                log.info(f'Result: {request.url}')
                 return
         except Exception as e:
             if _ == retries - 1:
@@ -131,13 +177,13 @@ async def read_and_process_csv(playlist_csv_file: str, start_position: Optional[
 
             title = row[0]
             url = row[1]
-            print(position, row)
+            log.info(f'{position}. {title} ({url})')
             await process_video(position, title, url)
 
     # print and send result
     post_message_if_any_failed = "Failed ones:\n" + "\n".join(map(lambda x: str(x), failed_ones))
     post_message = "Success" if len(failed_ones) == 0 else post_message_if_any_failed
-    print("\n" + post_message)
+    log.info("\n" + post_message)
     await send_telegram_message(post_message)
 
 
@@ -168,11 +214,11 @@ async def main():
         if args.start_position > args.end_position:
             parser.error("start_position must be less than or equal to end_position.")
 
-    print(f"playlist_csv: {args.playlist_csv}")
+    log.info(f"playlist_csv: {args.playlist_csv}")
     if args.start_position:
-        print(f"Start Position: {args.start_position}")
+        log.info(f"Start Position: {args.start_position}")
     if args.end_position:
-        print(f"End Position: {args.end_position}")
+        log.info(f"End Position: {args.end_position}")
 
     await read_and_process_csv(args.playlist_csv, args.start_position, args.end_position)
 
