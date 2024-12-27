@@ -3,6 +3,7 @@ import argparse
 import asyncio
 import csv
 import logging
+import math
 import os
 import tempfile
 import time
@@ -78,6 +79,25 @@ def validate_natural_number(value):
     return int_value
 
 
+def split_file(file_path: str, split_size_in_bytes: int, output_dir: str):
+    os.makedirs(output_dir, exist_ok=True)
+
+    number_of_parts = math.ceil(os.path.getsize(file_path) / split_size_in_bytes)
+    part_number = 1
+    file_paths = []
+
+    with open(file_path, 'rb') as file:
+        while chunk := file.read(split_size_in_bytes):
+            file_name = os.path.basename(file_path) + f'_part-{part_number:02}-of-{number_of_parts}'
+            output_file = os.path.join(output_dir, file_name)
+            file_paths.append(output_file)
+            with open(output_file, 'wb') as output:
+                output.write(chunk)
+            part_number += 1
+
+    return file_paths
+
+
 async def send_file_to_telegram(file_path: str, caption: str, on_failure: Callable[[Exception], None]):
     retries = 5
     delete_file = lambda: Path(file_path).unlink(missing_ok=True)
@@ -111,22 +131,24 @@ async def download_video_and_send_to_telegram(position: int, title: str, url: st
 
         file_path = os.path.join(videos_dir, f'{title}.{video_format}')
 
-        # check file size
+        # send to telegram
 
         # https://core.telegram.org/bots/faq#how-do-i-upload-a-large-file
         # see test-telegram-bot-file-limit() for details (tested limit is between 52428400b and 52428600b)
-        byte_limit = 50 * (1024 ** 2)
+        file_size_limit = 50 * (1000 ** 2)  # use 50 MB instead of 50 MiB because the latter fails
         file_size = os.path.getsize(file_path)
 
-        if file_size > byte_limit:
-            # TODO: split in 50MiB chunks
-            failed_ones.append((position, title, url, f"file too big - {file_size} bytes"))
-            return
-
-        # send to telegram
-        on_send_failure = lambda e: failed_ones.append(
-            (position, title, url, f"telegram bot api return exception: {e}"))
-        await send_file_to_telegram(file_path, f"{position}. {title} ({url})", on_failure=on_send_failure)
+        if file_size < file_size_limit:
+            on_send_failure = lambda e: failed_ones.append(
+                (position, title, url, f"telegram bot api return exception: {e}"))
+            await send_file_to_telegram(file_path, f"{position}. {title} ({url})", on_failure=on_send_failure)
+        else:
+            splits_paths = split_file(file_path, file_size_limit, file_path + '_splits')
+            for split_path in splits_paths:
+                split_name = os.path.basename(split_path)
+                on_send_failure = lambda e: failed_ones.append(
+                    (position, split_name, url, f"telegram bot api return exception: {e}"))
+                await send_file_to_telegram(split_path, f"{position}. {split_name} ({url})", on_failure=on_send_failure)
 
 
 async def save_to_wayback_machine(position: int, title: str, url: str):
