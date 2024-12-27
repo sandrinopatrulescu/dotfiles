@@ -8,7 +8,7 @@ import tempfile
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Callable
 
 import requests
 import telegram
@@ -78,7 +78,24 @@ def validate_natural_number(value):
     return int_value
 
 
-async def send_video_to_telegram(position: int, title: str, url: str):
+async def send_file_to_telegram(file_path: str, caption: str, on_failure: Callable[[Exception], None]):
+    retries = 5
+    delete_file = lambda: Path(file_path).unlink(missing_ok=True)
+
+    for _ in range(retries):
+        try:
+            await telegram_bot.send_document(chat_id=TELEGRAM_CHAT_ID, document=open(file_path, 'rb'), caption=caption)
+            delete_file()
+            return
+        except Exception as e:
+            if _ == retries - 1:
+                on_failure(e)
+
+                delete_file()
+                return
+
+
+async def download_video_and_send_to_telegram(position: int, title: str, url: str):
     # download using yt-dlp
 
     # https://github.com/yt-dlp/yt-dlp/#embedding-yt-dlp
@@ -107,20 +124,9 @@ async def send_video_to_telegram(position: int, title: str, url: str):
             return
 
         # send to telegram
-        retries = 5
-        delete_file = lambda: Path(file_path).unlink(missing_ok=True)
-
-        for _ in range(retries):
-            try:
-                await telegram_bot.send_document(chat_id=TELEGRAM_CHAT_ID, document=open(file_path, 'rb'),
-                                                 caption=f"{position}. {title} ({url})")
-                delete_file()
-                return
-            except Exception as e:
-                if _ == retries - 1:
-                    failed_ones.append((position, title, url, f"telegram bot api return exception: {e}"))
-                    delete_file()
-                    return
+        on_send_failure = lambda e: failed_ones.append(
+            (position, title, url, f"telegram bot api return exception: {e}"))
+        await send_file_to_telegram(file_path, f"{position}. {title} ({url})", on_failure=on_send_failure)
 
 
 async def save_to_wayback_machine(position: int, title: str, url: str):
@@ -150,7 +156,8 @@ async def process_video(position: int, title: str, url: str):
         failed_ones.append((position, title, url, "video is deleted/private"))
         return
 
-    await asyncio.gather(send_video_to_telegram(position, title, url), save_to_wayback_machine(position, title, url))
+    await asyncio.gather(download_video_and_send_to_telegram(position, title, url),
+                         save_to_wayback_machine(position, title, url))
 
 
 async def send_telegram_message(text: str):
