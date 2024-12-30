@@ -176,17 +176,16 @@ async def download_video_and_send_to_telegram(position: int, title: str, url: st
     # download using yt-dlp
 
     # https://github.com/yt-dlp/yt-dlp/#embedding-yt-dlp
-    video_format = 'mp4'
-    ydl_options = {'paths': {'home': videos_dir}, 'format': video_format, 'outtmpl': {'default': f'{title}.%(ext)s'},
-                   'no_warnings': True, 'retries': 50}
+    ydl_options = {
+        'paths': {'home': videos_dir},
+        'no_warnings': True,
+        'retries': 50,
+    }
 
     with YoutubeDL(ydl_options) as ydl:
-        return_code = ydl.download(url)
-        if return_code != 0:
-            failed_ones.append((position, title, url, f"yt-dlp returned code {return_code}"))
-            return
-
-        file_path = os.path.join(videos_dir, f'{title}.{video_format}')
+        # python yt-dlp get filename -> https://stackoverflow.com/a/78955109/17299754
+        info_dict = ydl.extract_info(url, download=True)
+        file_path = ydl.prepare_filename(info_dict)
 
         # send to telegram
 
