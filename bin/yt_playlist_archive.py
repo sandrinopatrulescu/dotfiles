@@ -7,6 +7,7 @@ import logging
 import math
 import os
 import platform
+import signal
 import socket
 import tempfile
 import time
@@ -53,6 +54,40 @@ failed_ones = []
 
 telegram_request = HTTPXRequest(connection_pool_size=20)
 telegram_bot = telegram.Bot(token=TELEGRAM_BOT_TOKEN, request=telegram_request)
+
+# region uniquely identify the process
+node = platform.uname().node  # hostname
+pid = os.getpid()
+process = psutil.Process(pid)
+process_start = datetime.fromtimestamp(process.create_time()).strftime('%Y-%m-%d_%H-%M-%S.%f')
+metadata = f"[{node}#{process_start}#{pid}] "
+# endregion
+
+
+async def log_and_send_result(result: str):
+    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    text = metadata + f"[{timestamp}] {result}. "
+
+    if len(failed_ones) == 0:
+        text += "Success."
+    else:
+        text += "Failed ones:\n" + "\n".join(map(lambda x: str(x), failed_ones))
+
+    log.info(text)
+    await send_telegram_message(text)
+
+
+async def sign_handler_intermediary(_, __):
+    await log_and_send_result("Aborted")
+    loop = asyncio.get_event_loop()
+    loop.stop()
+
+
+def sigint_handler(signum, frame):
+    asyncio.create_task(sign_handler_intermediary(signum, frame))
+
+
+signal.signal(signal.SIGINT, sigint_handler)
 
 
 def setup_logger():
@@ -221,12 +256,6 @@ async def read_and_process_csv(mode: str, playlist_csv_file: str, start_position
         reader = csv.reader(file, delimiter=";")
         sent_file_name = False
 
-        node = platform.uname().node  # hostname
-        pid = os.getpid()
-        process = psutil.Process(pid)
-        process_start = datetime.fromtimestamp(process.create_time()).strftime('%Y-%m-%d_%H-%M-%S.%f')
-        metadata = f"[{node}#{process_start}#{pid}] "
-
         # Iterate through rows
         for position, row in enumerate(reader):
             if position == 0:
@@ -243,14 +272,12 @@ async def read_and_process_csv(mode: str, playlist_csv_file: str, start_position
 
             title = row[0]
             url = row[1]
+
             log.info(f'{position}. {title} ({url})')
             await process_video(mode, position, title, url)
 
-    # print and send result
-    post_message_if_any_failed = "Failed ones:\n" + "\n".join(map(lambda x: str(x), failed_ones))
-    post_message = "Success" if len(failed_ones) == 0 else post_message_if_any_failed
-    log.info("\n" + post_message)
-    await send_telegram_message(metadata + post_message)
+    # log and send result
+    await log_and_send_result("Finished")
 
 
 async def main():
@@ -299,4 +326,8 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except RuntimeError as e:
+        if str(e) != "Event loop stopped before Future completed.":
+            raise
