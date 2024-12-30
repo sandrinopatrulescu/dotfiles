@@ -5,12 +5,14 @@ import csv
 import logging
 import math
 import os
+import platform
 import tempfile
 import time
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, Callable
 
+import psutil
 import requests
 import telegram
 from ratelimiter import RateLimiter
@@ -201,6 +203,12 @@ async def read_and_process_csv(mode: str, playlist_csv_file: str, start_position
         reader = csv.reader(file, delimiter=";")
         sent_file_name = False
 
+        node = platform.uname().node  # hostname
+        pid = os.getpid()
+        process = psutil.Process(pid)
+        process_start = datetime.fromtimestamp(process.create_time()).strftime('%Y-%m-%d_%H-%M-%S.%f')
+        metadata = f"[{node}#{process_start}#{pid}] "
+
         # Iterate through rows
         for position, row in enumerate(reader):
             if position == 0:
@@ -212,7 +220,7 @@ async def read_and_process_csv(mode: str, playlist_csv_file: str, start_position
 
             if not sent_file_name:
                 text = f"Processing {playlist_csv_file} in mode {mode} from position {start_position} to {end_position}"
-                await send_telegram_message(text)
+                await send_telegram_message(metadata + text)
                 sent_file_name = True
 
             title = row[0]
@@ -224,7 +232,7 @@ async def read_and_process_csv(mode: str, playlist_csv_file: str, start_position
     post_message_if_any_failed = "Failed ones:\n" + "\n".join(map(lambda x: str(x), failed_ones))
     post_message = "Success" if len(failed_ones) == 0 else post_message_if_any_failed
     log.info("\n" + post_message)
-    await send_telegram_message(post_message)
+    await send_telegram_message(metadata + post_message)
 
 
 async def main():
