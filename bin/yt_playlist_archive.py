@@ -2,10 +2,12 @@
 import argparse
 import asyncio
 import csv
+import errno
 import logging
 import math
 import os
 import platform
+import socket
 import tempfile
 import time
 from datetime import datetime
@@ -18,6 +20,22 @@ import telegram
 from ratelimiter import RateLimiter
 from telegram.request import HTTPXRequest
 from yt_dlp import YoutubeDL
+
+# region force single instance of the program
+# source: https://stackoverflow.com/questions/63525619/how-can-i-disable-multiple-instances-of-a-python-script
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+host = ''
+port = 12345
+try:
+    s.bind((host, port))  # Bind to the port
+except OSError as os_error:
+    if os_error.errno == errno.EADDRINUSE:
+        print("Can't run multiple instances of the program at the same time.")
+        exit(1)
+    else:
+        raise
+print("Listening on %s:%d" % (host, port))
+# endregion
 
 LOGS_DIR = os.getenv('LOGS')
 LOG_LEVEL = os.getenv('LOG_LEVEL', logging.INFO)
