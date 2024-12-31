@@ -61,6 +61,8 @@ pid = os.getpid()
 process = psutil.Process(pid)
 process_start = datetime.fromtimestamp(process.create_time()).strftime('%Y-%m-%d_%H-%M-%S.%f')
 metadata = f"[{node}#{process_start}#{pid}] "
+
+
 # endregion
 
 
@@ -327,6 +329,6 @@ async def main():
 if __name__ == "__main__":
     try:
         asyncio.run(main())
-    except RuntimeError as e:
-        if str(e) != "Event loop stopped before Future completed.":
+    except RuntimeError as re:
+        if str(re) != "Event loop stopped before Future completed.":
             raise
