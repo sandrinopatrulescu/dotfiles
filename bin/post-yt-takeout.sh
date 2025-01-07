@@ -55,6 +55,8 @@ cd "$gitDir"
 commitMessageSuffix=""
 [ $(($(wc -l < custom/"2 add queue re.csv") - $(wc -l < custom/"2 add queue re COMPACT.csv"))) -eq 0 ] && commitMessageSuffix=" [2aqr COMPLETE]" || commitMessageSuffix=" [2aqr INCOMPLETE]"
 
+\grep -qE "\[(Deleted|Private) video]" custom/"2 add queue re.csv" && commitMessageSuffix=" [2aqr INCOMPLETE]"
+
 # git add commit and push
 git add .
 git commit -m "takeout of ${timestamp}${commitMessageSuffix}"
