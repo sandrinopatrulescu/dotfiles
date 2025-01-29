@@ -1524,7 +1524,14 @@ function google-chrome-profile() {
 function yt_playlist_archive() {
     [ $# -eq 2 ] || { echo "ERROR: usage: $FUNCNAME <start position> <end position>"; return 1; }
 
-    yt_playlist_archive.py both "/mnt/e/git/sp-backups-z/google-takeout-youtube/custom/2 add queue re.csv" --start_position "$1" --end_position "$2"
+    takeoutRepo="/mnt/e/git/sp-backups-z/google-takeout-youtube"
+    oldpwd="$OLDPWD"
+    { cd $DOTS && git pull; } || { echo "ERROR: failed to do git pull in $DOTS"; return 1; }
+    { cd $DOTSS && git pull; } || { echo "ERROR: failed to do git pull in $DOTSS"; return 1; }
+    { cd $takeoutRepo && git pull; } || { echo "ERROR: failed to do git pull in $takeoutRepo"; return 1; }
+
+    cd "$oldpwd"
+    yt_playlist_archive.py both "${takeoutRepo}/custom/2 add queue re.csv" --start_position "$1" --end_position "$2"
 }
 
 # }}}
