@@ -1529,6 +1529,7 @@ function yt_playlist_archive() {
     { cd $DOTS && git pull; } || { echo "ERROR: failed to do git pull in $DOTS"; return 1; }
     { cd $DOTSS && git pull; } || { echo "ERROR: failed to do git pull in $DOTSS"; return 1; }
     { cd $takeoutRepo && git pull; } || { echo "ERROR: failed to do git pull in $takeoutRepo"; return 1; }
+    pip install yt-dlp -U # yt-dlp update
 
     cd "$oldpwd"
     yt_playlist_archive.py both "${takeoutRepo}/custom/2 add queue re.csv" --start_position "$1" --end_position "$2"
