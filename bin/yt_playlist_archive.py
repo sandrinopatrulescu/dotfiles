@@ -182,6 +182,8 @@ async def download_video_and_send_to_telegram(position: int, title: str, url: st
         'paths': {'home': videos_dir},
         'no_warnings': True,
         'retries': 50,
+        'fragment_retries': 50,
+        'restrictfilenames': True,
     }
 
     retries = 10
@@ -260,7 +262,14 @@ async def process_video(mode: str, position: int, title: str, url: str):
 
 
 async def send_telegram_message(text: str):
-    await telegram_bot.send_message(TELEGRAM_CHAT_ID, text)
+    retries = 30
+    for _ in range(retries):
+        try:
+            await telegram_bot.send_message(TELEGRAM_CHAT_ID, text)
+            return
+        except Exception as e:
+            if _ == retries - 1:
+                raise e
 
 
 async def read_and_process_csv(mode: str, playlist_csv_file: str, start_position: Optional[int],
