@@ -337,6 +337,7 @@ async def main():
         if args.start_position > args.end_position:
             parser.error("start_position must be less than or equal to end_position.")
 
+    log.info(f"TELEGRAM_CHAT_ID: {TELEGRAM_CHAT_ID}")
     log.info(f"mode: {args.mode}")
     log.info(f"playlist_csv: {args.playlist_csv}")
     if args.start_position:
