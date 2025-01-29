@@ -1521,6 +1521,12 @@ function google-chrome-profile() {
     nohup google-chrome --profile-directory="$1" > /dev/null &
 }
 
+function yt_playlist_archive() {
+    [ $# -eq 2 ] || { echo "ERROR: usage: $FUNCNAME <start position> <end position>"; return 1; }
+
+    yt_playlist_archive.py both "/mnt/e/git/sp-backups-z/google-takeout-youtube/custom/2 add queue re.csv" --start_position "$1" --end_position "$2"
+}
+
 # }}}
 
 
