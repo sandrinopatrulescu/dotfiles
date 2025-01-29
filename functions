@@ -1522,17 +1522,25 @@ function google-chrome-profile() {
 }
 
 function yt_playlist_archive() {
-    [ $# -eq 2 ] || { echo "ERROR: usage: $FUNCNAME <start position> <end position>"; return 1; }
+    local usage
+    local chatId
+    local mode
+
+    chatId="${1:-$YT_PLAYLIST_ARCHIVE_TELEGRAM_BOT_CHAT_ID}"
+    mode="${MODE:-both}"
+
+    usage="usage: ${FUNCNAME[0]} <start position> <end position> [<telegram chat id>]"
+    (( $# >=2 && $# <= 3 )) || { echo "ERROR: ${usage}"; return 1; }
 
     takeoutRepo="/mnt/e/git/sp-backups-z/google-takeout-youtube"
     oldpwd="$OLDPWD"
-    { cd $DOTS && git pull; } || { echo "ERROR: failed to do git pull in $DOTS"; return 1; }
-    { cd $DOTSS && git pull; } || { echo "ERROR: failed to do git pull in $DOTSS"; return 1; }
-    { cd $takeoutRepo && git pull; } || { echo "ERROR: failed to do git pull in $takeoutRepo"; return 1; }
+    { cd "$DOTS" && git pull; } || { echo "ERROR: failed to do git pull in $DOTS"; return 1; }
+    { cd "$DOTSS" && git pull; } || { echo "ERROR: failed to do git pull in $DOTSS"; return 1; }
+    { cd "$takeoutRepo" && git pull; } || { echo "ERROR: failed to do git pull in $takeoutRepo"; return 1; }
     pip install yt-dlp -U # yt-dlp update
 
     cd "$oldpwd"
-    yt_playlist_archive.py both "${takeoutRepo}/custom/2 add queue re.csv" --start_position "$1" --end_position "$2"
+    YT_PLAYLIST_ARCHIVE_TELEGRAM_BOT_CHAT_ID="${chatId}" yt_playlist_archive.py "${mode}" "${takeoutRepo}/custom/2 add queue re.csv" --start_position "$1" --end_position "$2"
 }
 
 # }}}
