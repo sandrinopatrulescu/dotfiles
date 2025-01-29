@@ -184,29 +184,41 @@ async def download_video_and_send_to_telegram(position: int, title: str, url: st
         'retries': 50,
     }
 
-    with YoutubeDL(ydl_options) as ydl:
-        # python yt-dlp get filename -> https://stackoverflow.com/a/78955109/17299754
-        info_dict = ydl.extract_info(url, download=True)
-        file_path = ydl.prepare_filename(info_dict)
+    retries = 10
+    for retry_number in range(retries + 1):
+        if retry_number > 0:
+            log.info(f"Retry {retry_number}/{retries} for downloading")
+        try:
+            with YoutubeDL(ydl_options) as ydl:
+                # python yt-dlp get filename -> https://stackoverflow.com/a/78955109/17299754
+                info_dict = ydl.extract_info(url, download=True)
+                file_path = ydl.prepare_filename(info_dict)
 
-        # send to telegram
+                # send to telegram
 
-        # https://core.telegram.org/bots/faq#how-do-i-upload-a-large-file
-        # see test-telegram-bot-file-limit() for details (tested limit is between 52428400b and 52428600b)
-        file_size_limit = 50 * (1000 ** 2)  # use 50 MB instead of 50 MiB because the latter fails
-        file_size = os.path.getsize(file_path)
+                # https://core.telegram.org/bots/faq#how-do-i-upload-a-large-file
+                # see test-telegram-bot-file-limit() for details (tested limit is between 52428400b and 52428600b)
+                file_size_limit = 50 * (1000 ** 2)  # use 50 MB instead of 50 MiB because the latter fails
+                file_size = os.path.getsize(file_path)
 
-        if file_size < file_size_limit:
-            on_send_failure = lambda e: failed_ones.append(
-                (position, title, url, f"telegram bot api return exception: {e}"))
-            await send_file_to_telegram(file_path, f"{position}. {title} ({url})", on_failure=on_send_failure)
-        else:
-            splits_paths = split_file(file_path, file_size_limit, file_path + '_splits')
-            for split_path in splits_paths:
-                split_name = os.path.basename(split_path)
-                on_send_failure = lambda e: failed_ones.append(
-                    (position, split_name, url, f"telegram bot api return exception: {e}"))
-                await send_file_to_telegram(split_path, f"{position}. {split_name} ({url})", on_failure=on_send_failure)
+                if file_size < file_size_limit:
+                    on_send_failure = lambda e: failed_ones.append(
+                        (position, title, url, f"telegram bot api return exception: {e}"))
+                    await send_file_to_telegram(file_path, f"{position}. {title} ({url})", on_failure=on_send_failure)
+                else:
+                    splits_paths = split_file(file_path, file_size_limit, file_path + '_splits')
+                    for split_path in splits_paths:
+                        split_name = os.path.basename(split_path)
+                        on_send_failure = lambda e: failed_ones.append(
+                            (position, split_name, url, f"telegram bot api return exception: {e}"))
+                        await send_file_to_telegram(split_path, f"{position}. {split_name} ({url})",
+                                                    on_failure=on_send_failure)
+                return
+        except Exception as yt_dlp_exception:
+            if retry_number == retries - 1:
+                failed_ones.append(
+                    (position, title, url, title, url, f"yt-dlp failed with exception: {yt_dlp_exception}"))
+                log.error(yt_dlp_exception)
 
 
 async def save_to_wayback_machine(position: int, title: str, url: str):
