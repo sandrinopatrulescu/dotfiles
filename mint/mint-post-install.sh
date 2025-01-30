@@ -239,7 +239,8 @@ echo "# 5.3 AC install"
 if [ "${install3Answer}" = "y" ]; then
     echo "Install 3 starting..."
     echo "installing skype..."
-    wget --quiet -O /tmp/skype.deb "https://go.skype.com/skypeforlinux-64.deb" && sudo dpkg -i /tmp/skype.deb
+    # TODO: test skype install
+    # wget --quiet -O /tmp/skype.deb "https://go.skype.com/skypeforlinux-64.deb" && sudo dpkg -i /tmp/skype.deb
     sudo sed -i 's;\[arch=amd64\];\[arch=amd64 signed-by=/usr/share/keyrings/skype.gpg\];g' /etc/apt/sources.list.d/skype-stable.list && apt update
     sudo apt-key export DF7587C3 | sudo gpg --dearmour -o /usr/share/keyrings/skype.gpg
     echo "installing RDC..."
