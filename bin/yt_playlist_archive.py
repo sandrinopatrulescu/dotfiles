@@ -157,20 +157,23 @@ def split_file(file_path: str, split_size_in_bytes: int, output_dir: str):
     return file_paths
 
 
+def delete_file(path: str):
+    Path(path).unlink(missing_ok=True)
+
+
 async def send_file_to_telegram(file_path: str, caption: str, on_failure: Callable[[Exception], None]):
     retries = 10
-    delete_file = lambda: Path(file_path).unlink(missing_ok=True)
 
     for _ in range(retries):
         try:
             await telegram_bot.send_document(chat_id=TELEGRAM_CHAT_ID, document=open(file_path, 'rb'), caption=caption)
-            delete_file()
+            delete_file(file_path)
             return
         except Exception as e:
             if _ == retries - 1:
                 on_failure(e)
 
-                delete_file()
+                delete_file(file_path)
                 return
 
 
