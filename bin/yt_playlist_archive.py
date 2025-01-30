@@ -161,6 +161,11 @@ def delete_file(path: str):
     Path(path).unlink(missing_ok=True)
 
 
+def delete_directory(path: str):
+    if os.path.isdir(path) and len(os.listdir(path)) == 0:
+        Path(path).rmdir()
+
+
 async def send_file_to_telegram(file_path: str, caption: str, on_failure: Callable[[Exception], None]):
     retries = 10
 
@@ -211,13 +216,16 @@ async def download_video_and_send_to_telegram(position: int, title: str, url: st
                         (position, title, url, f"telegram bot api return exception: {e}"))
                     await send_file_to_telegram(file_path, f"{position}. {title} ({url})", on_failure=on_send_failure)
                 else:
-                    splits_paths = split_file(file_path, file_size_limit, file_path + '_splits')
+                    splits_dir = file_path + '_splits'
+                    splits_paths = split_file(file_path, file_size_limit, splits_dir)
                     for split_path in splits_paths:
                         split_name = os.path.basename(split_path)
                         on_send_failure = lambda e: failed_ones.append(
                             (position, split_name, url, f"telegram bot api return exception: {e}"))
                         await send_file_to_telegram(split_path, f"{position}. {split_name} ({url})",
                                                     on_failure=on_send_failure)
+                    delete_file(file_path)
+                    delete_directory(splits_dir)
                 return
         except Exception as yt_dlp_exception:
             if retry_number == retries - 1:
