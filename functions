@@ -1521,13 +1521,13 @@ function google-chrome-profile() {
     nohup google-chrome --profile-directory="$1" > /dev/null &
 }
 
-function yt_playlist_archive() {
+yt_playlist_archive() {
     local usage
     local chatId
     local mode
 
     chatId="${CHAT_ID:-$YT_PLAYLIST_ARCHIVE_TELEGRAM_BOT_CHAT_ID}"
-    mode="${MODE:-both}"
+    mode="${MODE:-telegram}"
 
     echo "chatId=${chatId}"
     echo "mode=${mode}"
@@ -1536,11 +1536,21 @@ function yt_playlist_archive() {
     (( $# == 2 )) || { echo "ERROR: ${usage}"; return 1; }
 
     takeoutRepo="/mnt/e/git/sp-backups-z/google-takeout-youtube"
+    repoUpdated=false
+
     oldpwd="$OLDPWD"
-    { cd "$DOTS" && git pull; } || { echo "ERROR: failed to do git pull in $DOTS"; return 1; }
-    { cd "$DOTSS" && git pull; } || { echo "ERROR: failed to do git pull in $DOTSS"; return 1; }
-    { cd "$takeoutRepo" && git pull; } || { echo "ERROR: failed to do git pull in $takeoutRepo"; return 1; }
+    for repo in "$DOTS" "$DOTSS" "$takeoutRepo"; do
+        echo "Checking repo ${repo} ----------------"
+        if cd "${repo}"; then
+            # https://unix.stackexchange.com/questions/71492/output-to-stdout-and-at-the-same-time-grep-into-a-file
+            git pull | tee /dev/stderr | grep -q "Already up to date" || repoUpdated=true
+        else
+            { echo "ERROR: failed to do git pull in ${repo}"; return 1; }
+        fi
+    done
     pip install yt-dlp -U # yt-dlp update
+
+    [ "${repoUpdated}" = true ] && { echo "There have been repo changes. Please source ~/.bashrc"; return 1; }
 
     cd "$oldpwd"
     YT_PLAYLIST_ARCHIVE_TELEGRAM_BOT_CHAT_ID="${chatId}" yt_playlist_archive.py "${mode}" "${takeoutRepo}/custom/2 add queue re.csv" --start_position "$1" --end_position "$2"
