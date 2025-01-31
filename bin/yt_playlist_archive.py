@@ -73,7 +73,7 @@ async def log_and_send_result(result: str):
     if len(failed_ones) == 0:
         text += "Success."
     else:
-        text += "Failed ones:\n" + "\n".join(map(lambda x: str(x), failed_ones))
+        text += f"Failed ones ({len(failed_ones)} of them):\n" + "\n".join(map(lambda x: str(x), failed_ones))
 
     log.info(text)
     await send_telegram_message(text)
