@@ -1546,6 +1546,24 @@ function yt_playlist_archive() {
     YT_PLAYLIST_ARCHIVE_TELEGRAM_BOT_CHAT_ID="${chatId}" yt_playlist_archive.py "${mode}" "${takeoutRepo}/custom/2 add queue re.csv" --start_position "$1" --end_position "$2"
 }
 
+os-birth() {
+    stat -c %w / | sed -E 'y@ :@_-@;s@\..*@@'
+}
+
+system-install() {
+    echo "$(hostname)_$(os-birth)"
+}
+
+extract-youtube-cookies() {
+    local currentInstall
+
+    currentInstall="$(system-install)"
+    echo "${YOUTUBE_COOKIES_CHROME_PROFILE_INSTALLATIONS}" | \grep -q "${currentInstall}" || { echo "Cannot run on install ${currentInstall}"; return 1; }
+    yt-dlp --cookies-from-browser chrome:"${YOUTUBE_COOKIES_CHROME_PROFILE}" --cookies "${YOUTUBE_COOKIES_FILE}" \
+        --skip-download "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    # importing cookies: yt-dlp --cookies "${YOUTUBE_COOKIES_FILE}" <URL>
+}
+
 # }}}
 
 
