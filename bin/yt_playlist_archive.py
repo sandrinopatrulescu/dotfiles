@@ -43,6 +43,7 @@ LOG_LEVEL = os.getenv('LOG_LEVEL', logging.INFO)
 
 TELEGRAM_BOT_TOKEN = os.getenv("YT_PLAYLIST_ARCHIVE_TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("YT_PLAYLIST_ARCHIVE_TELEGRAM_BOT_CHAT_ID")
+COOKIE_FILE = os.getenv("YOUTUBE_COOKIES_FILE")
 WAYBACK_MACHINE_COOLDOWN_REQUESTS = 15
 WAYBACK_MACHINE_COOLDOWN_SECONDS = 1 * 60
 
@@ -229,6 +230,8 @@ async def download_video_and_send_to_telegram(position: int, title: str, url: st
                     delete_directory(splits_dir)
                 return
         except Exception as yt_dlp_exception:
+            if "Sign in to confirm your age" in str(yt_dlp_exception):
+                ydl_options['cookiefile'] = COOKIE_FILE
             if retry_number == retries - 1:
                 failed_ones.append(
                     (position, title, url, title, url, f"yt-dlp failed with exception: {yt_dlp_exception}"))
