@@ -138,7 +138,13 @@ def validate_natural_number(value):
     return int_value
 
 
-def split_file(file_path: str, split_size_in_bytes: int, output_dir: str):
+def split_file(file_path: str, split_size_in_bytes: int, output_dir: str, split_file_namer: Callable[[int, int], str]):
+    """
+    :param output_dir:
+    :param split_size_in_bytes:
+    :param file_path:
+    :param split_file_namer: (part_number, number_of_parts) -> filename
+    """
     os.makedirs(output_dir, exist_ok=True)
 
     number_of_parts = math.ceil(os.path.getsize(file_path) / split_size_in_bytes)
@@ -147,7 +153,7 @@ def split_file(file_path: str, split_size_in_bytes: int, output_dir: str):
 
     with open(file_path, 'rb') as file:
         while chunk := file.read(split_size_in_bytes):
-            file_name = os.path.basename(file_path) + f'_part-{part_number:02}-of-{number_of_parts}'
+            file_name = split_file_namer(part_number, number_of_parts)
             output_file = os.path.join(output_dir, file_name)
             file_paths.append(output_file)
             with open(output_file, 'wb') as output:
@@ -216,16 +222,28 @@ async def download_video_and_send_to_telegram(position: int, title: str, url: st
                         (position, title, url, f"telegram bot api return exception: {e}"))
                     await send_file_to_telegram(file_path, f"{position}. {title} ({url})", on_failure=on_send_failure)
                 else:
+                    video_file_name = os.path.basename(file_path)
+
+                    def split_file_namer(part_number: int, number_of_parts: int) -> str:
+                        name_end = f'_part-{part_number:02}-of-{number_of_parts:02}'
+                        max_name_length = 60  # decided based on observations
+                        name_start_length = max_name_length - len(name_end)
+
+                        return video_file_name[:name_start_length] + name_end
+
                     splits_dir = file_path + '_splits'
-                    splits_paths = split_file(file_path, file_size_limit, splits_dir)
+                    splits_paths = split_file(file_path, file_size_limit, splits_dir, split_file_namer)
+
                     for split_index, split_path in enumerate(splits_paths):
                         split_file_name = os.path.basename(split_path)
                         on_send_failure = lambda e: failed_ones.append(
                             (position, split_file_name, url, f"telegram bot api return exception: {e}"))
                         log.info(f"Sending split {split_index + 1}/{len(splits_paths)}")
+
                         split_title = f"{title} ({split_file_name[split_file_name.rfind('_') + 1:]})"
                         await send_file_to_telegram(split_path, f"{position}. {split_title} ({url})",
                                                     on_failure=on_send_failure)
+
                     delete_file(file_path)
                     delete_directory(splits_dir)
                 return
