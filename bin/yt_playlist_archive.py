@@ -167,7 +167,7 @@ def delete_directory(path: str):
 
 
 async def send_file_to_telegram(file_path: str, caption: str, on_failure: Callable[[Exception], None]):
-    retries = 10
+    retries = 30
 
     for _ in range(retries):
         try:
@@ -194,7 +194,7 @@ async def download_video_and_send_to_telegram(position: int, title: str, url: st
         'restrictfilenames': True,
     }
 
-    retries = 10
+    retries = 30
     for retry_number in range(retries + 1):
         if retry_number > 0:
             log.info(f"Retry {retry_number}/{retries} for downloading")
@@ -241,7 +241,7 @@ async def save_to_wayback_machine(position: int, title: str, url: str):
     # !!! NOTE this doesn't save the video itself, just the metadata
     wayback_machine_save_url = f"https://web.archive.org/save/{url}"
 
-    retries = 5
+    retries = 10
     for _ in range(retries):
         try:
             log.info('Before rate_limiter')
