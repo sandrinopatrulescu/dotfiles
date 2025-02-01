@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import argparse
 import asyncio
-import csv
 import errno
 import logging
 import math
@@ -287,15 +286,23 @@ async def send_telegram_message(text: str):
                 raise e
 
 
-async def read_and_process_csv(mode: str, playlist_csv_file: str, start_position: Optional[int],
+COLUMN_DELIMITER = ";"
+VIDEO_URL_BASE = "https://www.youtube.com/watch?v="
+VIDEO_ID_LENGTH = 11
+
+URL_LENGTH = len(VIDEO_URL_BASE) + VIDEO_ID_LENGTH
+SPLIT_TOKEN = COLUMN_DELIMITER + VIDEO_URL_BASE
+
+
+async def read_and_process_csv(mode: str, playlist_csv_file_path: str, start_position: Optional[int],
                                end_position: Optional[int]):
-    with open(playlist_csv_file, mode="r", newline="", encoding="utf-8") as file:
-        reader = csv.reader(file, delimiter=";")
+    with open(playlist_csv_file_path, mode="r", newline="", encoding="utf-8") as file:
+
         sent_file_name = False
 
-        # Iterate through rows
-        for position, row in enumerate(reader):
-            if position == 0:
+        # Iterate through lines in csv
+        for position, line in enumerate(file.read().splitlines()):
+            if position == 0:  # skip header
                 continue
             if start_position is not None and position < start_position:
                 continue
@@ -303,12 +310,16 @@ async def read_and_process_csv(mode: str, playlist_csv_file: str, start_position
                 break
 
             if not sent_file_name:
-                text = f"Processing {playlist_csv_file} in mode {mode} from position {start_position} to {end_position}"
+                text = f"Processing {playlist_csv_file_path} in mode {mode} from position {start_position} to {end_position}"
                 await send_telegram_message(metadata + text)
                 sent_file_name = True
 
-            title = row[0]
-            url = row[1]
+            index_title_end = line.find(SPLIT_TOKEN)
+            index_url_start = index_title_end + 1
+            index_url_end = index_url_start + URL_LENGTH
+
+            title = line[:index_title_end]
+            url = line[index_title_end + 1:index_url_end]
 
             log.info(f'{position}. {title} ({url})')
             await process_video(mode, position, title, url)
