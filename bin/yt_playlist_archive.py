@@ -219,11 +219,12 @@ async def download_video_and_send_to_telegram(position: int, title: str, url: st
                     splits_dir = file_path + '_splits'
                     splits_paths = split_file(file_path, file_size_limit, splits_dir)
                     for split_index, split_path in enumerate(splits_paths):
-                        split_name = os.path.basename(split_path)
+                        split_file_name = os.path.basename(split_path)
                         on_send_failure = lambda e: failed_ones.append(
-                            (position, split_name, url, f"telegram bot api return exception: {e}"))
+                            (position, split_file_name, url, f"telegram bot api return exception: {e}"))
                         log.info(f"Sending split {split_index + 1}/{len(splits_paths)}")
-                        await send_file_to_telegram(split_path, f"{position}. {split_name} ({url})",
+                        split_title = f"{title} ({split_file_name[split_file_name.rfind('_') + 1:]})"
+                        await send_file_to_telegram(split_path, f"{position}. {split_title} ({url})",
                                                     on_failure=on_send_failure)
                     delete_file(file_path)
                     delete_directory(splits_dir)
