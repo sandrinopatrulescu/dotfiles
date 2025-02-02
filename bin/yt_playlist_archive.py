@@ -73,10 +73,21 @@ async def log_and_send_result(result: str):
     if len(failed_ones) == 0:
         text += "Success."
     else:
-        text += f"Failed ones ({len(failed_ones)} of them):\n" + "\n".join(map(lambda x: str(x), failed_ones))
+        text += f"Failed ones ({len(failed_ones)} of them):\n"
 
-    log.info(text)
-    await send_telegram_message(text)
+    async def log_and_send_message(message: str):
+        log.info(message)
+        await send_telegram_message(message)
+
+    for failed_one in failed_ones:
+        new_text = text + failed_one + "\n"
+        if len(new_text) < 4000:
+            text = new_text
+        else:
+            await log_and_send_message(text)
+            text = failed_one + "\n"
+    else:
+        await log_and_send_message(text)
 
 
 async def sign_handler_intermediary(_, __):
@@ -297,7 +308,7 @@ async def process_video(mode: str, position: int, title: str, url: str):
 
 
 async def send_telegram_message(text: str):
-    retries = 30
+    retries = 50
     for _ in range(retries):
         try:
             await telegram_bot.send_message(TELEGRAM_CHAT_ID, text)
