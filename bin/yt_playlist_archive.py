@@ -260,19 +260,21 @@ async def save_to_wayback_machine(position: int, title: str, url: str):
     # !!! NOTE this doesn't save the video itself, just the metadata
     wayback_machine_save_url = f"https://web.archive.org/save/{url}"
 
-    retries = 10
-    for _ in range(retries):
+    retries = 20
+    for retry_number in range(retries + 1):
         try:
-            log.info('Before rate_limiter')
+            retry_message = "" if retry_number == 0 else f" Retry {retry_number}/{retries}."
+            log.info(f'Before wayback machine rate_limiter.' + retry_message)
             with rate_limiter:
                 log.info('Calling Wayback Machine API')
                 request = requests.get(wayback_machine_save_url)
                 if request.status_code != 200:
-                    raise Exception(f"wayback machine api returned status code: {request.status_code}")
+                    exception_message = f"wayback machine api returned status code: {request.status_code} and message: {request.text}"
+                    raise Exception(exception_message)
                 log.info(f'Result: {request.url}')
                 return
         except Exception as e:
-            if _ == retries - 1:
+            if retry_number == retries - 1:
                 failed_ones.append((position, title, url, f"calling wayback machine api returned exception: {e}"))
                 return
 
