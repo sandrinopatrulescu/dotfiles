@@ -81,7 +81,7 @@ async def log_and_send_result(result: str):
 
     for failed_one in failed_ones:
         new_text = text + failed_one + "\n"
-        if len(new_text) < 4000:
+        if len(new_text) < 4000: # character limit is 4096 (also tested it)
             text = new_text
         else:
             await log_and_send_message(text)
