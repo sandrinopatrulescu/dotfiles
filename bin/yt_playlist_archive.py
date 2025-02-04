@@ -237,7 +237,7 @@ async def download_video_and_send_to_telegram(position: int, title: str, url: st
 
                     def split_file_namer(part_number: int, number_of_parts: int) -> str:
                         name_end = f'_part-{part_number:02}-of-{number_of_parts:02}'
-                        max_name_length = 60  # decided based on observations
+                        max_name_length = 38  # decided based on observations
                         name_start_length = max_name_length - len(name_end)
 
                         return video_file_name[:name_start_length] + name_end
