@@ -79,13 +79,13 @@ async def log_and_send_result(result: str):
         log.info(message)
         await send_telegram_message(message)
 
-    for failed_one in failed_ones:
-        new_text = text + failed_one + "\n"
-        if len(new_text) < 4000: # character limit is 4096 (also tested it)
+    for failed_one_string in map(lambda x: str(x) + "\n", failed_ones):
+        new_text = text + failed_one_string
+        if len(new_text) < 4000:  # character limit is 4096 (also tested it)
             text = new_text
         else:
             await log_and_send_message(text)
-            text = failed_one + "\n"
+            text = failed_one_string
     else:
         await log_and_send_message(text)
 
