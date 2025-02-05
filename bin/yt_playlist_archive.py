@@ -237,10 +237,12 @@ async def download_video_and_send_to_telegram(position: int, title: str, url: st
 
                     def split_file_namer(part_number: int, number_of_parts: int) -> str:
                         name_end = f'_part-{part_number:02}-of-{number_of_parts:02}'
-                        max_name_length = 38  # decided based on observations
-                        name_start_length = max_name_length - len(name_end)
+                        max_name_length = 60  # decided based on observations
+                        name_middle_length = max_name_length - len(name_end)
+                        name_middle = video_file_name[:name_middle_length]
 
-                        return video_file_name[:name_start_length] + name_end
+                        file_extension = video_file_name[video_file_name.rfind(".") + 1:]
+                        return name_middle + name_end + f".{file_extension}-p"  # p from part
 
                     splits_dir = file_path + '_splits'
                     splits_paths = split_file(file_path, file_size_limit, splits_dir, split_file_namer)
@@ -251,7 +253,7 @@ async def download_video_and_send_to_telegram(position: int, title: str, url: st
                             (position, split_file_name, url, f"telegram bot api return exception: {e}"))
                         log.info(f"Sending split {split_index + 1}/{len(splits_paths)}")
 
-                        split_title = f"{title} ({split_file_name[split_file_name.rfind('_') + 1:]})"
+                        split_title = f"{title} ({split_file_name[split_file_name.rfind('_') + 1:split_file_name.rfind('.')]})"
                         await send_file_to_telegram(split_path, f"{position}. {split_title} ({url})",
                                                     on_failure=on_send_failure)
 
