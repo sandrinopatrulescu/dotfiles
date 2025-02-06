@@ -45,6 +45,7 @@ TELEGRAM_CHAT_ID = os.getenv("YT_PLAYLIST_ARCHIVE_TELEGRAM_BOT_CHAT_ID")
 COOKIE_FILE = os.getenv("YOUTUBE_COOKIES_FILE")
 WAYBACK_MACHINE_COOLDOWN_REQUESTS = 15
 WAYBACK_MACHINE_COOLDOWN_SECONDS = 1 * 60
+TELEGRAM_MESSAGE_CHARACTER_LIMIT = 4000  # character limit is 4096 (also tested it)
 
 script_basename = os.path.basename(__file__)
 basename_root = os.path.splitext(script_basename)[0]
@@ -77,11 +78,17 @@ async def log_and_send_result(result: str):
 
     async def log_and_send_message(message: str):
         log.info(message)
-        await send_telegram_message(message)
+        if len(message) < TELEGRAM_MESSAGE_CHARACTER_LIMIT:
+            try:
+                await send_telegram_message(message)
+            except Exception as e:
+                log.error(e)
+        else:
+            log.error("Message in previous log was not sent because TELEGRAM_MESSAGE_CHARACTER_LIMIT exceeded.")
 
     for failed_one_string in map(lambda x: str(x) + "\n", failed_ones):
         new_text = text + failed_one_string
-        if len(new_text) < 4000:  # character limit is 4096 (also tested it)
+        if len(new_text) < TELEGRAM_MESSAGE_CHARACTER_LIMIT:
             text = new_text
         else:
             await log_and_send_message(text)
@@ -282,7 +289,8 @@ async def save_to_wayback_machine(position: int, title: str, url: str):
                 log.info('Calling Wayback Machine API')
                 request = requests.get(wayback_machine_save_url)
                 if request.status_code != 200:
-                    exception_message = f"wayback machine api returned status code: {request.status_code} and message: {request.text}"
+                    exception_message = f"wayback machine api returned status code: {request.status_code}"
+                    exception_message += f" and message: {request.text}" if len(request.text) < 500 else ""
                     raise Exception(exception_message)
                 log.info(f'Result: {request.url}')
                 return
