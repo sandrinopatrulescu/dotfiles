@@ -18,7 +18,9 @@ import psutil
 import requests
 import telegram
 from ratelimiter import RateLimiter
+from requests.adapters import HTTPAdapter
 from telegram.request import HTTPXRequest
+from urllib3 import Retry
 from yt_dlp import YoutubeDL
 
 # region force single instance of the program
@@ -62,9 +64,14 @@ pid = os.getpid()
 process = psutil.Process(pid)
 process_start = datetime.fromtimestamp(process.create_time()).strftime('%Y-%m-%d_%H-%M-%S.%f')
 metadata = f"[{node}#{process_start}#{pid}] "
-
-
 # endregion
+
+
+requests_session = requests.session()
+retry = Retry(connect=20, backoff_factor=0.5)
+adapter = HTTPAdapter(max_retries=retry)
+requests_session.mount('http://', adapter)
+requests_session.mount('https://', adapter)
 
 
 async def log_and_send_result(result: str):
@@ -287,7 +294,7 @@ async def save_to_wayback_machine(position: int, title: str, url: str):
             log.info(f'Before wayback machine rate_limiter.' + retry_message)
             with rate_limiter:
                 log.info('Calling Wayback Machine API')
-                request = requests.get(wayback_machine_save_url)
+                request = requests_session.get(wayback_machine_save_url)
                 if request.status_code != 200:
                     exception_message = f"wayback machine api returned status code: {request.status_code}"
                     exception_message += f" and message: {request.text}" if len(request.text) < 500 else ""
