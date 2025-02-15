@@ -1574,6 +1574,11 @@ extract-youtube-cookies() {
     # importing cookies: yt-dlp --cookies "${YOUTUBE_COOKIES_FILE}" <URL>
 }
 
+timer() {
+    sleep "$@";
+    beep 5
+}
+
 # }}}
 
 
