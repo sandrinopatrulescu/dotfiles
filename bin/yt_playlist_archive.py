@@ -8,6 +8,7 @@ import os
 import platform
 import signal
 import socket
+import sys
 import tempfile
 import time
 from datetime import datetime
@@ -48,6 +49,8 @@ COOKIE_FILE = os.getenv("YOUTUBE_COOKIES_FILE")
 WAYBACK_MACHINE_COOLDOWN_REQUESTS = 15
 WAYBACK_MACHINE_COOLDOWN_SECONDS = 1 * 60
 TELEGRAM_MESSAGE_CHARACTER_LIMIT = 4000  # character limit is 4096 (also tested it)
+
+SKIPPED_TITLES = ["[Deleted video]", "[Private video]"]
 
 script_basename = os.path.basename(__file__)
 basename_root = os.path.splitext(script_basename)[0]
@@ -93,7 +96,12 @@ async def log_and_send_result(result: str):
         else:
             log.error("Message in previous log was not sent because TELEGRAM_MESSAGE_CHARACTER_LIMIT exceeded.")
 
-    for failed_one_string in map(lambda x: str(x) + "\n", failed_ones):
+    number_of_deleted_or_private_videos: int = 0
+    for failed_one in failed_ones:
+        if failed_one[1] in SKIPPED_TITLES:
+            number_of_deleted_or_private_videos += 1
+
+        failed_one_string = str(failed_one) + "\n"
         new_text = text + failed_one_string
         if len(new_text) < TELEGRAM_MESSAGE_CHARACTER_LIMIT:
             text = new_text
@@ -102,6 +110,10 @@ async def log_and_send_result(result: str):
             text = failed_one_string
     else:
         await log_and_send_message(text)
+
+    is_success = number_of_deleted_or_private_videos == len(failed_ones)
+    exit_code = 0 if is_success else 1
+    sys.exit(exit_code)
 
 
 async def sign_handler_intermediary(_, __):
@@ -309,7 +321,7 @@ async def save_to_wayback_machine(position: int, title: str, url: str):
 
 async def process_video(mode: str, position: int, title: str, url: str):
     # git grep "Private video" $(git rev-list --all -- custom/"2 add queue re.csv") -- custom/"2 add queue re.csv"
-    if title in ["[Deleted video]", "[Private video]"]:
+    if title in SKIPPED_TITLES:
         failed_ones.append((position, title, url, "video is deleted/private"))
         return
 
