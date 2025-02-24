@@ -1575,6 +1575,7 @@ extract-youtube-cookies() {
 }
 
 timer() {
+    date
     sleep "$@";
     beep 5
 }

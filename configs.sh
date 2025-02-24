@@ -43,16 +43,6 @@ dpkg -s vim &> /dev/null; [ $? -eq 0 ] || echo "WARNING: vim not installed";
 ##
 
 
-## Visual
-
-
-
-### dircolors
-#grep -q "LS_COLORS" ~/.env || { dircolors -b >> ~/.env && echo 'export LS_COLORS' >> ~/.env; }
-
-##
-
-
 # root
 sudo ln -s $DOTS/vimrc ~root/.vimrc
 

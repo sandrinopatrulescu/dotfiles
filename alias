@@ -110,7 +110,6 @@ alias compileandruncwiththreads="echo 'f=2; gcc -Wall -g -o \${f}.out \$f.c -lpt
 
 alias sl="cd /sl"
 
-alias ls="ls -vA"
 alias lsa="ls -A"
 alias lns="ln -s"
 
@@ -385,7 +384,6 @@ alias espeakr="espeak -v ro"
 
 
 ###### Coloring {{{
-alias ls='ls --color=always'
 alias dir='dir --color=always'
 alias vdir='vdir --color=always'
 alias fgrep='fgrep --color=always'
