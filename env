@@ -85,8 +85,7 @@ export CLEANUP_ENABLED=false
 
 export EDITOR=vim
 export BROWSER=/usr/bin/google-chrome
-LS_COLORS="$(cat "$DOTS/ls_colors.txt")"
-export LS_COLORS
+eval "$(dircolors)"; # https://unix.stackexchange.com/questions/427437/will-dircolors-work-here-instead-of-eval-dircolors
 
 
 # Windows
