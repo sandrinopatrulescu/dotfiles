@@ -134,6 +134,7 @@ append-path "/opt/mssql-tools18/bin"
 append-path "$ANDROID_SDK/emulator"
 append-path "$ANDROID_SDK/tools"
 append-path "${HOME}/.nvm/versions/node/v20.6.1/bin/node"
+append-path ~/.config/composer/vendor/bin
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm

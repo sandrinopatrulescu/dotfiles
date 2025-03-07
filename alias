@@ -70,8 +70,8 @@ alias mc="[ -d /mnt/c ] || sudo mkdir /mnt/c; sudo mount /dev/sda3 /mnt/c" # mou
 alias umc="sudo umount -v /mnt/c" # unmount Windows's C: Drive
 alias ml="sudo mount -l | grep '^/dev'" # mount list
 
-alias gcc="gcc -Wall -g"
-alias g++="g++ -Wall -g --std=c++17"
+#alias gcc="gcc -Wall -g"
+#alias g++="g++ -Wall -g --std=c++17"
 
 alias sda="mono '/e/Programs/Steam Desktop Authenticator/Steam Desktop Authenticator.exe' &" # steam desktop authenticator
 
@@ -80,7 +80,7 @@ alias acpi="date; acpi"
 alias cdirs="mkdir -p {src,tests}/{domain,persistence,service,tools} src/ui"
 
 alias lampp="_ /opt/lampp/xampp"
-alias php="/opt/lampp/bin/php"
+#alias php="/opt/lampp/bin/php"
 alias plogs="watch '{ tail /opt/lampp/logs/php_error_log | grep -E --color \"^\[[^[]+\]\"; echo; stat /opt/lampp/logs/php_error_log | sed -n '6p'; wc -l /opt/lampp/logs/php_error_log; }'"
 alias plogs2="tail -f /opt/lampp/logs/php_error_log | grep -E --color \"^\[[^[]+\]\""
 alias htdocs="cd /opt/lampp/htdocs"

@@ -29,7 +29,7 @@ export SSH=$(readlink -f /home/kamui/.ssh/)
 export JETBRAINS="${DISTRIBUTION_PATH}/home/kamui/.local/share/JetBrains"
 export JETBRAINS=$(readlink -f /home/kamui/.local/share/JetBrains)
 
-export LIBS="~kamui/libs"
+#export LIBS="~kamui/libs"
 ## Semi-Permanent
 export UNIPATH='/mnt/e/UBB_IE_2020-2023'
 
