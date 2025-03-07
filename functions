@@ -965,7 +965,7 @@ acvsq() { # ac vpn status quiet
 }
 
 acvc() { # ac vpn connect
-    bash -c "skype.sh &"
+    pgrep skype.sh >/dev/null || { nohup skype.sh >/dev/null 2>&1 & }
     # https://www.google.com/search?q=ubuntu+connect+to+vpn+command+line -> https://askubuntu.com/questions/57339/connect-disconnect-from-vpn-from-the-command-line
     acvs || nmcli con up id ssl_artsoft
 }
