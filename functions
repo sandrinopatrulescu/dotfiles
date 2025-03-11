@@ -1580,6 +1580,27 @@ timer() {
     beep 5
 }
 
+round-half-down-two-decimals() {
+    local number
+
+    number="$1"
+
+    wholePart="$(echo "${number}" | cut -d'.' -f1)"
+    fractionalPart="$(echo "${number}" | cut -d'.' -f2)"
+    fractionalPartTwoDigits="$(echo "${fractionalPart}" | cut -c '1-2')"
+    thousandthsDigit="$(echo "${fractionalPart}" | cut -c 3)"
+
+    [ -z "${thousandthsDigit}" ] && { echo "${number}"; return; }
+
+    addedThousandthsDigit=0
+    [ "${thousandthsDigit}" -gt 5 ] && addedThousandthsDigit=1
+
+    numberWithoutThousandthsDigit="${wholePart}.${fractionalPartTwoDigits}"
+    echo "scale=2; ${numberWithoutThousandthsDigit} + ${addedThousandthsDigit} / 100" | bc
+
+    # test: for i in {0..9}; do x=3.14${i}; echo "$x -> $(round-half-down-two-decimals $x)"; done
+}
+
 rechnung-studen() {
     local input
 
@@ -1626,7 +1647,11 @@ rechnung-studen() {
     [ -z "${isPL}" ] && pricePL=0
 
     totalNet="$(echo "${price} + ${pricePL}" | bc)"
-    totalVat="$(echo "scale=2; ${vatPercentage} / 100 * ${totalNet}" | bc)"
+    totalVat="$(echo "scale=20; ${vatPercentage} / 100 * ${totalNet}" | bc)"
+    echo
+    echo "totalVat ante-rounding: $totalVat"
+    totalVat="$(round-half-down-two-decimals "${totalVat}")"
+    echo "totalVat post-rounding: $totalVat"
     totalGross="$(echo "${totalNet} + ${totalVat}" | bc)"
 
     echo
@@ -1638,8 +1663,6 @@ rechnung-studen() {
     printf "Arbeitsleistung Netto: \t \t\t\t    \t %7.2f Euro netto \n" "${totalNet//./,}"
     printf "MwSt. ${vatPercentage}%% \t \t\t\t\t     \t %7.2f Euro \n" "${totalVat//./,}"
     printf "Gesamtbetrag \t \t\t\t\t     \t %7.2f Euro \n" "${totalGross//./,}"
-
-    # TODO: handle 3 decimals VAT
 }
 # }}}
 
