@@ -1617,7 +1617,7 @@ rechnung-studen() {
 
     echo
     echo "firstLineNoLetters = ${firstLineNoLetters}"
-    echo "stundenPerPerson =$ {stundenPerPerson}"
+    echo "stundenPerPerson = ${stundenPerPerson}"
     echo "stundenTotal = ${stundenTotal}"
     echo "isPL = ${isPL}"
 
@@ -1626,20 +1626,18 @@ rechnung-studen() {
     [ -z "${isPL}" ] && pricePL=0
 
     totalNet="$(echo "${price} + ${pricePL}" | bc)"
-    # TODO: compute MwSt. 19%:
-    # TODO: compute Gesamtbetrag
-
+    totalVat="$(echo "scale=2; ${vatPercentage} / 100 * ${totalNet}" | bc)"
+    totalGross="$(echo "${totalNet} + ${totalVat}" | bc)"
 
     echo
-    printf "1. ??????????????????????? \t %5.2f St x %4.2f Euro \t %6.2f Euro netto \n" "${stundenTotal//./,}" "${pricePerStunden}" "${price//./,}"
+    printf "1. ??????????????????????? \t %5.2f St x %4.2f Euro \t %7.2f Euro netto \n" "${stundenTotal//./,}" "${pricePerStunden}" "${price//./,}"
     if [ -n "${isPL}" ]; then
         printf "2. Projekt Leiter Zuschlag \t %5.2f St x %5.2f Euro \t %7.2f Euro netto \n" "${stundenPerPerson//./,}" "${pricePerPLStunden}" "${pricePL//./,}"
     fi
 
-    printf "Arbeitsleistung Netto: \t \t\t\t \t %6.2f Euro netto \n" "${totalNet//./,}"
-    # TODO: print string for MwSt. 19%
-
-    # TODO: print string for Gesamtbetrag
+    printf "Arbeitsleistung Netto: \t \t\t\t    \t %7.2f Euro netto \n" "${totalNet//./,}"
+    printf "MwSt. ${vatPercentage}%% \t \t\t\t\t     \t %7.2f Euro \n" "${totalVat//./,}"
+    printf "Gesamtbetrag \t \t\t\t\t     \t %7.2f Euro \n" "${totalGross//./,}"
 
     # TODO: handle 3 decimals VAT
 }
