@@ -1580,6 +1580,69 @@ timer() {
     beep 5
 }
 
+rechnung-studen() {
+    local input
+
+    local pricePerStunden
+    local pricePerPLStunden
+    local vatPercentage
+
+    local firstLine
+    local secondLine
+    local firstLineNoLetters
+    local stundenPerPerson
+    local stundenTotal
+    local isPL # non-empty <=> true
+
+    local price
+    local pricePL
+    local totalNet      # Arbeitsleistung Netto
+    local totalVat      # MwSt. ?% = ? / 100 * "Arbeitsleistung Netto"
+    local totalGross    # Gesamtbetrag = "Arbeitsleistung Netto" + "MwSt. ?%"
+
+    pricePerStunden=25
+    pricePerPLStunden=3
+    vatPercentage=19
+
+    echo "Paste multi-line input. Then press Enter & Ctrl+D"
+    input="$(</dev/stdin)"
+
+    firstLine="$(echo "${input}" | head -1)"
+    secondLine="$(echo "${input}" | tail -1)"
+
+    firstLineNoLetters="$(echo "${firstLine}" | sed -E 's@x@*@; s@[A-Z] |[A-Z]@@g')"
+    stundenPerPerson="$(echo "${firstLineNoLetters}" | cut -d' ' -f 1)"
+    stundenTotal="$(echo "${firstLineNoLetters}" | cut -d' ' -f 5)"
+    isPL="$(echo "${secondLine}" | grep -E "^PL$")"
+
+    echo
+    echo "firstLineNoLetters = ${firstLineNoLetters}"
+    echo "stundenPerPerson =$ {stundenPerPerson}"
+    echo "stundenTotal = ${stundenTotal}"
+    echo "isPL = ${isPL}"
+
+    price="$(echo "${stundenTotal} * ${pricePerStunden}" | bc)"
+    pricePL="$(echo "${stundenPerPerson} * ${pricePerPLStunden}" | bc)"
+    [ -z "${isPL}" ] && pricePL=0
+
+    totalNet="$(echo "${price} + ${pricePL}" | bc)"
+    # TODO: compute MwSt. 19%:
+    # TODO: compute Gesamtbetrag
+
+
+    echo
+    printf "1. ??????????????????????? \t %5.2f St x %4.2f Euro \t %6.2f Euro netto \n" "${stundenTotal//./,}" "${pricePerStunden}" "${price//./,}"
+    if [ -n "${isPL}" ]; then
+        printf "2. Projekt Leiter Zuschlag \t %5.2f St x %5.2f Euro \t %7.2f Euro netto \n" "${stundenPerPerson//./,}" "${pricePerPLStunden}" "${pricePL//./,}"
+    fi
+
+    printf "Arbeitsleistung Netto: \t \t\t\t \t %6.2f Euro netto \n" "${totalNet//./,}"
+    # TODO: print string for MwSt. 19%
+
+    # TODO: print string for Gesamtbetrag
+
+    # TODO: handle 3 decimals VAT
+}
 # }}}
 
 
