@@ -117,9 +117,15 @@ def compute_values(date_list, first_rechnung_nr):
 
     total = sum(rechnung_prices)
     total_formatted = format_price_no_justify(total)
-    print(
-        f"total: {' + '.join(map(lambda price: f'{format_price_no_justify(price)}', rechnung_prices))} = {total_formatted}")
-    print(f"Ins gesamt {total_formatted} Euro.")
+    summation = ' + '.join(map(lambda price: f'{format_price_no_justify(price)}', rechnung_prices))
+    print(f"total: {summation} = {total_formatted}")
+
+    print()
+
+    last_rechnung_nr = first_rechnung_nr + len(date_list) - 1
+    date_range = f"{date_list[0][0]} - {date_list[-1][0]}"
+    print(f"email subject: rechnungen {first_rechnung_nr} bis {last_rechnung_nr} | {date_range}")
+    print(f"email body: Ins gesamt {total_formatted} Euro.")
 
 
 def main():
