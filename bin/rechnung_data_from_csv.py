@@ -68,6 +68,8 @@ def compute_values(date_list, first_rechnung_nr):
 
     rechnung_prices = []
 
+    print(datetime.now().strftime("%d.%m.%Y") + "\n")
+
     for i, (date, tuple_list) in enumerate(date_list):
         result = ""
 
