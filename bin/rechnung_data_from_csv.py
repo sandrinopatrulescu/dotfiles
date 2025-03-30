@@ -51,10 +51,10 @@ def parse_csv(csv_file_path):
         tuple_list = date_to_tuple_list.setdefault(date, [])
         tuple_list.append((kn_nr, stunden, stunden_pl))
 
-    return date_to_tuple_list
+    return sorted(date_to_tuple_list.items(), key=lambda item: item[0][::-1])
 
 
-def compute_values(date_to_tuple_list, first_rechnung_nr):
+def compute_values(date_list, first_rechnung_nr):
     price_per_stunden = 25.0
     price_per_stunden_pl = 3.0
     vat_rate = 19
@@ -66,7 +66,9 @@ def compute_values(date_to_tuple_list, first_rechnung_nr):
     row_width = 83
     row_group_separator = "-" * row_width + "\n"
 
-    for i, (date, tuple_list) in enumerate(date_to_tuple_list.items()):
+    rechnung_prices = []
+
+    for i, (date, tuple_list) in enumerate(date_list):
         result = ""
 
         total_stunden_price = 0
@@ -105,14 +107,19 @@ def compute_values(date_to_tuple_list, first_rechnung_nr):
         gesamtbetrag = arbeitsleistung_netto + mehrwertsteuer
         result += format_row_string("Gesamtbetrag:", "", f"{format_final_price(gesamtbetrag)} Euro Brutto")
 
+        rechnung_prices.append(gesamtbetrag)
+
         print(f"RECHNUNG {first_rechnung_nr + i}\t{date}")
         print(result + "\n" * 2)
+
+        total = sum(rechnung_prices)
+        print(f"total: {' + '.join(map(lambda price: f'{price:.2f}', rechnung_prices))} = {total:.2f}")
 
 
 def main():
     csv_file_path, first_rechnung_nr = get_input_args()
-    date_to_tuple_list = parse_csv(csv_file_path)
-    compute_values(date_to_tuple_list, first_rechnung_nr)
+    date_list = parse_csv(csv_file_path)
+    compute_values(date_list, first_rechnung_nr)
 
 
 if __name__ == "__main__":
