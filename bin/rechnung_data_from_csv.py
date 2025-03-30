@@ -63,6 +63,7 @@ def compute_values(date_list, first_rechnung_nr):
     format_computation_column = lambda hours, price: f"{hours:04.2f} St x {price_per_stunden:04.2f} Euro".replace(".",
                                                                                                                   ",")
     format_final_price = lambda price: f"{price:7.2f}".replace(".", ",")
+    format_price_no_justify = lambda price: f"{price:.2f}".replace(".", ",")
     row_width = 83
     row_group_separator = "-" * row_width + "\n"
 
@@ -115,7 +116,8 @@ def compute_values(date_list, first_rechnung_nr):
         print(result + "\n" * 2)
 
     total = sum(rechnung_prices)
-    print(f"total: {' + '.join(map(lambda price: f'{price:.2f}', rechnung_prices))} = {total:.2f}")
+    print(
+        f"total: {' + '.join(map(lambda price: f'{format_price_no_justify(price)}', rechnung_prices))} = {format_price_no_justify(total)}")
 
 
 def main():
