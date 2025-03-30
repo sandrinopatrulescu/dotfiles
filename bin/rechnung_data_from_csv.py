@@ -1,0 +1,119 @@
+#!/usr/bin/env python3
+import csv
+import re
+import sys
+from datetime import datetime
+
+
+def get_input_args():
+    csv_file_path = sys.argv[1]
+    first_rechnung_nr = int(sys.argv[2]) if len(sys.argv) == 3 else 1
+    return csv_file_path, first_rechnung_nr
+
+
+def is_valid_date(date_str):
+    try:
+        if not bool(re.match(r"^\d{2}\.\d{2}\.\d{4}$", date_str)):
+            return False
+
+        datetime.strptime(date_str, "%d.%m.%Y")
+        return True
+    except ValueError:
+        return False
+
+
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+
+def parse_csv(csv_file_path):
+    csv_file = open(csv_file_path, mode='r')
+    csv_reader = csv.reader(csv_file, delimiter=',')
+
+    date_to_tuple_list = {}
+
+    for i, line in enumerate(csv_reader):
+        if line[0] == 'datum':
+            continue  # skip header
+        if not is_valid_date(line[0]):
+            raise Exception(f"Invalid date {line[0]} at line {i + 1}")
+        if not all(map(is_number, line[1:])):
+            raise Exception(f"Invalid numbers at line {i + 1}")
+
+        date = line[0]
+        kn_nr = line[1]
+        stunden = float(line[2])
+        stunden_pl = float(line[3])
+        tuple_list = date_to_tuple_list.setdefault(date, [])
+        tuple_list.append((kn_nr, stunden, stunden_pl))
+
+    return date_to_tuple_list
+
+
+def compute_values(date_to_tuple_list, first_rechnung_nr):
+    price_per_stunden = 25.0
+    price_per_stunden_pl = 3.0
+    vat_rate = 19
+
+    format_row_string = lambda x, y, z: f"{x:<25}\t{y:>25}\t{z:<25}\n"
+    format_computation_column = lambda hours, price: f"{hours:04.2f} St x {price_per_stunden:04.2f} Euro".replace(".",
+                                                                                                                  ",")
+    format_final_price = lambda price: f"{price:7.2f}".replace(".", ",")
+    row_width = 83
+    row_group_separator = "-" * row_width + "\n"
+
+    for i, (date, tuple_list) in enumerate(date_to_tuple_list.items()):
+        result = ""
+
+        total_stunden_price = 0
+        total_stunden_pl = 0
+        total_stunden_pl_price = 0
+
+        for j, (kn_nr, stunden, stunden_pl) in enumerate(tuple_list):
+            kn_price = stunden * price_per_stunden
+            total_stunden_price += kn_price
+            total_stunden_pl += stunden_pl
+
+            info_column = f"{j + 1}. KN NR: {kn_nr} ??(?)bau"
+            computation_column = format_computation_column(stunden, price_per_stunden)
+            result_column = f"{format_final_price(kn_price)} Euro netto"
+
+            result += format_row_string(info_column, computation_column, result_column)
+
+        if total_stunden_pl > 0:
+            info_column = f'{len(tuple_list) + 1}. Projekt Leiter Zuschlag'
+            computation_column = format_computation_column(total_stunden_pl, price_per_stunden_pl)
+            total_stunden_pl_price = total_stunden_pl * price_per_stunden_pl
+            result_column = f"{format_final_price(total_stunden_pl_price)} Euro netto"
+            result += format_row_string(info_column, computation_column, result_column)
+
+        result += row_group_separator
+
+        arbeitsleistung_netto = total_stunden_price + total_stunden_pl_price
+        result += format_row_string("Arbeitsleistung Netto:", "",
+                                    f"{format_final_price(arbeitsleistung_netto)} Euro netto")
+
+        mehrwertsteuer = vat_rate / 100 * arbeitsleistung_netto
+        result += format_row_string("MwSt. 19%:", "", f"{format_final_price(mehrwertsteuer)} Euro")
+
+        result += row_group_separator
+
+        gesamtbetrag = arbeitsleistung_netto + mehrwertsteuer
+        result += format_row_string("Gesamtbetrag:", "", f"{format_final_price(gesamtbetrag)} Euro Brutto")
+
+        print(f"RECHNUNG {first_rechnung_nr + i}\t{date}")
+        print(result + "\n" * 2)
+
+
+def main():
+    csv_file_path, first_rechnung_nr = get_input_args()
+    date_to_tuple_list = parse_csv(csv_file_path)
+    compute_values(date_to_tuple_list, first_rechnung_nr)
+
+
+if __name__ == "__main__":
+    main()
