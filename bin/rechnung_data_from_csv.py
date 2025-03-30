@@ -112,8 +112,8 @@ def compute_values(date_list, first_rechnung_nr):
         print(f"RECHNUNG {first_rechnung_nr + i}\t{date}")
         print(result + "\n" * 2)
 
-        total = sum(rechnung_prices)
-        print(f"total: {' + '.join(map(lambda price: f'{price:.2f}', rechnung_prices))} = {total:.2f}")
+    total = sum(rechnung_prices)
+    print(f"total: {' + '.join(map(lambda price: f'{price:.2f}', rechnung_prices))} = {total:.2f}")
 
 
 def main():
