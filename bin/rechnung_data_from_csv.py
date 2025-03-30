@@ -116,8 +116,10 @@ def compute_values(date_list, first_rechnung_nr):
         print(result + "\n" * 2)
 
     total = sum(rechnung_prices)
+    total_formatted = format_price_no_justify(total)
     print(
-        f"total: {' + '.join(map(lambda price: f'{format_price_no_justify(price)}', rechnung_prices))} = {format_price_no_justify(total)}")
+        f"total: {' + '.join(map(lambda price: f'{format_price_no_justify(price)}', rechnung_prices))} = {total_formatted}")
+    print(f"Ins gesamt {total_formatted} Euro.")
 
 
 def main():
