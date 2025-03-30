@@ -1601,7 +1601,7 @@ round-half-down-two-decimals() {
     # test: for i in {0..9}; do x=3.14${i}; echo "$x -> $(round-half-down-two-decimals $x)"; done
 }
 
-rechnung-studen() {
+rechnung-stunden() {
     local input
 
     local pricePerStunden
