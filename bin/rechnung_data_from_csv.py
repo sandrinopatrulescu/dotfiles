@@ -12,12 +12,16 @@ def get_input_args():
     return csv_file_path, first_rechnung_nr
 
 
-def is_valid_date(date_str):
+def date_str_to_date(date_str: str):
+    return datetime.strptime(date_str, "%d.%m.%Y")
+
+
+def is_valid_date(date_str: str):
     try:
         if not bool(re.match(r"^\d{2}\.\d{2}\.\d{4}$", date_str)):
             return False
 
-        datetime.strptime(date_str, "%d.%m.%Y")
+        date_str_to_date(date_str)
         return True
     except ValueError:
         return False
@@ -53,7 +57,7 @@ def parse_csv(csv_file_path: str):
         tuple_list = date_to_tuple_list.setdefault(date, [])
         tuple_list.append((kn_nr, bau, stunden, stunden_pl))
 
-    return sorted(date_to_tuple_list.items(), key=lambda item: item[0][::-1])
+    return sorted(date_to_tuple_list.items(), key=lambda item: date_str_to_date(item[0]).strftime('%Y.%m.%d'))
 
 
 def compute_values(date_list: List[Tuple[str, List[Tuple[str, str, float, float]]]], first_rechnung_nr: int):
