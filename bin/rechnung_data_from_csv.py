@@ -66,7 +66,7 @@ def compute_values(date_list: List[Tuple[str, List[Tuple[str, str, float, float]
     vat_rate = 19
 
     format_row_string = lambda x, y, z: f"{x:<25}\t{y:>25}\t{z:<25}\n"
-    format_computation_column = lambda hours, price: f"{hours:04.2f} St x {price:04.2f} Euro".replace(".", ",")
+    format_computation_column = lambda hours, price: f"{hours:04.2f} St x {price:5.2f} Euro".replace(".", ",")
     format_final_price = lambda price: f"{price:7.2f}".replace(".", ",")
     format_price_no_justify = lambda price: f"{price:.2f}".replace(".", ",")
     row_width = 83
