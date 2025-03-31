@@ -104,11 +104,13 @@ def compute_values(date_list: List[Tuple[str, List[Tuple[str, str, float, float]
         result += row_group_separator
 
         arbeitsleistung_netto = total_stunden_price + total_stunden_pl_price
-        result += format_row_string("Arbeitsleistung Netto:", "",
-                                    f"{format_final_price(arbeitsleistung_netto)} Euro netto")
+        result_column = f"{format_final_price(arbeitsleistung_netto)} Euro netto"
+        result += format_row_string("Arbeitsleistung Netto:", "", result_column)
 
-        mehrwertsteuer = vat_rate / 100 * arbeitsleistung_netto
-        result += format_row_string("MwSt. 19%:", "", f"{format_final_price(mehrwertsteuer)} Euro")
+        mehrwertsteuer_not_rounded = vat_rate / 100 * arbeitsleistung_netto
+        mehrwertsteuer = round(mehrwertsteuer_not_rounded, 2)
+        row_end = f" ({mehrwertsteuer_not_rounded})" if len(str(mehrwertsteuer_not_rounded).split('.')[1]) > 2 else ""
+        result += format_row_string("MwSt. 19%:", "", f"{format_final_price(mehrwertsteuer)} Euro" + row_end)
 
         result += row_group_separator
 
