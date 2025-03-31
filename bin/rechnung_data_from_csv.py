@@ -65,7 +65,7 @@ def compute_values(date_list: List[Tuple[str, List[Tuple[str, str, float, float]
     price_per_stunden_pl = 3.0
     vat_rate = 19
 
-    format_row_string = lambda x, y, z: f"{x:<25}\t{y:>25}\t{z:<25}\n"
+    format_row_string = lambda x, y, z: f"{x:<32}\t{y:>25}\t{z:<25}\n"
     format_computation_column = lambda hours, price: f"{hours:04.2f} St x {price:5.2f} Euro".replace(".", ",")
     format_final_price = lambda price: f"{price:7.2f}".replace(".", ",")
     format_price_no_justify = lambda price: f"{price:.2f}".replace(".", ",")
@@ -88,7 +88,8 @@ def compute_values(date_list: List[Tuple[str, List[Tuple[str, str, float, float]
             total_stunden_price += kn_price
             total_stunden_pl += stunden_pl
 
-            info_column = f"{j + 1}. KN NR: {kn_nr} {bau.capitalize()}bau"
+            bau_string = ' / '.join(map(lambda x: x.strip().capitalize() + 'bau', bau.split('+')))
+            info_column = f"{j + 1}. KN NR: {kn_nr} {bau_string}"
             computation_column = format_computation_column(stunden, price_per_stunden)
             result_column = f"{format_final_price(kn_price)} Euro netto"
 
