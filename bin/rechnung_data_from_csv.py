@@ -3,6 +3,7 @@ import csv
 import re
 import sys
 from datetime import datetime
+from typing import Dict, List, Tuple
 
 
 def get_input_args():
@@ -30,31 +31,32 @@ def is_number(s):
         return False
 
 
-def parse_csv(csv_file_path):
+def parse_csv(csv_file_path: str):
     csv_file = open(csv_file_path, mode='r')
     csv_reader = csv.reader(csv_file, delimiter=',')
 
-    date_to_tuple_list = {}
+    date_to_tuple_list: Dict[str, List[Tuple[str, str, float, float]]] = {}
 
     for i, line in enumerate(csv_reader):
         if line[0] == 'datum':
             continue  # skip header
         if not is_valid_date(line[0]):
             raise Exception(f"Invalid date {line[0]} at line {i + 1}")
-        if not all(map(is_number, line[1:])):
+        if not all(map(is_number, [line[1]] + line[3:])):  # skip bau
             raise Exception(f"Invalid numbers at line {i + 1}")
 
         date = line[0]
-        kn_nr = line[1]
-        stunden = float(line[2])
-        stunden_pl = float(line[3])
+        kn_nr = line[1]  # ab, auf, um
+        bau = line[2].strip()
+        stunden = float(line[3])
+        stunden_pl = float(line[4])
         tuple_list = date_to_tuple_list.setdefault(date, [])
-        tuple_list.append((kn_nr, stunden, stunden_pl))
+        tuple_list.append((kn_nr, bau, stunden, stunden_pl))
 
     return sorted(date_to_tuple_list.items(), key=lambda item: item[0][::-1])
 
 
-def compute_values(date_list, first_rechnung_nr):
+def compute_values(date_list: List[Tuple[str, List[Tuple[str, str, float, float]]]], first_rechnung_nr: int):
     price_per_stunden = 25.0
     price_per_stunden_pl = 3.0
     vat_rate = 19
@@ -78,12 +80,12 @@ def compute_values(date_list, first_rechnung_nr):
         total_stunden_pl = 0
         total_stunden_pl_price = 0
 
-        for j, (kn_nr, stunden, stunden_pl) in enumerate(tuple_list):
+        for j, (kn_nr, bau, stunden, stunden_pl) in enumerate(tuple_list):
             kn_price = stunden * price_per_stunden
             total_stunden_price += kn_price
             total_stunden_pl += stunden_pl
 
-            info_column = f"{j + 1}. KN NR: {kn_nr} ??(?)bau"
+            info_column = f"{j + 1}. KN NR: {kn_nr} {bau.capitalize()}bau"
             computation_column = format_computation_column(stunden, price_per_stunden)
             result_column = f"{format_final_price(kn_price)} Euro netto"
 
