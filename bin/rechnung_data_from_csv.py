@@ -54,11 +54,16 @@ def is_number(s):
         return False
 
 
+WorkSessionInfo = Tuple[str, str, float, float]
+RechnungInfo = List[WorkSessionInfo]
+DateToRechnung = Dict[str, RechnungInfo]
+
+
 def parse_csv(csv_file_path: str):
     csv_file = open(csv_file_path, mode='r')
     csv_reader = csv.reader(csv_file, delimiter=',')
 
-    date_to_tuple_list: Dict[str, List[Tuple[str, str, float, float]]] = {}
+    date_to_tuple_list: DateToRechnung = {}
 
     for i, line in enumerate(csv_reader):
         if line[0] == 'datum':
@@ -79,8 +84,7 @@ def parse_csv(csv_file_path: str):
     return sorted(date_to_tuple_list.items(), key=lambda item: date_str_to_date(item[0]).strftime('%Y.%m.%d'))
 
 
-def compute_values(date_list: List[Tuple[str, List[Tuple[str, str, float, float]]]], first_rechnung_nr: int,
-                   price_per_stunden: float):
+def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr: int, price_per_stunden: float):
     format_row_string = lambda x, y, z: f"{x:<32}\t{y:>25}\t{z:<25}\n"
     format_computation_column = lambda hours, price: f"{hours:04.2f} St x {price:5.2f} Euro".replace(".", ",")
     format_final_price = lambda price: f"{price:7.2f}".replace(".", ",")
