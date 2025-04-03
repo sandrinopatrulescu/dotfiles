@@ -5,11 +5,30 @@ import sys
 from datetime import datetime
 from typing import Dict, List, Tuple
 
+# region defaults
+
+
+PRICE_PER_STUNDEN = 25.0
+PRICE_PER_STUNDEN_PL = 3.0
+VAT_RATE = 19
+
+
+# endregion
+
 
 def get_input_args():
+    if not 1 <= len(sys.argv) - 1 <= 3:
+        message = f"Usage: python rechnung_data_from_csv.py <csv_file_path> [<first_rechnung_nr>=1] [<price_per_stunden>={PRICE_PER_STUNDEN}]\n"
+        sys.stderr.write(message)
+        sys.exit(1)
+
+    def get_argument_or_default(index: int, default: any):
+        return sys.argv[index] if len(sys.argv) > index else default
+
     csv_file_path = sys.argv[1]
-    first_rechnung_nr = int(sys.argv[2]) if len(sys.argv) == 3 else 1
-    return csv_file_path, first_rechnung_nr
+    first_rechnung_nr = int(get_argument_or_default(2, 1))
+    price_per_stunden = float(get_argument_or_default(3, PRICE_PER_STUNDEN))
+    return csv_file_path, first_rechnung_nr, price_per_stunden
 
 
 def date_str_to_date(date_str: str):
@@ -45,9 +64,9 @@ def parse_csv(csv_file_path: str):
         if line[0] == 'datum':
             continue  # skip header
         if not is_valid_date(line[0]):
-            raise Exception(f"Invalid date {line[0]} at line {i + 1}")
+            raise ValueError(f"Invalid date {line[0]} at line {i + 1}")
         if not all(map(is_number, [line[1]] + line[3:])):  # skip bau
-            raise Exception(f"Invalid numbers at line {i + 1}")
+            raise ValueError(f"Invalid numbers at line {i + 1}")
 
         date = line[0]
         kn_nr = line[1]  # ab, auf, um
@@ -60,11 +79,8 @@ def parse_csv(csv_file_path: str):
     return sorted(date_to_tuple_list.items(), key=lambda item: date_str_to_date(item[0]).strftime('%Y.%m.%d'))
 
 
-def compute_values(date_list: List[Tuple[str, List[Tuple[str, str, float, float]]]], first_rechnung_nr: int):
-    price_per_stunden = 25.0
-    price_per_stunden_pl = 3.0
-    vat_rate = 19
-
+def compute_values(date_list: List[Tuple[str, List[Tuple[str, str, float, float]]]], first_rechnung_nr: int,
+                   price_per_stunden: float):
     format_row_string = lambda x, y, z: f"{x:<32}\t{y:>25}\t{z:<25}\n"
     format_computation_column = lambda hours, price: f"{hours:04.2f} St x {price:5.2f} Euro".replace(".", ",")
     format_final_price = lambda price: f"{price:7.2f}".replace(".", ",")
@@ -97,8 +113,8 @@ def compute_values(date_list: List[Tuple[str, List[Tuple[str, str, float, float]
 
         if total_stunden_pl > 0:
             info_column = f'{len(tuple_list) + 1}. Projekt Leiter Zuschlag'
-            computation_column = format_computation_column(total_stunden_pl, price_per_stunden_pl)
-            total_stunden_pl_price = total_stunden_pl * price_per_stunden_pl
+            computation_column = format_computation_column(total_stunden_pl, PRICE_PER_STUNDEN_PL)
+            total_stunden_pl_price = total_stunden_pl * PRICE_PER_STUNDEN_PL
             result_column = f"{format_final_price(total_stunden_pl_price)} Euro netto"
             result += format_row_string(info_column, computation_column, result_column)
 
@@ -108,7 +124,7 @@ def compute_values(date_list: List[Tuple[str, List[Tuple[str, str, float, float]
         result_column = f"{format_final_price(arbeitsleistung_netto)} Euro netto"
         result += format_row_string("Arbeitsleistung Netto:", "", result_column)
 
-        mehrwertsteuer_not_rounded = vat_rate / 100 * arbeitsleistung_netto
+        mehrwertsteuer_not_rounded = VAT_RATE / 100 * arbeitsleistung_netto
         mehrwertsteuer = round(mehrwertsteuer_not_rounded, 2)
         row_end = f" ({mehrwertsteuer_not_rounded})" if len(str(mehrwertsteuer_not_rounded).split('.')[1]) > 2 else ""
         result += format_row_string("MwSt. 19%:", "", f"{format_final_price(mehrwertsteuer)} Euro" + row_end)
@@ -137,9 +153,9 @@ def compute_values(date_list: List[Tuple[str, List[Tuple[str, str, float, float]
 
 
 def main():
-    csv_file_path, first_rechnung_nr = get_input_args()
+    csv_file_path, first_rechnung_nr, price_per_stunden = get_input_args()
     date_list = parse_csv(csv_file_path)
-    compute_values(date_list, first_rechnung_nr)
+    compute_values(date_list, first_rechnung_nr, price_per_stunden)
 
 
 if __name__ == "__main__":
