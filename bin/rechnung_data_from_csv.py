@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
 import csv
+import os
 import re
 import sys
 from datetime import datetime
+from enum import Enum
 from typing import Dict, List, Tuple
+
+from docx import Document
+from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.enum.text import WD_LINE_SPACING
+from docx.shared import Pt, Mm, Inches
 
 # region defaults
 
@@ -84,6 +91,124 @@ def parse_csv(csv_file_path: str):
     return sorted(date_to_tuple_list.items(), key=lambda item: date_str_to_date(item[0]).strftime('%Y.%m.%d'))
 
 
+class PrDataKeys(str, Enum):
+    BANK_ACCOUNT = "bank-account"
+    HEADER_TEXT_LEFT = "header-text-left"
+    HEADER_TEXT_RIGHT = "header-text-right"
+
+
+def generate_doc(rechnung_nr: int):
+    # TODO: do this once for n rechnung
+
+    pr_data = {}
+
+    # TODO: make this whole method into a class, add the enum there, add read the pr data in the constructor
+    pr_dir = os.path.expandvars(os.getenv('OTHERS_M_PR'))
+    for pr_data_key in PrDataKeys:
+        key = pr_data_key.value
+        pr_data[key] = open(os.path.join(pr_dir, f"{key}.txt"), 'r').read()
+
+    # TODO: replace all of this w/ args
+    year = 2025  # TODO: get it from rechnung_date
+    rechnung_date = "22.03.2025"
+    raw_price_rows = 2
+
+    issue_date = "05.04.2025"
+
+    doc = Document()
+
+    # region global style (text)
+    style = doc.styles['Normal']
+    font = style.font
+    font.name = 'Times New Roman'
+    font.size = Pt(12)
+
+    style.paragraph_format.space_before = Pt(0)
+    style.paragraph_format.space_after = Pt(0)
+
+    style.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
+    # endregion
+
+    # region section style
+    section = doc.sections[0]
+
+    # A4 paper size https://en.wikipedia.org/wiki/ISO_216#A_series
+    section.page_height = Mm(297)
+    section.page_width = Mm(210)
+
+    margin = Inches(1)
+    section.left_margin = margin
+    section.right_margin = margin
+    section.top_margin = margin
+    section.bottom_margin = margin
+    # endregion
+
+    # TODO: temporary
+    doc.add_paragraph()
+
+    # region header table
+    header_table = doc.add_table(rows=1, cols=2)
+    header_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    row = header_table.rows[0]
+    left_cell = row.cells[0]
+    right_cell = row.cells[1]
+
+    table_width = section.page_width - section.left_margin - section.right_margin
+    left_column_width_ratio = 3 / 5
+    left_column_width = int(left_column_width_ratio * table_width)
+    header_table.columns[0].width = left_column_width
+    header_table.columns[1].width = table_width - left_column_width
+
+    left_cell.text = pr_data[PrDataKeys.HEADER_TEXT_LEFT]
+    right_cell.text = pr_data[PrDataKeys.HEADER_TEXT_RIGHT]
+    # endregion
+
+    doc.add_paragraph("\n")
+
+    title = doc.add_paragraph()
+    title_runner = title.add_run(f"RECHNUNG {rechnung_nr}/{year}")
+    title_runner.bold = True
+
+    doc.add_paragraph("\n")
+
+    # region price table
+    period_and_billing_text = f"Für den leistungszeitraum von {rechnung_date} erlaube Ich mir Ihnen folgende Leistungen zu berechnen:"
+    doc.add_paragraph(period_and_billing_text)
+
+    doc.add_paragraph("")
+
+    price_table = doc.add_table(rows=raw_price_rows + 3, cols=3)
+    price_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+
+    # TODO: table content
+    price_table.cell(len(price_table.rows) - 3, 0).text = "Arbeitsleistung Netto:"
+    price_table.cell(len(price_table.rows) - 2, 0).text = f"MwSt. {VAT_RATE}%:"
+    price_table.cell(len(price_table.rows) - 1, 0).text = "Gesamtbetrag:"
+    # endregion
+
+    doc.add_paragraph("")
+
+    # region bank account
+    transfer_text = "Bitte überweisen Sie den Betrag innerhalb von 14 Tagen auf dem untenstehenden Konto:"
+    doc.add_paragraph(transfer_text)
+
+    doc.add_paragraph("\n")
+
+    # TODO: make 2nd line 13pt and make 3rd line bold
+    bank_account_text = os.linesep.join(
+        map(lambda line: f"\t{line}", pr_data[PrDataKeys.BANK_ACCOUNT].split(os.linesep)))
+    doc.add_paragraph(bank_account_text)
+    # endregion
+
+    doc.add_paragraph("\n")
+
+    doc.add_paragraph(f"München den {issue_date}")
+
+    file_name_stem = f"rechnung_{rechnung_nr:03}_{year}.docx"
+    doc.save(f"{file_name_stem}.docx")
+    # TODO: convert to PDF
+
+
 def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr: int, price_per_stunden: float):
     format_row_string = lambda x, y, z: f"{x:<32}\t{y:>25}\t{z:<25}\n"
     format_computation_column = lambda hours, price: f"{hours:04.2f} St x {price:5.2f} Euro".replace(".", ",")
@@ -96,7 +221,7 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
 
     print(datetime.now().strftime("%d.%m.%Y") + "\n")
 
-    for i, (date, tuple_list) in enumerate(date_list):
+    for i, (rechnung_date, tuple_list) in enumerate(date_list):
         result = ""
 
         total_stunden_price = 0
@@ -140,8 +265,11 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
 
         rechnung_prices.append(gesamtbetrag)
 
-        print(f"RECHNUNG {first_rechnung_nr + i}\t{date}")
+        rechnung_nr = first_rechnung_nr + i
+        print(f"RECHNUNG {rechnung_nr}\t{rechnung_date}")
         print(result + "\n" * 2)
+
+        generate_doc(rechnung_nr)
 
     total = sum(rechnung_prices)
     total_formatted = format_price_no_justify(total)
