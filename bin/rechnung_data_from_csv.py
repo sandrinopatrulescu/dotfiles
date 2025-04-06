@@ -20,6 +20,8 @@ PRICE_PER_STUNDEN = 25.0
 PRICE_PER_STUNDEN_PL = 3.0
 VAT_RATE = 19
 
+DECIMAL_SEPARATOR = ","
+
 
 # endregion
 
@@ -102,6 +104,9 @@ class DocGenerator:
         HEADER_TEXT_LEFT = "header-text-left"
         HEADER_TEXT_RIGHT = "header-text-right"
 
+    PRICE_TABLE_NAME_COLUMN = 0
+    PRICE_TABLE_RESULT_COLUMN = 2
+
     def __init__(self):
         self.__pr_data = {}
 
@@ -110,11 +115,16 @@ class DocGenerator:
             key = pr_data_key.value
             self.__pr_data[key] = open(os.path.join(pr_dir, f"{key}.txt"), 'r').read()
 
-    def generate_doc(self, rechnung_nr: int, rechnung_date: str, issue_date: datetime):
+    def generate_doc(self, rechnung_nr: int, rechnung_date: str, total_column_name_to_result: Dict[str, str],
+                     issue_date: datetime):
         # TODO: do this once for n rechnung
 
         # region TODO: replace all of this w/ args
-        raw_price_rows = 2
+        # TODO: list of tuple of 3 strings - each row of partial price
+        partial_price_data = [
+            ("1. KN NR: ??????? ???bau", "12,00 St x 25,00 Euro", "300,00 Euro netto"),
+            ("2. Projekt Leiter Zuschlag", " 8,00 St x  3,00 Euro", " 24,00 Euro netto"),
+        ]
         # endregion
 
         year = issue_date.year
@@ -183,13 +193,27 @@ class DocGenerator:
 
         doc.add_paragraph("")
 
-        price_table = doc.add_table(rows=raw_price_rows + 3, cols=3)
+        price_table = doc.add_table(rows=len(partial_price_data) + 3, cols=3)
         price_table.alignment = WD_TABLE_ALIGNMENT.CENTER
 
-        # TODO: table content
-        price_table.cell(len(price_table.rows) - 3, 0).text = "Arbeitsleistung Netto:"
-        price_table.cell(len(price_table.rows) - 2, 0).text = f"MwSt. {VAT_RATE}%:"
-        price_table.cell(len(price_table.rows) - 1, 0).text = "Gesamtbetrag:"
+        # TODO: table partial prices
+        # TODO: table borders
+
+        for i, (name, result) in enumerate(total_column_name_to_result.items()):
+            column_index_and_text_pairs = [
+                (DocGenerator.PRICE_TABLE_NAME_COLUMN, name),
+                (DocGenerator.PRICE_TABLE_RESULT_COLUMN, result),
+            ]
+            for column_index, text in column_index_and_text_pairs:
+                cell = price_table.cell(len(price_table.rows) - 3 + i, column_index)
+                for paragraph in cell.paragraphs:
+                    paragraph.alignment = WD_TABLE_ALIGNMENT.LEFT
+                if column_index == DocGenerator.PRICE_TABLE_RESULT_COLUMN:
+                    lhs, rhs = text.split(DECIMAL_SEPARATOR)
+                    cell.text = f"{lhs:>6}{DECIMAL_SEPARATOR}{rhs}"  # TODO: deal with alignment
+                    cell.text = f"{lhs:>6}{DECIMAL_SEPARATOR}{rhs}".replace("  ", "\u00A0 ")
+                else:
+                    cell.text = text
         # endregion
 
         doc.add_paragraph("")
@@ -237,9 +261,10 @@ class DocGenerator:
 def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr: int, price_per_stunden: float):
     doc_generator = DocGenerator()
     format_row_string = lambda x, y, z: f"{x:<32}\t{y:>25}\t{z:<25}\n"
-    format_computation_column = lambda hours, price: f"{hours:04.2f} St x {price:5.2f} Euro".replace(".", ",")
-    format_final_price = lambda price: f"{price:7.2f}".replace(".", ",")
-    format_price_no_justify = lambda price: f"{price:.2f}".replace(".", ",")
+    format_computation_column = lambda hours, price: f"{hours:04.2f} St x {price:5.2f} Euro".replace(".",
+                                                                                                     DECIMAL_SEPARATOR)
+    format_final_price = lambda price: f"{price:7.2f}".replace(".", DECIMAL_SEPARATOR)
+    format_price_no_justify = lambda price: f"{price:.2f}".replace(".", DECIMAL_SEPARATOR)
     row_width = 83
     row_group_separator = "-" * row_width + "\n"
 
@@ -275,19 +300,29 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
 
         result += row_group_separator
 
+        total_column_name_to_result = {}
+
         arbeitsleistung_netto = total_stunden_price + total_stunden_pl_price
+        name_column = "Arbeitsleistung Netto:"
         result_column = f"{format_final_price(arbeitsleistung_netto)} Euro netto"
-        result += format_row_string("Arbeitsleistung Netto:", "", result_column)
+        result += format_row_string(name_column, "", result_column)
+        total_column_name_to_result[name_column] = result_column
 
         mehrwertsteuer_not_rounded = VAT_RATE / 100 * arbeitsleistung_netto
         mehrwertsteuer = round(mehrwertsteuer_not_rounded, 2)
         row_end = f" ({mehrwertsteuer_not_rounded})" if len(str(mehrwertsteuer_not_rounded).split('.')[1]) > 2 else ""
-        result += format_row_string("MwSt. 19%:", "", f"{format_final_price(mehrwertsteuer)} Euro" + row_end)
+        name_column = f"MwSt. {VAT_RATE}%:"
+        result_column = f"{format_final_price(mehrwertsteuer)} Euro"
+        result += format_row_string(f"MwSt. {VAT_RATE}%:", "", result_column + row_end)
+        total_column_name_to_result[name_column] = result_column
 
         result += row_group_separator
 
         gesamtbetrag = arbeitsleistung_netto + mehrwertsteuer
-        result += format_row_string("Gesamtbetrag:", "", f"{format_final_price(gesamtbetrag)} Euro Brutto")
+        name_column = "Gesamtbetrag:"
+        result_column = f"{format_final_price(gesamtbetrag)} Euro Brutto"
+        result += format_row_string(name_column, "", result_column)
+        total_column_name_to_result[name_column] = result_column
 
         rechnung_prices.append(gesamtbetrag)
 
@@ -295,7 +330,7 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
         print(f"RECHNUNG {rechnung_nr}\t{rechnung_date}")
         print(result + "\n" * 2)
 
-        doc_generator.generate_doc(rechnung_nr, rechnung_date, issue_date)
+        doc_generator.generate_doc(rechnung_nr, rechnung_date, total_column_name_to_result, issue_date)
 
     total = sum(rechnung_prices)
     total_formatted = format_price_no_justify(total)
