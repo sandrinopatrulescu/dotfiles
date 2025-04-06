@@ -105,7 +105,8 @@ class DocGenerator:
         HEADER_TEXT_RIGHT = "header-text-right"
 
     PRICE_TABLE_NAME_COLUMN = 0
-    PRICE_TABLE_RESULT_COLUMN = 2
+    PRICE_TABLE_RESULT_VALUE_COLUMN = 2
+    PRICE_TABLE_RESULT_DETAILS_COLUMN = 3
 
     def __init__(self):
         self.__pr_data = {}
@@ -193,27 +194,35 @@ class DocGenerator:
 
         doc.add_paragraph("")
 
-        price_table = doc.add_table(rows=len(partial_price_data) + 3, cols=3)
+        price_table = doc.add_table(rows=len(partial_price_data) + 3, cols=4)
         price_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+
+        price_table.columns[1].width = Inches(1.74)
+        price_table.columns[2].width = Inches(0.71)
+        price_table.columns[3].width = Inches(0.96)
+        price_table.columns[0].width = table_width - sum(map(lambda x: x.width, list(price_table.columns)[1:4]))
 
         # TODO: table partial prices
         # TODO: table borders
 
         for i, (name, result) in enumerate(total_column_name_to_result.items()):
+            separation_index = result.index(DECIMAL_SEPARATOR) + 3
+            result_value = result[:separation_index]
+            result_details = result[separation_index:]
+
             column_index_and_text_pairs = [
                 (DocGenerator.PRICE_TABLE_NAME_COLUMN, name),
-                (DocGenerator.PRICE_TABLE_RESULT_COLUMN, result),
+                (DocGenerator.PRICE_TABLE_RESULT_VALUE_COLUMN, result_value),
+                (DocGenerator.PRICE_TABLE_RESULT_DETAILS_COLUMN, result_details),
             ]
+
             for column_index, text in column_index_and_text_pairs:
                 cell = price_table.cell(len(price_table.rows) - 3 + i, column_index)
-                for paragraph in cell.paragraphs:
-                    paragraph.alignment = WD_TABLE_ALIGNMENT.LEFT
-                if column_index == DocGenerator.PRICE_TABLE_RESULT_COLUMN:
-                    lhs, rhs = text.split(DECIMAL_SEPARATOR)
-                    cell.text = f"{lhs:>6}{DECIMAL_SEPARATOR}{rhs}"  # TODO: deal with alignment
-                    cell.text = f"{lhs:>6}{DECIMAL_SEPARATOR}{rhs}".replace("  ", "\u00A0 ")
-                else:
-                    cell.text = text
+                paragraph = cell.paragraphs[0]
+                paragraph.clear()
+                paragraph.add_run(text.strip())
+                if column_index == DocGenerator.PRICE_TABLE_RESULT_VALUE_COLUMN:
+                    paragraph.alignment = WD_TABLE_ALIGNMENT.RIGHT
         # endregion
 
         doc.add_paragraph("")
