@@ -2,6 +2,7 @@
 import csv
 import os
 import re
+import subprocess
 import sys
 from datetime import datetime
 from enum import Enum
@@ -204,9 +205,20 @@ def generate_doc(rechnung_nr: int):
 
     doc.add_paragraph(f"München den {issue_date}")
 
-    file_name_stem = f"rechnung_{rechnung_nr:03}_{year}.docx"
-    doc.save(f"{file_name_stem}.docx")
-    # TODO: convert to PDF
+    file_name_stem = f"rechnung_{rechnung_nr:03}_{year}"
+    doc_filename = f"{file_name_stem}.docx"
+    doc.save(doc_filename)
+
+    try:
+        subprocess.run([
+            "libreoffice",
+            "--headless",
+            "--convert-to", "pdf",
+            "--outdir", os.getcwd(),
+            doc_filename
+        ], check=True)
+    except subprocess.CalledProcessError as e:
+        print("LibreOffice PDF conversion failed:", e)
 
 
 def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr: int, price_per_stunden: float):
