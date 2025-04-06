@@ -193,8 +193,12 @@ class DocGenerator:
         price_table.columns[3].width = Inches(0.96)
         price_table.columns[0].width = table_width - sum(map(lambda x: x.width, list(price_table.columns)[1:4]))
 
-        # TODO: table borders
-        # TODO: make PRICE_TABLE_RESULT_VALUE_COLUMN bolded
+        # TODO: table borders:
+        #   top for -1 and -3 rows with increased height
+        #   remove left border for last column
+        price_table.style = 'Table Grid'
+
+        # TODO: add a little padding to table
         # TODO: PRICE_TABLE_COMPUTATION_COLUMN justification
         def split_result_text(the_result_text: str):
             separation_index = the_result_text.index(DECIMAL_SEPARATOR) + 3
@@ -216,9 +220,10 @@ class DocGenerator:
                 cell = price_table.cell(i, column_index)
                 paragraph = cell.paragraphs[0]
                 paragraph.clear()
-                paragraph.add_run(text.strip())
+                run = paragraph.add_run(text.strip())
                 if column_index == DocGenerator.PRICE_TABLE_RESULT_VALUE_COLUMN:
                     paragraph.alignment = WD_TABLE_ALIGNMENT.RIGHT
+                    run.bold = True
         # endregion
 
         doc.add_paragraph("")
