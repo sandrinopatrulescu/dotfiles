@@ -104,7 +104,8 @@ class DocGenerator:
         HEADER_TEXT_LEFT = "header-text-left"
         HEADER_TEXT_RIGHT = "header-text-right"
 
-    PRICE_TABLE_NAME_COLUMN = 0
+    PRICE_TABLE_info_column = 0
+    PRICE_TABLE_COMPUTATION_COLUMN = 1
     PRICE_TABLE_RESULT_VALUE_COLUMN = 2
     PRICE_TABLE_RESULT_DETAILS_COLUMN = 3
 
@@ -116,18 +117,8 @@ class DocGenerator:
             key = pr_data_key.value
             self.__pr_data[key] = open(os.path.join(pr_dir, f"{key}.txt"), 'r').read()
 
-    def generate_doc(self, rechnung_nr: int, rechnung_date: str, total_column_name_to_result: Dict[str, str],
+    def generate_doc(self, rechnung_nr: int, rechnung_date: str, price_table_data: List[Tuple[str, str, str]],
                      issue_date: datetime):
-        # TODO: do this once for n rechnung
-
-        # region TODO: replace all of this w/ args
-        # TODO: list of tuple of 3 strings - each row of partial price
-        partial_price_data = [
-            ("1. KN NR: ??????? ???bau", "12,00 St x 25,00 Euro", "300,00 Euro netto"),
-            ("2. Projekt Leiter Zuschlag", " 8,00 St x  3,00 Euro", " 24,00 Euro netto"),
-        ]
-        # endregion
-
         year = issue_date.year
 
         doc = Document()
@@ -194,7 +185,7 @@ class DocGenerator:
 
         doc.add_paragraph("")
 
-        price_table = doc.add_table(rows=len(partial_price_data) + 3, cols=4)
+        price_table = doc.add_table(rows=len(price_table_data), cols=4)
         price_table.alignment = WD_TABLE_ALIGNMENT.CENTER
 
         price_table.columns[1].width = Inches(1.74)
@@ -202,22 +193,27 @@ class DocGenerator:
         price_table.columns[3].width = Inches(0.96)
         price_table.columns[0].width = table_width - sum(map(lambda x: x.width, list(price_table.columns)[1:4]))
 
-        # TODO: table partial prices
         # TODO: table borders
+        # TODO: make PRICE_TABLE_RESULT_VALUE_COLUMN bolded
+        # TODO: PRICE_TABLE_COMPUTATION_COLUMN justification
+        def split_result_text(the_result_text: str):
+            separation_index = the_result_text.index(DECIMAL_SEPARATOR) + 3
+            value = the_result_text[:separation_index]
+            details = the_result_text[separation_index:]
+            return value, details
 
-        for i, (name, result) in enumerate(total_column_name_to_result.items()):
-            separation_index = result.index(DECIMAL_SEPARATOR) + 3
-            result_value = result[:separation_index]
-            result_details = result[separation_index:]
+        for i, (name, computation, result) in enumerate(price_table_data):
+            result_value, result_details = split_result_text(result)
 
             column_index_and_text_pairs = [
-                (DocGenerator.PRICE_TABLE_NAME_COLUMN, name),
+                (DocGenerator.PRICE_TABLE_info_column, name),
+                (DocGenerator.PRICE_TABLE_COMPUTATION_COLUMN, computation),
                 (DocGenerator.PRICE_TABLE_RESULT_VALUE_COLUMN, result_value),
                 (DocGenerator.PRICE_TABLE_RESULT_DETAILS_COLUMN, result_details),
             ]
 
             for column_index, text in column_index_and_text_pairs:
-                cell = price_table.cell(len(price_table.rows) - 3 + i, column_index)
+                cell = price_table.cell(i, column_index)
                 paragraph = cell.paragraphs[0]
                 paragraph.clear()
                 paragraph.add_run(text.strip())
@@ -288,6 +284,8 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
         total_stunden_pl = 0
         total_stunden_pl_price = 0
 
+        price_table_data = []
+
         for j, (kn_nr, bau, stunden, stunden_pl) in enumerate(tuple_list):
             kn_price = stunden * price_per_stunden
             total_stunden_price += kn_price
@@ -299,6 +297,7 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
             result_column = f"{format_final_price(kn_price)} Euro netto"
 
             result += format_row_string(info_column, computation_column, result_column)
+            price_table_data.append((info_column, computation_column, result_column))
 
         if total_stunden_pl > 0:
             info_column = f'{len(tuple_list) + 1}. Projekt Leiter Zuschlag'
@@ -306,32 +305,31 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
             total_stunden_pl_price = total_stunden_pl * PRICE_PER_STUNDEN_PL
             result_column = f"{format_final_price(total_stunden_pl_price)} Euro netto"
             result += format_row_string(info_column, computation_column, result_column)
+            price_table_data.append((info_column, computation_column, result_column))
 
         result += row_group_separator
 
-        total_column_name_to_result = {}
-
         arbeitsleistung_netto = total_stunden_price + total_stunden_pl_price
-        name_column = "Arbeitsleistung Netto:"
+        info_column = "Arbeitsleistung Netto:"
         result_column = f"{format_final_price(arbeitsleistung_netto)} Euro netto"
-        result += format_row_string(name_column, "", result_column)
-        total_column_name_to_result[name_column] = result_column
+        result += format_row_string(info_column, "", result_column)
+        price_table_data.append((info_column, "", result_column))
 
         mehrwertsteuer_not_rounded = VAT_RATE / 100 * arbeitsleistung_netto
         mehrwertsteuer = round(mehrwertsteuer_not_rounded, 2)
         row_end = f" ({mehrwertsteuer_not_rounded})" if len(str(mehrwertsteuer_not_rounded).split('.')[1]) > 2 else ""
-        name_column = f"MwSt. {VAT_RATE}%:"
+        info_column = f"MwSt. {VAT_RATE}%:"
         result_column = f"{format_final_price(mehrwertsteuer)} Euro"
         result += format_row_string(f"MwSt. {VAT_RATE}%:", "", result_column + row_end)
-        total_column_name_to_result[name_column] = result_column
+        price_table_data.append((info_column, "", result_column))
 
         result += row_group_separator
 
         gesamtbetrag = arbeitsleistung_netto + mehrwertsteuer
-        name_column = "Gesamtbetrag:"
+        info_column = "Gesamtbetrag:"
         result_column = f"{format_final_price(gesamtbetrag)} Euro Brutto"
-        result += format_row_string(name_column, "", result_column)
-        total_column_name_to_result[name_column] = result_column
+        result += format_row_string(info_column, "", result_column)
+        price_table_data.append((info_column, "", result_column))
 
         rechnung_prices.append(gesamtbetrag)
 
@@ -339,7 +337,7 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
         print(f"RECHNUNG {rechnung_nr}\t{rechnung_date}")
         print(result + "\n" * 2)
 
-        doc_generator.generate_doc(rechnung_nr, rechnung_date, total_column_name_to_result, issue_date)
+        doc_generator.generate_doc(rechnung_nr, rechnung_date, price_table_data, issue_date)
 
     total = sum(rechnung_prices)
     total_formatted = format_price_no_justify(total)
