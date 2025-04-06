@@ -92,6 +92,10 @@ def parse_csv(csv_file_path: str):
     return sorted(date_to_tuple_list.items(), key=lambda item: date_str_to_date(item[0]).strftime('%Y.%m.%d'))
 
 
+def get_issue_date_string(issue_date: datetime):
+    return f"München den {issue_date.strftime('%d.%m.%Y')}"
+
+
 class DocGenerator:
     class PrDataKeys(str, Enum):
         BANK_ACCOUNT = "bank-account"
@@ -106,15 +110,14 @@ class DocGenerator:
             key = pr_data_key.value
             self.__pr_data[key] = open(os.path.join(pr_dir, f"{key}.txt"), 'r').read()
 
-    def generate_doc(self, rechnung_nr: int):
+    def generate_doc(self, rechnung_nr: int, rechnung_date: str, issue_date: datetime):
         # TODO: do this once for n rechnung
 
-        # TODO: replace all of this w/ args
-        year = 2025  # TODO: get it from rechnung_date
-        rechnung_date = "22.03.2025"
+        # region TODO: replace all of this w/ args
         raw_price_rows = 2
+        # endregion
 
-        issue_date = "05.04.2025"
+        year = issue_date.year
 
         doc = Document()
 
@@ -164,6 +167,7 @@ class DocGenerator:
         right_cell.text = self.__pr_data[DocGenerator.PrDataKeys.HEADER_TEXT_RIGHT]
         # endregion
 
+        # region title (rechnung nr)
         doc.add_paragraph("\n")
 
         title = doc.add_paragraph()
@@ -171,6 +175,7 @@ class DocGenerator:
         title_runner.bold = True
 
         doc.add_paragraph("\n")
+        # endregion
 
         # region price table
         period_and_billing_text = f"Für den leistungszeitraum von {rechnung_date} erlaube Ich mir Ihnen folgende Leistungen zu berechnen:"
@@ -207,12 +212,16 @@ class DocGenerator:
 
         doc.add_paragraph("\n")
 
-        doc.add_paragraph(f"München den {issue_date}")
+        doc.add_paragraph(get_issue_date_string(issue_date))
 
         file_name_stem = f"rechnung_{rechnung_nr:03}_{year}"
+
+        DocGenerator.save_doc_and_pdf(doc, file_name_stem)
+
+    @staticmethod
+    def save_doc_and_pdf(doc: Document, file_name_stem: str):
         doc_filename = f"{file_name_stem}.docx"
         doc.save(doc_filename)
-
         try:
             subprocess.run([
                 "libreoffice",
@@ -235,8 +244,8 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
     row_group_separator = "-" * row_width + "\n"
 
     rechnung_prices = []
-
-    print(datetime.now().strftime("%d.%m.%Y") + "\n")
+    issue_date = datetime.now()
+    print(get_issue_date_string(issue_date))
 
     for i, (rechnung_date, tuple_list) in enumerate(date_list):
         result = ""
@@ -286,7 +295,7 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
         print(f"RECHNUNG {rechnung_nr}\t{rechnung_date}")
         print(result + "\n" * 2)
 
-        doc_generator.generate_doc(rechnung_nr)
+        doc_generator.generate_doc(rechnung_nr, rechnung_date, issue_date)
 
     total = sum(rechnung_prices)
     total_formatted = format_price_no_justify(total)
