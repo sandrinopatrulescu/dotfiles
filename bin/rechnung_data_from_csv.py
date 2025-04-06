@@ -119,15 +119,15 @@ def generate_doc(rechnung_nr: int):
     doc = Document()
 
     # region global style (text)
-    style = doc.styles['Normal']
-    font = style.font
-    font.name = 'Times New Roman'
-    font.size = Pt(12)
+    doc_style = doc.styles['Normal']
+    doc_style_font = doc_style.font
+    doc_style_font.name = 'Times New Roman'
+    doc_style_font.size = Pt(12)
 
-    style.paragraph_format.space_before = Pt(0)
-    style.paragraph_format.space_after = Pt(0)
+    doc_style.paragraph_format.space_before = Pt(0)
+    doc_style.paragraph_format.space_after = Pt(0)
 
-    style.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
+    doc_style.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
     # endregion
 
     # region section style
@@ -195,10 +195,13 @@ def generate_doc(rechnung_nr: int):
 
     doc.add_paragraph("\n")
 
-    # TODO: make 2nd line 13pt and make 3rd line bold
-    bank_account_text = os.linesep.join(
-        map(lambda line: f"\t{line}", pr_data[PrDataKeys.BANK_ACCOUNT].split(os.linesep)))
-    doc.add_paragraph(bank_account_text)
+    bank_account_text_lines = list(map(lambda line: f"\t{line}", pr_data[PrDataKeys.BANK_ACCOUNT].split(os.linesep)))
+    bank_account_paragraph = doc.add_paragraph()
+    bank_account_paragraph.add_run(bank_account_text_lines[0] + "\n")
+    bank_account_paragraph.add_run(bank_account_text_lines[1] + "\n").font.size = doc_style_font.size + Pt(1)
+    bank_account_paragraph.add_run(bank_account_text_lines[2] + "\n").bold = True
+    bank_account_paragraph.add_run("\n".join(bank_account_text_lines[3:]))
+
     # endregion
 
     doc.add_paragraph("\n")
