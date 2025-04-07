@@ -12,7 +12,10 @@ from typing import Dict, List, Tuple
 from docx import Document
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_LINE_SPACING
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
 from docx.shared import Pt, Mm, Inches
+from docx.table import _Row, _Cell
 
 # region defaults
 
@@ -124,6 +127,30 @@ class DocGenerator:
             key = pr_data_key.value
             self.__pr_data[key] = open(os.path.join(pr_dir, f"{key}.txt"), 'r').read()
 
+    @staticmethod
+    def set_table_cell_top_border(table_cell: _Cell, size: int):
+        table_cell_properties = table_cell._tc.get_or_add_tcPr()
+
+        table_cell_borders = table_cell_properties.find(qn('w:tcBorders'))
+        if table_cell_borders is None:
+            table_cell_borders = OxmlElement('w:tcBorders')
+            table_cell_properties.append(table_cell_borders)
+
+        border_top = table_cell_borders.find(qn('w:top'))
+        if border_top is None:
+            border_top = OxmlElement('w:top')
+            table_cell_borders.append(border_top)
+
+        border_top.set(qn('w:val'), 'single')
+        border_top.set(qn('w:sz'), str(size))
+        border_top.set(qn('w:space'), '0')
+        border_top.set(qn('w:color'), '000000')
+
+    @staticmethod
+    def set_table_row_top_border(row: _Row, size: int):
+        for cell in row.cells:
+            DocGenerator.set_table_cell_top_border(cell, size)
+
     def generate_doc(self, rechnung_nr: int, rechnung_date: str, price_table_data: List[Tuple[str, str, str]],
                      issue_date: datetime):
         year = issue_date.year
@@ -200,9 +227,11 @@ class DocGenerator:
         price_table.columns[3].width = Inches(0.96)
         price_table.columns[0].width = table_width - sum(map(lambda x: x.width, list(price_table.columns)[1:4]))
 
-        # TODO: table borders:
-        #   top for -1 and -3 rows with increased height
-        #   remove left border for last column
+        separator_border_size = 16
+        DocGenerator.set_table_row_top_border(price_table.rows[-1], separator_border_size)
+        DocGenerator.set_table_row_top_border(price_table.rows[-3], separator_border_size)
+        # TODO: table borders: remove left border for last column
+
         price_table.style = 'Table Grid'
 
         # TODO: add a little padding to table
