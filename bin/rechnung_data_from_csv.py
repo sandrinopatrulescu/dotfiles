@@ -198,7 +198,6 @@ class DocGenerator:
 
     @staticmethod
     def set_price_table_margins(column_index: int, cell: _Cell):
-        # TODO add some space between computation separator and hour price
         is_computation_stunden_column = column_index == DocGenerator.PriceTableColumns.ComputationStunden.value
         is_computation_hour_price_column = column_index == DocGenerator.PriceTableColumns.ComputationHourPrice.value
         is_result_details_column = column_index == DocGenerator.PriceTableColumns.ResultDetails.value
@@ -301,7 +300,7 @@ class DocGenerator:
         price_table.alignment = WD_TABLE_ALIGNMENT.CENTER
 
         price_table.columns[DocGenerator.PriceTableColumns.ComputationStunden.value].width = Inches(1)
-        price_table.columns[DocGenerator.PriceTableColumns.ComputationHourPrice.value].width = Inches(0.87881999999)
+        price_table.columns[DocGenerator.PriceTableColumns.ComputationHourPrice.value].width = Inches(0.95)
         price_table.columns[DocGenerator.PriceTableColumns.ResultValue.value].width = Inches(0.7)
         price_table.columns[DocGenerator.PriceTableColumns.ResultDetails.value].width = Inches(1)
         price_table.columns[DocGenerator.PriceTableColumns.Info.value].width = table_width - sum(
