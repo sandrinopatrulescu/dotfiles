@@ -187,11 +187,31 @@ class DocGenerator:
             node.set(qn('w:type'), 'dxa')  # dxa = twentieths of a point
 
     @staticmethod
+    def set_price_table_cell_borders(column_index: int, cell: _Cell, ):
+        is_column_without_border = any(filter(lambda x: column_index == x.value, DocGenerator.COLUMNS_WITHOUT_BORDER))
+
+        for direction in ('top', 'left'):
+            should_set_border = not (direction == 'left' and is_column_without_border)
+
+            if should_set_border:
+                DocGenerator.set_table_cell_border(cell, direction, table_border_size, BLACK)
+
+    @staticmethod
+    def set_price_table_margins(column_index, table):
+        # TODO
+        is_result_details_column = column_index == DocGenerator.PriceTableColumns.ResultDetails.value
+        is_left_of_result_value = column_index == DocGenerator.PriceTableColumns.ResultValue.value
+        left_margin = int(margin_horizontal / 2) if is_result_details_column else margin_horizontal
+        right_margin = 0 if column_index == DocGenerator.PriceTableColumns.ResultDetails.value else margin_horizontal
+        DocGenerator.set_table_cell_margins(table, margin_vertical, margin_horizontal, margin_vertical,
+                                            right_margin)
+
+    @staticmethod
     def set_price_table_border_and_margins(table: Table):
         for row_index, row in enumerate(table.rows):
             for column_index, cell in enumerate(row.cells):
-                for direction in ('top', 'left'):
-                    DocGenerator.set_price_table_cell_border_and_margin(table, column_index, cell, direction)
+                DocGenerator.set_price_table_cell_borders(column_index, cell)
+                DocGenerator.set_price_table_margins(column_index, table)
         DocGenerator.set_table_column_border(table.columns[-1], 'right', table_border_size, BLACK)
         DocGenerator.set_table_row_border(table.rows[-1], 'bottom', table_border_size, BLACK)
 
@@ -200,28 +220,13 @@ class DocGenerator:
         DocGenerator.set_table_row_border(table.rows[-3], 'top', table_border_size_group_separator, BLACK)
 
     COLUMNS_WITHOUT_BORDER = [PriceTableColumns.ComputationHourPrice, PriceTableColumns.ResultDetails]
-    COLUMNS_WITH_MARGIN_RIGHT_0 = [PriceTableColumns.ComputationStunden, PriceTableColumns.ComputationHourPrice,
-                                   PriceTableColumns.ResultValue]
 
     @staticmethod
-    def set_price_table_cell_border_and_margin(table: Table, column_index: int, cell: _Cell, direction: str):
-        # border
-        is_column_without_border = any(filter(lambda x: column_index == x.value, DocGenerator.COLUMNS_WITHOUT_BORDER))
-        should_set_border = not (direction == 'left' and is_column_without_border)
-
-        if should_set_border:
-            DocGenerator.set_table_cell_border(cell, direction, table_border_size, BLACK)
-
-        # TODO justification
-        # margin
-        is_column_with_margin_right_0 = any(
-            filter(lambda x: column_index == x.value, DocGenerator.COLUMNS_WITH_MARGIN_RIGHT_0))
-        has_custom_horizontal_margins = direction == 'left' and is_column_with_margin_right_0
-
-        left_margin = 60 if has_custom_horizontal_margins else margin_horizontal
-        right_margin = 0 if has_custom_horizontal_margins else margin_horizontal
-
-        DocGenerator.set_table_cell_margins(table, margin_vertical, left_margin, margin_vertical, right_margin)
+    def is_column_right_justified(column_index: int):
+        columns_with_right_alignment = [DocGenerator.PriceTableColumns.ComputationStunden,
+                                        DocGenerator.PriceTableColumns.ComputationHourPrice,
+                                        DocGenerator.PriceTableColumns.ResultValue]
+        return any(filter(lambda x: column_index == x.value, columns_with_right_alignment))
 
     def generate_doc(self, rechnung_nr: int, rechnung_date: str, price_table_data: List[Tuple[str, str, str]],
                      issue_date: datetime):
@@ -299,8 +304,7 @@ class DocGenerator:
             map(lambda y: price_table.columns[y.value].width,
                 filter(lambda x: x != DocGenerator.PriceTableColumns.Info, list(DocGenerator.PriceTableColumns))))
 
-        self.set_price_table_border_and_margins(price_table)
-
+        # region table values
         def split_result_text(result_text: str):
             separation_index = result_text.index(DECIMAL_SEPARATOR) + 3
             value = result_text[:separation_index]
@@ -335,8 +339,12 @@ class DocGenerator:
                 paragraph.clear()
                 run = paragraph.add_run(text.strip())
                 if column_index == DocGenerator.PriceTableColumns.ResultValue.value:
-                    paragraph.alignment = WD_TABLE_ALIGNMENT.RIGHT
                     run.bold = True
+                if DocGenerator.is_column_right_justified(column_index):
+                    paragraph.alignment = WD_TABLE_ALIGNMENT.RIGHT
+        # endregion
+
+        self.set_price_table_border_and_margins(price_table)
         # endregion
 
         doc.add_paragraph("")
