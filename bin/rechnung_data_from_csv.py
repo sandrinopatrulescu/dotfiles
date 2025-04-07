@@ -179,6 +179,31 @@ class DocGenerator:
             node.set(qn('w:w'), str(value))
             node.set(qn('w:type'), 'dxa')  # dxa = twentieths of a point
 
+    @staticmethod
+    def set_price_table_border_and_margins(table):
+        vertical_margin = 80
+        horizontal_margin = 120
+        table_border_size = 8
+        table_group_separator_border_size = int(table_border_size * 2.25)
+
+        for i, row in enumerate(table.rows):
+            for j, cell in enumerate(row.cells):
+                for direction in ('top', 'left'):
+                    is_left_of_result_details_column = j == len(row.cells) - 1 and direction == 'left'
+                    should_set_border = not is_left_of_result_details_column
+
+                    left_margin = 60 if is_left_of_result_details_column else horizontal_margin
+                    right_margin = 0 if is_left_of_result_details_column else horizontal_margin
+                    DocGenerator.set_table_cell_margins(table, vertical_margin, left_margin, vertical_margin,
+                                                        right_margin)
+
+                    if should_set_border:
+                        DocGenerator.set_table_cell_border(cell, direction, table_border_size, BLACK)
+        DocGenerator.set_table_column_border(table.columns[-1], 'right', table_border_size, BLACK)
+        DocGenerator.set_table_row_border(table.rows[-1], 'bottom', table_border_size, BLACK)
+        DocGenerator.set_table_row_border(table.rows[-1], 'top', table_group_separator_border_size, BLACK)
+        DocGenerator.set_table_row_border(table.rows[-3], 'top', table_group_separator_border_size, BLACK)
+
     def generate_doc(self, rechnung_nr: int, rechnung_date: str, price_table_data: List[Tuple[str, str, str]],
                      issue_date: datetime):
         year = issue_date.year
@@ -252,28 +277,7 @@ class DocGenerator:
         price_table.columns[3].width = Inches(0.96)
         price_table.columns[0].width = table_width - sum(map(lambda x: x.width, list(price_table.columns)[1:4]))
 
-        vertical_margin = 80
-        horizontal_margin = 120
-        table_border_size = 8
-        table_group_separator_border_size = int(table_border_size * 2.25)
-        for i, row in enumerate(price_table.rows):
-            for j, cell in enumerate(row.cells):
-                for direction in ('top', 'left'):
-                    is_left_of_result_details_column = j == len(row.cells) - 1 and direction == 'left'
-                    should_set_border = not is_left_of_result_details_column
-
-                    left_margin = 60 if is_left_of_result_details_column else horizontal_margin
-                    right_margin = 0 if is_left_of_result_details_column else horizontal_margin
-                    DocGenerator.set_table_cell_margins(price_table, vertical_margin, left_margin, vertical_margin,
-                                                        right_margin)
-
-                    if should_set_border:
-                        DocGenerator.set_table_cell_border(cell, direction, table_border_size, BLACK)
-        DocGenerator.set_table_column_border(price_table.columns[-1], 'right', table_border_size, BLACK)
-        DocGenerator.set_table_row_border(price_table.rows[-1], 'bottom', table_border_size, BLACK)
-
-        DocGenerator.set_table_row_border(price_table.rows[-1], 'top', table_group_separator_border_size, BLACK)
-        DocGenerator.set_table_row_border(price_table.rows[-3], 'top', table_group_separator_border_size, BLACK)
+        self.set_price_table_border_and_margins(price_table)
 
         # TODO: PRICE_TABLE_COMPUTATION_COLUMN justification
         def split_result_text(the_result_text: str):
