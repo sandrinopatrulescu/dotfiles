@@ -5,6 +5,7 @@ import re
 import subprocess
 import sys
 from datetime import datetime
+from decimal import Decimal, ROUND_HALF_DOWN
 from enum import Enum
 from typing import Dict, List, Tuple
 
@@ -274,6 +275,11 @@ class DocGenerator:
             print("LibreOffice PDF conversion failed:", e)
 
 
+def round_half_down(value: Decimal, digits=2):
+    quantize_str = '1.' + '0' * digits  # e.g., '1.00' for 2 digits
+    return value.quantize(Decimal(quantize_str), rounding=ROUND_HALF_DOWN)
+
+
 def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr: int, price_per_stunden: float):
     doc_generator = DocGenerator()
     format_row_string = lambda x, y, z: f"{x:<32}\t{y:>25}\t{z:<25}\n"
@@ -326,9 +332,12 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
         result += format_row_string(info_column, "", result_column)
         price_table_data.append((info_column, "", result_column))
 
-        mehrwertsteuer_not_rounded = VAT_RATE / 100 * arbeitsleistung_netto
-        mehrwertsteuer = round(mehrwertsteuer_not_rounded, 2)
-        row_end = f" ({mehrwertsteuer_not_rounded})" if len(str(mehrwertsteuer_not_rounded).split('.')[1]) > 2 else ""
+        def as_decimal(value: float | int):
+            return Decimal(str(value))
+
+        mehrwertsteuer_not_rounded = as_decimal(VAT_RATE) / as_decimal(100) * as_decimal(arbeitsleistung_netto)
+        mehrwertsteuer = round_half_down(mehrwertsteuer_not_rounded)
+        row_end = f" ({mehrwertsteuer_not_rounded})" if str(mehrwertsteuer_not_rounded).split('.')[1][2] != '0' else ""
         info_column = f"MwSt. {VAT_RATE}%:"
         result_column = f"{format_final_price(mehrwertsteuer)} Euro"
         result += format_row_string(f"MwSt. {VAT_RATE}%:", "", result_column + row_end)
@@ -336,7 +345,7 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
 
         result += row_group_separator
 
-        gesamtbetrag = arbeitsleistung_netto + mehrwertsteuer
+        gesamtbetrag = as_decimal(arbeitsleistung_netto) + mehrwertsteuer
         info_column = "Gesamtbetrag:"
         result_column = f"{format_final_price(gesamtbetrag)} Euro Brutto"
         result += format_row_string(info_column, "", result_column)
@@ -363,7 +372,19 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
     print(f"email body: Ins gesamt {total_formatted} Euro.")
 
 
+def test_round_half_down_2_digit():
+    for tenth in range(10):
+        for hundredth in range(10):
+            for thousandth in range(10):
+                number_to_round = Decimal(f"0.{tenth}{hundredth}{thousandth}")
+                expected = Decimal(f"0.{tenth}{hundredth}") + Decimal(f"0.0{int(thousandth > 5)}")
+                actual = round_half_down(number_to_round)
+                assert actual == expected
+
+
 def main():
+    test_round_half_down_2_digit()
+
     csv_file_path, first_rechnung_nr, price_per_stunden = get_input_args()
     date_list = parse_csv(csv_file_path)
     compute_values(date_list, first_rechnung_nr, price_per_stunden)
