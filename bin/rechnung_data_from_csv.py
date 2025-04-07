@@ -15,7 +15,7 @@ from docx.enum.text import WD_LINE_SPACING
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Pt, Mm, Inches
-from docx.table import _Row, _Cell
+from docx.table import _Row, _Cell, _Column, Table
 
 # region defaults
 
@@ -31,6 +31,8 @@ STUNDEN_CSV_COLUMN_KN_NR = 1
 STUNDEN_CSV_COLUMN_BAU = 2
 STUNDEN_CSV_COLUMN_STUNDEN = 3
 STUNDEN_CSV_COLUMN_STUNDEN_PL = 4
+
+BLACK = '000000'
 
 
 # endregion
@@ -128,7 +130,7 @@ class DocGenerator:
             self.__pr_data[key] = open(os.path.join(pr_dir, f"{key}.txt"), 'r').read()
 
     @staticmethod
-    def set_table_cell_top_border(table_cell: _Cell, size: int):
+    def set_table_cell_border(table_cell: _Cell, direction: str, size: int, color=BLACK):
         table_cell_properties = table_cell._tc.get_or_add_tcPr()
 
         table_cell_borders = table_cell_properties.find(qn('w:tcBorders'))
@@ -136,20 +138,46 @@ class DocGenerator:
             table_cell_borders = OxmlElement('w:tcBorders')
             table_cell_properties.append(table_cell_borders)
 
-        border_top = table_cell_borders.find(qn('w:top'))
-        if border_top is None:
-            border_top = OxmlElement('w:top')
-            table_cell_borders.append(border_top)
+        side_border = table_cell_borders.find(qn(f'w:{direction}'))
+        if side_border is None:
+            side_border = OxmlElement(f'w:{direction}')
+            table_cell_borders.append(side_border)
 
-        border_top.set(qn('w:val'), 'single')
-        border_top.set(qn('w:sz'), str(size))
-        border_top.set(qn('w:space'), '0')
-        border_top.set(qn('w:color'), '000000')
+        side_border.set(qn('w:val'), 'single')
+        side_border.set(qn('w:sz'), str(size))
+        side_border.set(qn('w:space'), '0')
+        side_border.set(qn('w:color'), color)
 
     @staticmethod
-    def set_table_row_top_border(row: _Row, size: int):
+    def set_table_row_border(row: _Row, direction: str, size: int, color=BLACK):
         for cell in row.cells:
-            DocGenerator.set_table_cell_top_border(cell, size)
+            DocGenerator.set_table_cell_border(cell, direction, size, color)
+
+    @staticmethod
+    def set_table_column_border(column: _Column, direction: str, size: int, color=BLACK):
+        for cell in column.cells:
+            DocGenerator.set_table_cell_border(cell, direction, size, color)
+
+    @staticmethod
+    def set_table_cell_margins(table: Table, top=100, start=100, bottom=100, end=100):
+        """
+        Set cell padding for all cells in a table (in twips: 1/20 of a point).
+        Defaults to 100 twips = 5 points = ~1.76 mm
+        """
+        table_properties = table._tbl.tblPr
+
+        table_cell_margin = table_properties.find(qn('w:tblCellMar'))
+        if table_cell_margin is None:
+            table_cell_margin = OxmlElement('w:tblCellMar')
+            table_properties.append(table_cell_margin)
+
+        for margin_type, value in (('top', top), ('start', start), ('bottom', bottom), ('end', end)):
+            node = table_cell_margin.find(qn(f'w:{margin_type}'))
+            if node is None:
+                node = OxmlElement(f'w:{margin_type}')
+                table_cell_margin.append(node)
+            node.set(qn('w:w'), str(value))
+            node.set(qn('w:type'), 'dxa')  # dxa = twentieths of a point
 
     def generate_doc(self, rechnung_nr: int, rechnung_date: str, price_table_data: List[Tuple[str, str, str]],
                      issue_date: datetime):
@@ -222,19 +250,34 @@ class DocGenerator:
         price_table = doc.add_table(rows=len(price_table_data), cols=4)
         price_table.alignment = WD_TABLE_ALIGNMENT.CENTER
 
-        price_table.columns[1].width = Inches(1.74)
+        price_table.columns[1].width = Inches(1.80)
         price_table.columns[2].width = Inches(0.71)
         price_table.columns[3].width = Inches(0.96)
         price_table.columns[0].width = table_width - sum(map(lambda x: x.width, list(price_table.columns)[1:4]))
 
-        separator_border_size = 16
-        DocGenerator.set_table_row_top_border(price_table.rows[-1], separator_border_size)
-        DocGenerator.set_table_row_top_border(price_table.rows[-3], separator_border_size)
-        # TODO: table borders: remove left border for last column
+        vertical_margin = 80
+        horizontal_margin = 120
+        table_border_size = 8
+        table_group_separator_border_size = int(table_border_size * 2.25)
+        for i, row in enumerate(price_table.rows):
+            for j, cell in enumerate(row.cells):
+                for direction in ('top', 'left'):
+                    is_left_of_result_details_column = j == len(row.cells) - 1 and direction == 'left'
+                    should_set_border = not is_left_of_result_details_column
 
-        price_table.style = 'Table Grid'
+                    left_margin = 60 if is_left_of_result_details_column else horizontal_margin
+                    right_margin = 0 if is_left_of_result_details_column else horizontal_margin
+                    DocGenerator.set_table_cell_margins(price_table, vertical_margin, left_margin, vertical_margin,
+                                                        right_margin)
 
-        # TODO: add a little padding to table
+                    if should_set_border:
+                        DocGenerator.set_table_cell_border(cell, direction, table_border_size, BLACK)
+        DocGenerator.set_table_column_border(price_table.columns[-1], 'right', table_border_size, BLACK)
+        DocGenerator.set_table_row_border(price_table.rows[-1], 'bottom', table_border_size, BLACK)
+
+        DocGenerator.set_table_row_border(price_table.rows[-1], 'top', table_group_separator_border_size, BLACK)
+        DocGenerator.set_table_row_border(price_table.rows[-3], 'top', table_group_separator_border_size, BLACK)
+
         # TODO: PRICE_TABLE_COMPUTATION_COLUMN justification
         def split_result_text(the_result_text: str):
             separation_index = the_result_text.index(DECIMAL_SEPARATOR) + 3
