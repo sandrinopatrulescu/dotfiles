@@ -116,7 +116,7 @@ class DocGenerator:
         HEADER_TEXT_LEFT = "header-text-left"
         HEADER_TEXT_RIGHT = "header-text-right"
 
-    PRICE_TABLE_info_column = 0
+    PRICE_TABLE_INFO_COLUMN = 0
     PRICE_TABLE_COMPUTATION_COLUMN = 1
     PRICE_TABLE_RESULT_VALUE_COLUMN = 2
     PRICE_TABLE_RESULT_DETAILS_COLUMN = 3
@@ -211,9 +211,6 @@ class DocGenerator:
         section.bottom_margin = margin
         # endregion
 
-        # TODO: temporary
-        doc.add_paragraph()
-
         # region header table
         header_table = doc.add_table(rows=1, cols=2)
         header_table.alignment = WD_TABLE_ALIGNMENT.CENTER
@@ -289,7 +286,7 @@ class DocGenerator:
             result_value, result_details = split_result_text(result)
 
             column_index_and_text_pairs = [
-                (DocGenerator.PRICE_TABLE_info_column, name),
+                (DocGenerator.PRICE_TABLE_INFO_COLUMN, name),
                 (DocGenerator.PRICE_TABLE_COMPUTATION_COLUMN, computation),
                 (DocGenerator.PRICE_TABLE_RESULT_VALUE_COLUMN, result_value),
                 (DocGenerator.PRICE_TABLE_RESULT_DETAILS_COLUMN, result_details),
