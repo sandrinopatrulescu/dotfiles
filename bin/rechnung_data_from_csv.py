@@ -355,9 +355,11 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
 
         rechnung_nr = first_rechnung_nr + i
         print(f"RECHNUNG {rechnung_nr}\t{rechnung_date}")
-        print(result + "\n" * 2)
+        print(result)
 
         doc_generator.generate_doc(rechnung_nr, rechnung_date, price_table_data, issue_date)
+
+        print("\n" * 2)
 
     total = sum(rechnung_prices)
     total_formatted = format_price_no_justify(total)
