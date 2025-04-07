@@ -35,7 +35,6 @@ STUNDEN_CSV_COLUMN_STUNDEN_PL = 4
 # price table
 BLACK = '000000'
 margin_vertical = 80
-margin_horizontal = 120
 table_border_size = 8
 table_border_size_group_separator = int(table_border_size * 2.25)
 
@@ -166,60 +165,65 @@ class DocGenerator:
             DocGenerator.set_table_cell_border(cell, direction, size, color)
 
     @staticmethod
-    def set_table_cell_margins(table: Table, top=100, start=100, bottom=100, end=100):
+    def set_table_cell_margins(cell: _Cell, top=100, start=100, bottom=100, end=100):
         """
-        Set cell padding for all cells in a table (in twips: 1/20 of a point).
+        Set padding (margins) for a single table cell (in twips: 1/20 of a point).
         Defaults to 100 twips = 5 points = ~1.76 mm
         """
-        table_properties = table._tbl.tblPr
+        table_cell_properties = cell._tc.get_or_add_tcPr()
 
-        table_cell_margin = table_properties.find(qn('w:tblCellMar'))
+        table_cell_margin = table_cell_properties.find(qn('w:tcMar'))
         if table_cell_margin is None:
-            table_cell_margin = OxmlElement('w:tblCellMar')
-            table_properties.append(table_cell_margin)
+            table_cell_margin = OxmlElement('w:tcMar')
+            table_cell_properties.append(table_cell_margin)
 
-        for margin_type, value in (('top', top), ('start', start), ('bottom', bottom), ('end', end)):
-            node = table_cell_margin.find(qn(f'w:{margin_type}'))
-            if node is None:
-                node = OxmlElement(f'w:{margin_type}')
-                table_cell_margin.append(node)
-            node.set(qn('w:w'), str(value))
-            node.set(qn('w:type'), 'dxa')  # dxa = twentieths of a point
+        for side, value in (('top', top), ('start', start), ('bottom', bottom), ('end', end)):
+            margin = table_cell_margin.find(qn(f'w:{side}'))
+            if margin is None:
+                margin = OxmlElement(f'w:{side}')
+                table_cell_margin.append(margin)
+            margin.set(qn('w:w'), str(value))
+            margin.set(qn('w:type'), 'dxa')  # 'dxa' means twips (1/20 pt)
 
     @staticmethod
-    def set_price_table_cell_borders(column_index: int, cell: _Cell, ):
+    def set_price_table_cell_borders(column_index: int, cell: _Cell):
         is_column_without_border = any(filter(lambda x: column_index == x.value, DocGenerator.COLUMNS_WITHOUT_BORDER))
 
-        for direction in ('top', 'left'):
-            should_set_border = not (direction == 'left' and is_column_without_border)
+        horizontal_direction = 'right'
+        for direction in ('top', horizontal_direction):
+            should_set_border = not (direction == horizontal_direction and is_column_without_border)
 
             if should_set_border:
                 DocGenerator.set_table_cell_border(cell, direction, table_border_size, BLACK)
 
     @staticmethod
-    def set_price_table_margins(column_index, table):
-        # TODO
+    def set_price_table_margins(column_index: int, cell: _Cell):
+        # TODO add some space between computation separator and hour price
+        is_computation_stunden_column = column_index == DocGenerator.PriceTableColumns.ComputationStunden.value
+        is_computation_hour_price_column = column_index == DocGenerator.PriceTableColumns.ComputationHourPrice.value
         is_result_details_column = column_index == DocGenerator.PriceTableColumns.ResultDetails.value
-        is_left_of_result_value = column_index == DocGenerator.PriceTableColumns.ResultValue.value
-        left_margin = int(margin_horizontal / 2) if is_result_details_column else margin_horizontal
-        right_margin = 0 if column_index == DocGenerator.PriceTableColumns.ResultDetails.value else margin_horizontal
-        DocGenerator.set_table_cell_margins(table, margin_vertical, margin_horizontal, margin_vertical,
-                                            right_margin)
+        is_result_value_column = column_index == DocGenerator.PriceTableColumns.ResultValue.value
+
+        left_margin = 80 if is_result_details_column else 120
+        left_margin = 0 if is_computation_hour_price_column else left_margin
+        right_margin = 0 if is_result_value_column or is_computation_stunden_column else 200
+
+        DocGenerator.set_table_cell_margins(cell, margin_vertical, left_margin, margin_vertical, right_margin)
 
     @staticmethod
     def set_price_table_border_and_margins(table: Table):
         for row_index, row in enumerate(table.rows):
             for column_index, cell in enumerate(row.cells):
                 DocGenerator.set_price_table_cell_borders(column_index, cell)
-                DocGenerator.set_price_table_margins(column_index, table)
-        DocGenerator.set_table_column_border(table.columns[-1], 'right', table_border_size, BLACK)
+                DocGenerator.set_price_table_margins(column_index, cell)
+        DocGenerator.set_table_column_border(table.columns[0], 'left', table_border_size, BLACK)
         DocGenerator.set_table_row_border(table.rows[-1], 'bottom', table_border_size, BLACK)
 
         # row groups separators
-        DocGenerator.set_table_row_border(table.rows[-1], 'top', table_border_size_group_separator, BLACK)
-        DocGenerator.set_table_row_border(table.rows[-3], 'top', table_border_size_group_separator, BLACK)
+        for index in [1, 3]:
+            DocGenerator.set_table_row_border(table.rows[-index], 'top', table_border_size_group_separator, BLACK)
 
-    COLUMNS_WITHOUT_BORDER = [PriceTableColumns.ComputationHourPrice, PriceTableColumns.ResultDetails]
+    COLUMNS_WITHOUT_BORDER = [PriceTableColumns.ComputationStunden, PriceTableColumns.ResultValue]
 
     @staticmethod
     def is_column_right_justified(column_index: int):
@@ -296,10 +300,10 @@ class DocGenerator:
         price_table = doc.add_table(rows=len(price_table_data), cols=len(DocGenerator.PriceTableColumns))
         price_table.alignment = WD_TABLE_ALIGNMENT.CENTER
 
-        price_table.columns[DocGenerator.PriceTableColumns.ComputationStunden.value].width = Inches(0.8)
-        price_table.columns[DocGenerator.PriceTableColumns.ComputationHourPrice.value].width = Inches(1)
-        price_table.columns[DocGenerator.PriceTableColumns.ResultValue.value].width = Inches(0.71)
-        price_table.columns[DocGenerator.PriceTableColumns.ResultDetails.value].width = Inches(0.96)
+        price_table.columns[DocGenerator.PriceTableColumns.ComputationStunden.value].width = Inches(1)
+        price_table.columns[DocGenerator.PriceTableColumns.ComputationHourPrice.value].width = Inches(0.87881999999)
+        price_table.columns[DocGenerator.PriceTableColumns.ResultValue.value].width = Inches(0.7)
+        price_table.columns[DocGenerator.PriceTableColumns.ResultDetails.value].width = Inches(1)
         price_table.columns[DocGenerator.PriceTableColumns.Info.value].width = table_width - sum(
             map(lambda y: price_table.columns[y.value].width,
                 filter(lambda x: x != DocGenerator.PriceTableColumns.Info, list(DocGenerator.PriceTableColumns))))
