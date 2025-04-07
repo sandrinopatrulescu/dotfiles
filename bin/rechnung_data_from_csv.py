@@ -22,6 +22,12 @@ VAT_RATE = 19
 
 DECIMAL_SEPARATOR = ","
 
+STUNDEN_CSV_COLUMN_DATE = 0
+STUNDEN_CSV_COLUMN_KN_NR = 1
+STUNDEN_CSV_COLUMN_BAU = 2
+STUNDEN_CSV_COLUMN_STUNDEN = 3
+STUNDEN_CSV_COLUMN_STUNDEN_PL = 4
+
 
 # endregion
 
@@ -78,16 +84,16 @@ def parse_csv(csv_file_path: str):
     for i, line in enumerate(csv_reader):
         if line[0] == 'datum':
             continue  # skip header
-        if not is_valid_date(line[0]):
-            raise ValueError(f"Invalid date {line[0]} at line {i + 1}")
-        if not all(map(is_number, [line[1]] + line[3:])):  # skip bau
+        if not is_valid_date(line[STUNDEN_CSV_COLUMN_DATE]):
+            raise ValueError(f"Invalid date {line[STUNDEN_CSV_COLUMN_KN_NR]} at line {i + 1}")
+        if not all(map(is_number, [line[STUNDEN_CSV_COLUMN_STUNDEN], line[STUNDEN_CSV_COLUMN_STUNDEN_PL]])):
             raise ValueError(f"Invalid numbers at line {i + 1}")
 
-        date = line[0]
-        kn_nr = line[1]  # ab, auf, um
-        bau = line[2].strip()
-        stunden = float(line[3])
-        stunden_pl = float(line[4])
+        date = line[STUNDEN_CSV_COLUMN_DATE]
+        kn_nr = line[STUNDEN_CSV_COLUMN_KN_NR]  # ab, auf, um
+        bau = line[STUNDEN_CSV_COLUMN_BAU].strip()
+        stunden = float(line[STUNDEN_CSV_COLUMN_STUNDEN])
+        stunden_pl = float(line[STUNDEN_CSV_COLUMN_STUNDEN_PL])
         tuple_list = date_to_tuple_list.setdefault(date, [])
         tuple_list.append((kn_nr, bau, stunden, stunden_pl))
 
@@ -280,7 +286,7 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
 
     rechnung_prices = []
     issue_date = datetime.now()
-    print(get_issue_date_string(issue_date))
+    print(get_issue_date_string(issue_date) + "\n")
 
     for i, (rechnung_date, tuple_list) in enumerate(date_list):
         result = ""
