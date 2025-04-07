@@ -32,7 +32,12 @@ STUNDEN_CSV_COLUMN_BAU = 2
 STUNDEN_CSV_COLUMN_STUNDEN = 3
 STUNDEN_CSV_COLUMN_STUNDEN_PL = 4
 
+# price table
 BLACK = '000000'
+margin_vertical = 80
+margin_horizontal = 120
+table_border_size = 8
+table_border_size_group_separator = int(table_border_size * 2.25)
 
 
 # endregion
@@ -182,30 +187,41 @@ class DocGenerator:
             node.set(qn('w:type'), 'dxa')  # dxa = twentieths of a point
 
     @staticmethod
-    def set_price_table_border_and_margins(table):
-        vertical_margin = 80
-        horizontal_margin = 120
-        table_border_size = 8
-        table_group_separator_border_size = int(table_border_size * 2.25)
-
-        for i, row in enumerate(table.rows):
-            for j, cell in enumerate(row.cells):
+    def set_price_table_border_and_margins(table: Table):
+        for row_index, row in enumerate(table.rows):
+            for column_index, cell in enumerate(row.cells):
                 for direction in ('top', 'left'):
-                    # TODO: border & right alignment for computation columns
-                    is_left_of_result_details_column = j == DocGenerator.PriceTableColumns.ResultDetails.value and direction == 'left'
-                    should_set_border = not is_left_of_result_details_column
-
-                    left_margin = 60 if is_left_of_result_details_column else horizontal_margin
-                    right_margin = 0 if is_left_of_result_details_column else horizontal_margin
-                    DocGenerator.set_table_cell_margins(table, vertical_margin, left_margin, vertical_margin,
-                                                        right_margin)
-
-                    if should_set_border:
-                        DocGenerator.set_table_cell_border(cell, direction, table_border_size, BLACK)
+                    DocGenerator.set_price_table_cell_border_and_margin(table, column_index, cell, direction)
         DocGenerator.set_table_column_border(table.columns[-1], 'right', table_border_size, BLACK)
         DocGenerator.set_table_row_border(table.rows[-1], 'bottom', table_border_size, BLACK)
-        DocGenerator.set_table_row_border(table.rows[-1], 'top', table_group_separator_border_size, BLACK)
-        DocGenerator.set_table_row_border(table.rows[-3], 'top', table_group_separator_border_size, BLACK)
+
+        # row groups separators
+        DocGenerator.set_table_row_border(table.rows[-1], 'top', table_border_size_group_separator, BLACK)
+        DocGenerator.set_table_row_border(table.rows[-3], 'top', table_border_size_group_separator, BLACK)
+
+    COLUMNS_WITHOUT_BORDER = [PriceTableColumns.ComputationHourPrice, PriceTableColumns.ResultDetails]
+    COLUMNS_WITH_MARGIN_RIGHT_0 = [PriceTableColumns.ComputationStunden, PriceTableColumns.ComputationHourPrice,
+                                   PriceTableColumns.ResultValue]
+
+    @staticmethod
+    def set_price_table_cell_border_and_margin(table: Table, column_index: int, cell: _Cell, direction: str):
+        # border
+        is_column_without_border = any(filter(lambda x: column_index == x.value, DocGenerator.COLUMNS_WITHOUT_BORDER))
+        should_set_border = not (direction == 'left' and is_column_without_border)
+
+        if should_set_border:
+            DocGenerator.set_table_cell_border(cell, direction, table_border_size, BLACK)
+
+        # TODO justification
+        # margin
+        is_column_with_margin_right_0 = any(
+            filter(lambda x: column_index == x.value, DocGenerator.COLUMNS_WITH_MARGIN_RIGHT_0))
+        has_custom_horizontal_margins = direction == 'left' and is_column_with_margin_right_0
+
+        left_margin = 60 if has_custom_horizontal_margins else margin_horizontal
+        right_margin = 0 if has_custom_horizontal_margins else margin_horizontal
+
+        DocGenerator.set_table_cell_margins(table, margin_vertical, left_margin, margin_vertical, right_margin)
 
     def generate_doc(self, rechnung_nr: int, rechnung_date: str, price_table_data: List[Tuple[str, str, str]],
                      issue_date: datetime):
