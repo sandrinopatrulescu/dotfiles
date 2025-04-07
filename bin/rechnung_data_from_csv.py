@@ -116,10 +116,12 @@ class DocGenerator:
         HEADER_TEXT_LEFT = "header-text-left"
         HEADER_TEXT_RIGHT = "header-text-right"
 
-    PRICE_TABLE_INFO_COLUMN = 0
-    PRICE_TABLE_COMPUTATION_COLUMN = 1
-    PRICE_TABLE_RESULT_VALUE_COLUMN = 2
-    PRICE_TABLE_RESULT_DETAILS_COLUMN = 3
+    class PriceTableColumns(Enum):
+        Info = 0
+        ComputationStunden = 1
+        ComputationHourPrice = 2
+        ResultValue = 3
+        ResultDetails = 4
 
     def __init__(self):
         self.__pr_data = {}
@@ -189,7 +191,8 @@ class DocGenerator:
         for i, row in enumerate(table.rows):
             for j, cell in enumerate(row.cells):
                 for direction in ('top', 'left'):
-                    is_left_of_result_details_column = j == len(row.cells) - 1 and direction == 'left'
+                    # TODO: border & right alignment for computation columns
+                    is_left_of_result_details_column = j == DocGenerator.PriceTableColumns.ResultDetails.value and direction == 'left'
                     should_set_border = not is_left_of_result_details_column
 
                     left_margin = 60 if is_left_of_result_details_column else horizontal_margin
@@ -269,31 +272,45 @@ class DocGenerator:
 
         doc.add_paragraph("")
 
-        price_table = doc.add_table(rows=len(price_table_data), cols=4)
+        price_table = doc.add_table(rows=len(price_table_data), cols=len(DocGenerator.PriceTableColumns))
         price_table.alignment = WD_TABLE_ALIGNMENT.CENTER
 
-        price_table.columns[1].width = Inches(1.80)
-        price_table.columns[2].width = Inches(0.71)
-        price_table.columns[3].width = Inches(0.96)
-        price_table.columns[0].width = table_width - sum(map(lambda x: x.width, list(price_table.columns)[1:4]))
+        price_table.columns[DocGenerator.PriceTableColumns.ComputationStunden.value].width = Inches(0.8)
+        price_table.columns[DocGenerator.PriceTableColumns.ComputationHourPrice.value].width = Inches(1)
+        price_table.columns[DocGenerator.PriceTableColumns.ResultValue.value].width = Inches(0.71)
+        price_table.columns[DocGenerator.PriceTableColumns.ResultDetails.value].width = Inches(0.96)
+        price_table.columns[DocGenerator.PriceTableColumns.Info.value].width = table_width - sum(
+            map(lambda y: price_table.columns[y.value].width,
+                filter(lambda x: x != DocGenerator.PriceTableColumns.Info, list(DocGenerator.PriceTableColumns))))
 
         self.set_price_table_border_and_margins(price_table)
 
-        # TODO: PRICE_TABLE_COMPUTATION_COLUMN justification
-        def split_result_text(the_result_text: str):
-            separation_index = the_result_text.index(DECIMAL_SEPARATOR) + 3
-            value = the_result_text[:separation_index]
-            details = the_result_text[separation_index:]
+        def split_result_text(result_text: str):
+            separation_index = result_text.index(DECIMAL_SEPARATOR) + 3
+            value = result_text[:separation_index]
+            details = result_text[separation_index:]
             return value, details
+
+        def split_computation_text(computation_text: str):
+            separator = "x"
+            separator_index = computation_text.find(separator)
+
+            if separator_index == -1:
+                return "", ""
+
+            split_index = separator_index + 1
+            return computation_text[:split_index], computation_text[split_index:]
 
         for i, (name, computation, result) in enumerate(price_table_data):
             result_value, result_details = split_result_text(result)
+            computation_stunden, computation_hour_price = split_computation_text(computation)
 
             column_index_and_text_pairs = [
-                (DocGenerator.PRICE_TABLE_INFO_COLUMN, name),
-                (DocGenerator.PRICE_TABLE_COMPUTATION_COLUMN, computation),
-                (DocGenerator.PRICE_TABLE_RESULT_VALUE_COLUMN, result_value),
-                (DocGenerator.PRICE_TABLE_RESULT_DETAILS_COLUMN, result_details),
+                (DocGenerator.PriceTableColumns.Info.value, name),
+                (DocGenerator.PriceTableColumns.ComputationStunden.value, computation_stunden),
+                (DocGenerator.PriceTableColumns.ComputationHourPrice.value, computation_hour_price),
+                (DocGenerator.PriceTableColumns.ResultValue.value, result_value),
+                (DocGenerator.PriceTableColumns.ResultDetails.value, result_details),
             ]
 
             for column_index, text in column_index_and_text_pairs:
@@ -301,7 +318,7 @@ class DocGenerator:
                 paragraph = cell.paragraphs[0]
                 paragraph.clear()
                 run = paragraph.add_run(text.strip())
-                if column_index == DocGenerator.PRICE_TABLE_RESULT_VALUE_COLUMN:
+                if column_index == DocGenerator.PriceTableColumns.ResultValue.value:
                     paragraph.alignment = WD_TABLE_ALIGNMENT.RIGHT
                     run.bold = True
         # endregion
