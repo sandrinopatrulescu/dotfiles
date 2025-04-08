@@ -34,12 +34,21 @@ STUNDEN_CSV_COLUMN_STUNDEN_PL = 4
 
 # price table
 BLACK = '000000'
+TWIPS_PER_INCH = 1440
+TABLE_CELL_SIDE_PADDING_INCHES = 0.20
+RESULT_DETAILS_LEFT_SIDE_MARGIN_INCHES = 0.05
 margin_vertical = 80
 table_border_size = 8
 table_border_size_group_separator = int(table_border_size * 2.25)
 
 
 # endregion
+
+def inches_to_twips(inches: float):
+    return int(inches * TWIPS_PER_INCH)
+
+
+TABLE_CELL_SIDE_MARGIN_TWIPS = inches_to_twips(TABLE_CELL_SIDE_PADDING_INCHES)
 
 
 def get_input_args():
@@ -198,14 +207,15 @@ class DocGenerator:
 
     @staticmethod
     def set_price_table_margins(column_index: int, cell: _Cell):
-        is_computation_stunden_column = column_index == DocGenerator.PriceTableColumns.ComputationStunden.value
-        is_computation_hour_price_column = column_index == DocGenerator.PriceTableColumns.ComputationHourPrice.value
-        is_result_details_column = column_index == DocGenerator.PriceTableColumns.ResultDetails.value
-        is_result_value_column = column_index == DocGenerator.PriceTableColumns.ResultValue.value
-
-        left_margin = 80 if is_result_details_column else 120
-        left_margin = 0 if is_computation_hour_price_column else left_margin
-        right_margin = 0 if is_result_value_column or is_computation_stunden_column else 200
+        column_to_horizontal_margins = {
+            DocGenerator.PriceTableColumns.Info: (inches_to_twips(0.1), TABLE_CELL_SIDE_MARGIN_TWIPS),
+            DocGenerator.PriceTableColumns.ComputationStunden: (TABLE_CELL_SIDE_MARGIN_TWIPS, 0),
+            DocGenerator.PriceTableColumns.ComputationHourPrice: (0, TABLE_CELL_SIDE_MARGIN_TWIPS),
+            DocGenerator.PriceTableColumns.ResultValue: (TABLE_CELL_SIDE_MARGIN_TWIPS, 0),
+            DocGenerator.PriceTableColumns.ResultDetails: (
+                inches_to_twips(RESULT_DETAILS_LEFT_SIDE_MARGIN_INCHES), TABLE_CELL_SIDE_MARGIN_TWIPS),
+        }
+        left_margin, right_margin = column_to_horizontal_margins[DocGenerator.PriceTableColumns(column_index)]
 
         DocGenerator.set_table_cell_margins(cell, margin_vertical, left_margin, margin_vertical, right_margin)
 
@@ -299,10 +309,16 @@ class DocGenerator:
         price_table = doc.add_table(rows=len(price_table_data), cols=len(DocGenerator.PriceTableColumns))
         price_table.alignment = WD_TABLE_ALIGNMENT.CENTER
 
-        price_table.columns[DocGenerator.PriceTableColumns.ComputationStunden.value].width = Inches(1)
-        price_table.columns[DocGenerator.PriceTableColumns.ComputationHourPrice.value].width = Inches(0.95)
-        price_table.columns[DocGenerator.PriceTableColumns.ResultValue.value].width = Inches(0.7)
-        price_table.columns[DocGenerator.PriceTableColumns.ResultDetails.value].width = Inches(1)
+        table_cell_side_padding = Inches(TABLE_CELL_SIDE_PADDING_INCHES)
+        # base column widths were obtained using "Minimize column width"
+        price_table.columns[DocGenerator.PriceTableColumns.ComputationStunden.value].width = Inches(
+            0.70) + table_cell_side_padding
+        price_table.columns[DocGenerator.PriceTableColumns.ComputationHourPrice.value].width = Inches(
+            0.76) + table_cell_side_padding
+        price_table.columns[DocGenerator.PriceTableColumns.ResultValue.value].width = Inches(
+            0.56) + table_cell_side_padding
+        price_table.columns[DocGenerator.PriceTableColumns.ResultDetails.value].width = Inches(
+            0.81) + table_cell_side_padding + Inches(RESULT_DETAILS_LEFT_SIDE_MARGIN_INCHES)
         price_table.columns[DocGenerator.PriceTableColumns.Info.value].width = table_width - sum(
             map(lambda y: price_table.columns[y.value].width,
                 filter(lambda x: x != DocGenerator.PriceTableColumns.Info, list(DocGenerator.PriceTableColumns))))
