@@ -52,7 +52,8 @@ TABLE_CELL_SIDE_MARGIN_TWIPS = inches_to_twips(TABLE_CELL_SIDE_PADDING_INCHES)
 
 
 def get_input_args():
-    if not 1 <= len(sys.argv) - 1 <= 3:
+    effective_program_arguments = len(sys.argv) - 1
+    if not 1 <= effective_program_arguments <= 3:
         message = f"Usage: python rechnung_data_from_csv.py <csv_file_path> [<first_rechnung_nr>=1] [<price_per_stunden>={PRICE_PER_STUNDEN}]\n"
         sys.stderr.write(message)
         sys.exit(1)
@@ -104,7 +105,7 @@ def parse_csv(csv_file_path: str):
         if line[0] == 'datum':
             continue  # skip header
         if not is_valid_date(line[STUNDEN_CSV_COLUMN_DATE]):
-            raise ValueError(f"Invalid date {line[STUNDEN_CSV_COLUMN_KN_NR]} at line {i + 1}")
+            raise ValueError(f"Invalid date {line[STUNDEN_CSV_COLUMN_DATE]} at line {i + 1}")
         if not all(map(is_number, [line[STUNDEN_CSV_COLUMN_STUNDEN], line[STUNDEN_CSV_COLUMN_STUNDEN_PL]])):
             raise ValueError(f"Invalid numbers at line {i + 1}")
 
