@@ -77,15 +77,15 @@ def parse_csv(csv_file_path: str):
 
     date_to_tuple_list: DateToRechnung = {}
 
-    for i, line in enumerate(csv_reader):
+    for line_index, line in enumerate(csv_reader):
         if len(line) == 0:
             continue
 
-        first_column = line[STUNDEN_CSV_COLUMN_DATE]
-        if first_column == 'datum' or first_column[0] == '#':
-            continue  # skip header and comment lines
+        first_field = line[0]
+        if first_field.startswith("#") or (line_index == 0 and first_field in ['datum', 'date']):
+            continue  # skip header and/or comment lines
 
-        date = first_column
+        date = line[STUNDEN_CSV_COLUMN_DATE]
         start = line[STUNDEN_CSV_COLUMN_START]
         pause = line[STUNDEN_CSV_COLUMN_PAUSE]
         end = line[STUNDEN_CSV_COLUMN_END]
@@ -93,17 +93,17 @@ def parse_csv(csv_file_path: str):
         persons_pl = line[STUNDEN_CSV_COLUMN_PERSONS_PL]
 
         if not is_valid_date(date):
-            raise ValueError(f"Invalid date {date} at line {i + 1}")
+            raise ValueError(f"Invalid date {date} at line {line_index + 1}")
         if not is_valid_hour_format(start):
-            raise ValueError(f"Invalid start {start} at line {i + 1}")
+            raise ValueError(f"Invalid start {start} at line {line_index + 1}")
         if not is_number(pause):
-            raise ValueError(f"Invalid pause {pause} at line {i + 1}")
+            raise ValueError(f"Invalid pause {pause} at line {line_index + 1}")
         if not is_valid_hour_format(end):
-            raise ValueError(f"Invalid end {end} at line {i + 1}")
+            raise ValueError(f"Invalid end {end} at line {line_index + 1}")
         if not persons.isdigit():
-            raise ValueError(f"Invalid persons {persons} at line {i + 1}")
+            raise ValueError(f"Invalid persons {persons} at line {line_index + 1}")
         if not persons_pl.isdigit():
-            raise ValueError(f"Invalid persons_pl {persons_pl} at line {i + 1}")
+            raise ValueError(f"Invalid persons_pl {persons_pl} at line {line_index + 1}")
 
         pause = float(pause)
         persons = int(persons)
@@ -128,6 +128,10 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
         rechnung_nr = first_rechnung_nr + i
         print(f"RECHNUNG NR: {rechnung_nr} {date}")
         for j, (start, pause, end, persons, persons_pl) in enumerate(rechnung_infos):
+            if not (persons >= persons_pl >= 0):
+                sys.stderr.write(f"Condition persons >= persons_pl >= 0 is not respected: {persons} >= {persons_pl} >= 0\n")
+                exit(1)
+
             stunden = hour_string_to_decimal(end) - hour_string_to_decimal(start) - Decimal(str(pause))
             stunden = max(stunden, Decimal(str('4')))
             total_stunden = stunden * Decimal(str(persons))
@@ -144,8 +148,6 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
 
 
 def main():
-    # TODO: clone csv parsing check for skipping rows to rechnung_data_from_csv.py
-    # TODO: validate persons is int and persons >= persons_pl >= 0
     # TODO: print strings to put on PDF (IN THE ORDER RECEIVED)
     #   TODO: [MAYBE ???] change how PL is shown: -||- x ? P = ?? ST PL
     # TODO: also include kn_nr and auf

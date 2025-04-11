@@ -101,13 +101,18 @@ def parse_csv(csv_file_path: str):
 
     date_to_tuple_list: DateToRechnung = {}
 
-    for i, line in enumerate(csv_reader):
-        if line[0] == 'datum':
-            continue  # skip header
+    for line_index, line in enumerate(csv_reader):
+        if len(line) == 0:
+         continue
+
+        first_field = line[0]
+        if first_field.startswith("#") or (line_index == 0 and first_field in ['datum', 'date']):
+            continue  # skip header and/or comment lines
+        # TODO: move validation to after defining the values
         if not is_valid_date(line[STUNDEN_CSV_COLUMN_DATE]):
-            raise ValueError(f"Invalid date {line[STUNDEN_CSV_COLUMN_DATE]} at line {i + 1}")
+            raise ValueError(f"Invalid date {line[STUNDEN_CSV_COLUMN_DATE]} at line {line_index + 1}")
         if not all(map(is_number, [line[STUNDEN_CSV_COLUMN_STUNDEN], line[STUNDEN_CSV_COLUMN_STUNDEN_PL]])):
-            raise ValueError(f"Invalid numbers at line {i + 1}")
+            raise ValueError(f"Invalid numbers at line {line_index + 1}")
 
         date = line[STUNDEN_CSV_COLUMN_DATE]
         kn_nr = line[STUNDEN_CSV_COLUMN_KN_NR]  # ab, auf, um
@@ -527,4 +532,21 @@ def main():
 
 
 if __name__ == "__main__":
+    # TODO:
+    # usages: <mode> <template> <content> [--price-per-stunden ]
+    # mode:
+    #   interval -> rechnung_data_from_computation_csv.py
+    #   duration -> current
+    # template: PR, ER, GIC, GIG
+    # auto detected if <content> is file path
+
+    # script.py interval/duration <content> [--price-per-stunden/--pps <FLOAT>] [--template/-t pr/er/gic/gig] [-first-rechnung-nr/--frn <NON-NEGATIVE INT>] [--print/-p]
+
+    # TODO: class for each template if (needed)
+    # TODO: default price per template
+
+    # TODO: LATEST: parse content when string
+    # interval "09:00,0.0,19:00;10:00,0.0;14:00"
+    # duration ""
+
     main()
