@@ -542,7 +542,7 @@ if __name__ == "__main__":
 
     # script.py interval/duration <content> [--price-per-stunden/--pps <FLOAT>] [--template/-t pr/er/gic/gig] [-first-rechnung-nr/--frn <NON-NEGATIVE INT>] [--print/-p]
 
-    # TODO: class for each template if (needed)
+    # TODO: class for each template if (needed) + maybe in combination with enums
     # TODO: default price per template
 
     # TODO: LATEST: parse content when string

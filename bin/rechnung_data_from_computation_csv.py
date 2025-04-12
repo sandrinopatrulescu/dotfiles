@@ -126,7 +126,7 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
 
     for i, (date, rechnung_infos) in enumerate(date_list):
         rechnung_nr = first_rechnung_nr + i
-        print(f"RECHNUNG NR: {rechnung_nr} {date}")
+        print(f"\n\n\t### RECHNUNG NR: {rechnung_nr} {date} ###")
         for j, (start, pause, end, persons, persons_pl) in enumerate(rechnung_infos):
             if not (persons >= persons_pl >= 0):
                 sys.stderr.write(f"Condition persons >= persons_pl >= 0 is not respected: {persons} >= {persons_pl} >= 0\n")
@@ -136,8 +136,12 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
             stunden = max(stunden, Decimal(str('4')))
             total_stunden = stunden * Decimal(str(persons))
             total_stunden_pl = stunden * Decimal(str(persons_pl))
-            print(f"\t{stunden} ST x {persons} P = {total_stunden} ST")
-            print(f"\tPL x {persons_pl}")
+            print("-" * 5 + f" PAGE {i + 1:02} START " + "-" * 5)
+            print(f"{stunden} ST x {persons} P = {total_stunden} ST")
+            print(f"PL x {persons_pl}")
+            print()
+            print(f"RECHNUNG {rechnung_nr}")
+            print("-" * 5 + f" PAGE {i + 1:02} END " + "-" * 5)
             print()
 
             total_stunden_str = int(total_stunden) if total_stunden % 1 == 0 else total_stunden
@@ -148,7 +152,7 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
 
 
 def main():
-    # TODO: print strings to put on PDF (IN THE ORDER RECEIVED)
+    # TODO: change order of computing + fix page number
     #   TODO: [MAYBE ???] change how PL is shown: -||- x ? P = ?? ST PL
     # TODO: also include kn_nr and auf
     # TODO: add warning about different hours for different people for same (date, kn_nr)
