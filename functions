@@ -965,7 +965,7 @@ acvsq() { # ac vpn status quiet
 }
 
 acvc() { # ac vpn connect
-    pgrep skype.sh >/dev/null || { nohup skype.sh >/dev/null 2>&1 & }
+#    pgrep skype.sh >/dev/null || { nohup skype.sh >/dev/null 2>&1 & }
     # https://www.google.com/search?q=ubuntu+connect+to+vpn+command+line -> https://askubuntu.com/questions/57339/connect-disconnect-from-vpn-from-the-command-line
     acvs || nmcli con up id ssl_artsoft
 }
@@ -1017,7 +1017,7 @@ acds() { # artsoft consult disconnect, w/o skype
 }
 
 acd() { # artsoft consult disconnect, opposite to acc bin/ script
-    flatpak kill com.skype.Client
+#    flatpak kill com.skype.Client
     acds
     exit
 }
