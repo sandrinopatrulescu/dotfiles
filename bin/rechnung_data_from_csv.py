@@ -532,21 +532,4 @@ def main():
 
 
 if __name__ == "__main__":
-    # TODO:
-    # usages: <mode> <template> <content> [--price-per-stunden ]
-    # mode:
-    #   interval -> rechnung_data_from_computation_csv.py
-    #   duration -> current
-    # template: PR, ER, GIC, GIG
-    # auto detected if <content> is file path
-
-    # script.py interval/duration <content> [--price-per-stunden/--pps <FLOAT>] [--template/-t pr/er/gic/gig] [-first-rechnung-nr/--frn <NON-NEGATIVE INT>] [--print/-p]
-
-    # TODO: class for each template if (needed) + maybe in combination with enums
-    # TODO: default price per template
-
-    # TODO: LATEST: parse content when string
-    # interval "09:00,0.0,19:00;10:00,0.0;14:00"
-    # duration ""
-
     main()
