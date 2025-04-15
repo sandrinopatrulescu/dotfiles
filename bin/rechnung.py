@@ -14,6 +14,10 @@ class InputMode(Enum):
     INTERVAL = "interval",
     DURATION = "duration",
 
+    @staticmethod
+    def from_string(name: str) -> "InputMode":
+        return InputMode[name.upper()]
+
 
 @dataclass(frozen=True)
 class Interval:
@@ -216,6 +220,10 @@ def parse_args():
     return parser.parse_args()
 
 
+def template_name_to_template(name: str) -> Template:
+    return globals()[str(name).upper()]()
+
+
 # endregion
 
 
@@ -237,8 +245,12 @@ def main():
 
     """
     args = parse_args()
-    print(args)
-    raise NotImplementedError()
+    print(f"args={args}")
+
+    template = template_name_to_template(args.template)
+    mode = InputMode.from_string(args.mode)
+
+    Template.process_csv(template, mode, args.content, args.price_per_hour, args.fin, args.print)
 
 
 if __name__ == "__main__":
