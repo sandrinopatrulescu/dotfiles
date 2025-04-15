@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import argparse
 from abc import abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from enum import Enum
 from typing import List, final
 
@@ -155,10 +156,72 @@ class PR(Template):
         raise NotImplementedError()  # TODO: print info for table scans - computed duration (what rechnung_data_from_computation_csv.py is doing)
 
 
+class ER:
+    pass
+
+
+class GIC:  # TODO: PR(TemplateReceiver), GIC(TemplateSender)
+    pass
+
+
+class GIG:
+    pass
+
+
+templates = [PR, ER, GIC, GIG]
+
+
+# region helpers pure
+def is_number(s: str):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+
+# endregion
+
+
+# region input processing
+def validate_price_per_hour(value: str):
+    try:
+        return Decimal(value)
+    except InvalidOperation:
+        raise argparse.ArgumentTypeError(f"{value} is not a valid decimal number")
+
+
+def validate_first_rechnung_number(value: str):
+    if value.isdigit():
+        return int(value)
+    else:
+        raise argparse.ArgumentTypeError(f"{value} is not a valid non-negative integer")
+
+
+def parse_args():
+    modes = list(map(lambda x: x.name.lower(), list(InputMode)))
+    template_choices = list(map(lambda x: x.__name__.lower(), templates))
+
+    # @formatter:off
+    parser = argparse.ArgumentParser(description="Create invoices from CSV files or strings")
+
+    parser.add_argument("mode", choices=modes, help=f"The mode to use: {', '.join(template_choices)}")
+    parser.add_argument("content", type=str, help="CSV path or string with format: TBD")
+    parser.add_argument("--price-per-hour", "--pph", type=validate_price_per_hour, help="Hourly rate (float).")
+    parser.add_argument("--template", "-t", choices=template_choices, help=f"Template type ({', '.join(template_choices)}).")
+    parser.add_argument("-first-invoice-nr", "--fin", type=validate_first_rechnung_number, help="First invoice number (non-negative integer).")
+    parser.add_argument("--print", "-p", action="store_true", help="Print output only (no docs).")
+    # @formatter:on
+
+    return parser.parse_args()
+
+
+# endregion
+
+
 def main():
     """
     TODO:
-        - read args: script.py interval/duration <content> [--price-per-stunden/--pps <FLOAT>] [--template/-t pr/er/gic/gig] [-first-rechnung-nr/--frn <NON-NEGATIVE INT>] [--print/-p]
         - path_or_string -> lines/rows (auto detected if <content> is file path)
         - implement interval CSV reading for PR
         - ???
@@ -168,10 +231,13 @@ def main():
         - parse content when string
             - interval "09:00,0.0,19:00;10:00,0.0;14:00"
             - duration "????"
+            - args parse - direct string format - TBD
         - ER template
             NOTE that ER template requires grouping by item_name (not by date) (maybe swap them)
 
     """
+    args = parse_args()
+    print(args)
     raise NotImplementedError()
 
 
