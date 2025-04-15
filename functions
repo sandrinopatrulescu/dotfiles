@@ -1327,6 +1327,9 @@ login-to-blomp-count() { # # of non-empty lines
 
 cleanup-ubuntu() {
     cat <<'EOF'
+Run: du -s -h /home/kamui/.cache/JetBrains/Toolbox/temp
+    and rm -r /home/kamui/.cache/JetBrains/Toolbox/temp/*
+
 # https://askubuntu.com/a/58003/1547353
 Run: sudo apt-get clean
 
