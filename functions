@@ -1669,6 +1669,54 @@ rechnung-stunden() {
     printf "MwSt. ${vatPercentage}%% \t \t\t\t\t     \t %7.2f Euro \n" "${totalVat//./,}"
     printf "Gesamtbetrag \t \t\t\t\t     \t %7.2f Euro \n" "${totalGross//./,}"
 }
+
+e2r() { # shows the value in RON for 1 EUR (from BNR)
+    curl -s "https://www.cursbnr.ro/insert/cursvalutar.php?diff=0&cb=0" | /usr/bin/grep  -oP "1 EUR = \K[0-9.]+"
+}
+
+glr() { # computes G.L. r in RON
+    # TODO: replace with glr.py that prints a table (using texttable) w/ columns (glr e, glr r, xSource, diff) and rows (split, total)
+    local rate
+    local glr_e_split
+    local glr_r
+    local glr_r_split
+    local xSource
+    local xSourceSplit
+    local glr_r_diff
+    local glr_r_split_diff
+    local diffSource
+
+    rate=$(e2r)
+    diffSource=5
+    glr_e_split=$(bc -l <<< "${GLR_E} / ${GLR_SPLIT_FACTOR}")
+
+    echo "rate = ${rate}"
+    echo "GLR_SPLIT_FACTOR = ${GLR_SPLIT_FACTOR}"
+    echo
+    echo "GLR_E = ${GLR_E}"
+    echo "glr_e_split = GLR_E / GLR_SPLIT_FACTOR = ${glr_e_split}"
+    echo
+
+
+    glr_r=$(bc -l <<< "${GLR_E} * ${rate}")
+    glr_r_split=$(bc -l <<< "${glr_e_split} * ${rate}")
+
+    xSource=$(bc -l <<< "${GLR_E} * ${diffSource}")
+    xSourceSplit=$(bc -l <<< "${glr_e_split} * ${diffSource}")
+
+    glr_r_diff=$(bc -l <<< "${xSource} - ${glr_r}")
+    glr_r_split_diff=$(bc -l <<< "${xSourceSplit} - ${glr_r_split}")
+
+    echo
+    echo "glr_r = GLR_E * rate = ${glr_r}"
+    echo "glr_r_split = glr_e_split * rate = ${glr_r_split}"
+    echo
+    echo "xSource = GLR_E * ${diffSource} = ${xSource}"
+    echo "xSourceSplit = glr_e_split * ${diffSource} = ${xSourceSplit}"
+    echo
+    echo "glr_r_diff = xSource - glr_r = ${glr_r_diff}"
+    echo "glr_r_split_diff = xSourceSplit - glr_r_split = ${glr_r_split_diff}"
+}
 # }}}
 
 
