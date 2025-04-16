@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 # TODO: test if this could have been a spreadsheet instead - the only problem is updated exchange rate
 import os
+import re
+import sys
 from decimal import Decimal, getcontext
 
+import requests
 from texttable import Texttable
 
 # Set high precision for financial math
@@ -12,7 +15,18 @@ getcontext().prec = 10
 GLR_E = Decimal(os.getenv("GLR_E"))
 GLR_SPLIT_FACTOR = Decimal(os.getenv("GLR_SPLIT_FACTOR"))
 diffSource = Decimal("5")
-rate = Decimal(os.getenv("RATE", "4.9775"))  # result of e2r() # TODO: replace with call to API
+
+
+def get_bnr_rate():
+    bnr_response = requests.request("GET", "https://www.cursbnr.ro/insert/cursvalutar.php?diff=0&cb=0")
+    bnr_response_match = re.search(r"1 EUR = ([0-9.]+)", bnr_response.text)
+    if not bnr_response_match:
+        sys.stderr.write("Could not parse BNR response from cursvalutar.php\n")
+        exit(1)
+    return bnr_response_match.group(1)
+
+
+rate = Decimal(get_bnr_rate())  # result of e2r()
 
 # Calculations
 glr_e_split = GLR_E / GLR_SPLIT_FACTOR
