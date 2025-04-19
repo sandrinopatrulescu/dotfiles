@@ -54,7 +54,7 @@ TABLE_CELL_SIDE_MARGIN_TWIPS = inches_to_twips(TABLE_CELL_SIDE_PADDING_INCHES)
 def get_input_args():
     effective_program_arguments = len(sys.argv) - 1
     if not 1 <= effective_program_arguments <= 3:
-        message = f"Usage: python rechnung_data_from_csv.py <csv_file_path> [<first_rechnung_nr>=1] [<price_per_stunden>={PRICE_PER_STUNDEN}]\n"
+        message = f"Usage: python rechnung_from_durations_csv.py <csv_file_path> [<first_rechnung_nr>=1] [<price_per_stunden>={PRICE_PER_STUNDEN}]\n"
         sys.stderr.write(message)
         sys.exit(1)
 

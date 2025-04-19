@@ -23,7 +23,7 @@ STUNDEN_CSV_COLUMN_PERSONS_PL = 5
 def get_input_args():
     effective_program_arguments = len(sys.argv) - 1
     if not 1 <= effective_program_arguments <= 2:
-        message = f"Usage: python rechnung_data_from_computation_csv.py <csv_file_path>\n"
+        message = f"Usage: python rechnung_intervals_to_durations_csv.py <csv_file_path>\n"
         sys.stderr.write(message)
         sys.exit(1)
 
@@ -156,8 +156,8 @@ def main():
     #   TODO: [MAYBE ???] change how PL is shown: -||- x ? P = ?? ST PL
     # TODO: also include kn_nr and auf
     # TODO: add warning about different hours for different people for same (date, kn_nr)
-    # TODO: move to rechnung_data_from_csv.py
-    # TODO: [AFTER MOVING to rechnung_data_from_csv.py] use the args parser: <mode> <csv file> [<first rechnung nr>] [<price_per_stunden>]
+    # TODO: move to rechnung_from_durations_csv.py
+    # TODO: [AFTER MOVING to rechnung_from_durations_csv.py] use the args parser: <mode> <csv file> [<first rechnung nr>] [<price_per_stunden>]
     csv_file_path, first_rechnung_nr = get_input_args()
     date_list = parse_csv(csv_file_path)
     compute_values(date_list, first_rechnung_nr)

@@ -112,7 +112,7 @@ class Template:
         return Decimal('0')
 
     def on_durations_computed(self, durations: List[Duration]):
-        raise NotImplementedError()  # TODO: print info for table scans - computed duration (what rechnung_data_from_computation_csv.py is doing)
+        raise NotImplementedError()  # TODO: print info for table scans - computed duration (what rechnung_intervals_to_durations_csv.py is doing)
 
     @final
     def __intervals_to_durations(self, intervals: List[Interval]) -> List[Duration]:
@@ -157,7 +157,7 @@ class PR(Template):
         return Decimal(PR.MINIMUM_HOURS)
 
     def on_durations_computed(self, durations: List[Duration]):
-        raise NotImplementedError()  # TODO: print info for table scans - computed duration (what rechnung_data_from_computation_csv.py is doing)
+        raise NotImplementedError()  # TODO: print info for table scans - computed duration (what rechnung_intervals_to_durations_csv.py is doing)
 
 
 class ER:
@@ -235,7 +235,7 @@ def main():
         - ???
         - default price per template
         - ???
-        - check todos from `rechnung_data_from_computation_csv.py`
+        - check todos from `rechnung_intervals_to_durations_csv.py`
         - parse content when string
             - interval "09:00,0.0,19:00;10:00,0.0;14:00"
             - duration "????"
