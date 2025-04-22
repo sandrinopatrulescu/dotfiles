@@ -299,7 +299,7 @@ async def save_to_wayback_machine(position: int, title: str, url: str):
     # !!! NOTE this doesn't save the video itself, just the metadata
     wayback_machine_save_url = f"https://web.archive.org/save/{url}"
 
-    retries = 75
+    retries = 30
     for retry_number in range(retries + 1):
         try:
             retry_message = "" if retry_number == 0 else f" Retry {retry_number}/{retries}."

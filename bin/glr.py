@@ -54,4 +54,6 @@ table.add_rows([
 ], header=False)
 
 # Print table
+print(f"Rate: {rate}")
+print()
 print(table.draw())

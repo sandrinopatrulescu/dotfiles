@@ -19,6 +19,13 @@ def read_file(videos_file_path):
 
 
 def get_youtube():
+    client_secrets_file = os.path.join(os.environ['DOTS_SECRETS'], os.environ['YOUTUBE_API_OAUTH'])
+    credentials_file_path = os.environ['YOUTUBE_API_CREDENTIALS_FILE_PATH']
+
+    return get_youtube_from_client_secret(client_secrets_file, credentials_file_path)
+
+
+def get_youtube_from_client_secret(client_secrets_file, credentials_file_path):
     # Sample Python code for youtube.playlistItems.insert
     # See instructions for running these code samples locally:
     # https://developers.google.com/explorer-help/code-samples#python
@@ -30,9 +37,6 @@ def get_youtube():
     os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
     api_service_name = "youtube"
     api_version = "v3"
-    client_secrets_file = os.path.join(os.environ['DOTS_SECRETS'], os.environ['YOUTUBE_API_OAUTH'])
-    credentials_file_path = os.environ['YOUTUBE_API_CREDENTIALS_FILE_PATH']
-
     # google_auth_oauthlib store credentials -> https://stackoverflow.com/questions/73485981/in-python-is-there-any-way-i-can-store-a-resource-object-so-i-can-use-it-late
     credentials = None
     if os.path.exists(credentials_file_path):
