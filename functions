@@ -1295,6 +1295,7 @@ login-to-blomp-full() {
     # takes ~2h
     local sleepTime="1h"
     local announceCount=3
+    local checkOutputFile
     announce() { [[  $XDG_SESSION_TYPE =~ x11 ]] && espeak "login-to-blomp finished" && beep; }
 
     echo "[$(date +%Y-%m-%d_%H-%M-%S)] started  login-to-blomp 1 15"
@@ -1310,7 +1311,9 @@ login-to-blomp-full() {
     echo "[$(date +%Y-%m-%d_%H-%M-%S)] finished login-to-blomp 16 30"
 
     echo; echo; echo "### CHECKING ###"
-    login-to-blomp-check-all
+    checkOutputFile="$LOGS/login-to-blomp-full_check-all_output_$(fdatei).txt"
+    login-to-blomp-check-all | tee "${checkOutputFile}"
+    backups_telegram_bot.py -m "${checkOutputFile}: $(cat "${checkOutputFile}")"
 }
 
 login-to-blomp-entries-raw() {

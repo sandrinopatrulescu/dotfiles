@@ -360,6 +360,7 @@ async def read_and_process_csv(mode: str, playlist_csv_file_path: str, start_pos
     with open(playlist_csv_file_path, mode="r", newline="", encoding="utf-8") as file:
 
         sent_file_name = False
+        entries_processed = 0
 
         # Iterate through lines in csv
         for position, line in enumerate(file.read().splitlines()):
@@ -384,9 +385,10 @@ async def read_and_process_csv(mode: str, playlist_csv_file_path: str, start_pos
 
             log.info(f'{position}. {title} ({url})')
             await process_video(mode, position, title, url)
+            entries_processed += 1
 
-    # log and send result
-    await log_and_send_result("Finished")
+    # log and send the result
+    await log_and_send_result(f"Finished processing {entries_processed} entries")
 
 
 async def main():
