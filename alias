@@ -171,7 +171,7 @@ alias realpath="realpath -e" # find path of file
 alias sfind="sudo find"
 alias sfindr="sudo find /"
 alias svi="sudo vi" # sudo vi
-alias myip="curl ifconfig.me" # show the public IP address https://opensource.com/article/18/5/how-find-ip-address-linux
+alias myip="curl ifconfig.me && echo" # show the public IP address https://opensource.com/article/18/5/how-find-ip-address-linux
 
 alias termdown="termdown -e"
 
