@@ -128,6 +128,7 @@ def compute_time_difference(start: Decimal, end: Decimal):
 
 def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr: int):
     computed_hours = []
+    page_nr = 0
 
     for i, (date, rechnung_infos) in enumerate(date_list):
         rechnung_nr = first_rechnung_nr + i
@@ -143,12 +144,13 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
             stunden = max(stunden, Decimal(str('4')))
             total_stunden = stunden * Decimal(str(persons))
             total_stunden_pl = stunden * Decimal(str(persons_pl))
-            print("-" * 5 + f" PAGE {i + 1:02} START " + "-" * 5)
+            page_nr += 1
+            print("-" * 5 + f" PAGE {page_nr:02} START " + "-" * 5)
             print(f"{stunden} ST x {persons} P = {total_stunden} ST")
             print(f"PL x {persons_pl}")
             print()
             print(f"RECHNUNG {rechnung_nr}")
-            print("-" * 5 + f" PAGE {i + 1:02} END " + "-" * 5)
+            print("-" * 5 + f" PAGE {page_nr:02} END " + "-" * 5)
             print()
 
             total_stunden_str = int(total_stunden) if total_stunden % 1 == 0 else total_stunden
