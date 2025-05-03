@@ -121,18 +121,25 @@ def hour_string_to_decimal(value: str):
     return Decimal(str(hour)) + (Decimal(str(minutes)) / Decimal(str(minutes_per_hour)))
 
 
+def compute_time_difference(start: Decimal, end: Decimal):
+    hours_per_day = Decimal('24')
+    return (end - start) + (end < start) * hours_per_day
+
+
 def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr: int):
     computed_hours = []
 
     for i, (date, rechnung_infos) in enumerate(date_list):
         rechnung_nr = first_rechnung_nr + i
         print(f"\n\n\t### RECHNUNG NR: {rechnung_nr} {date} ###")
-        for j, (start, pause, end, persons, persons_pl) in enumerate(rechnung_infos):
+        for j, (interval_start, pause, interval_end, persons, persons_pl) in enumerate(rechnung_infos):
             if not (persons >= persons_pl >= 0):
                 sys.stderr.write(f"Condition persons >= persons_pl >= 0 is not respected: {persons} >= {persons_pl} >= 0\n")
                 exit(1)
 
-            stunden = hour_string_to_decimal(end) - hour_string_to_decimal(start) - Decimal(str(pause))
+            interval_start_decimal = hour_string_to_decimal(interval_start)
+            interval_end_decimal = hour_string_to_decimal(interval_end)
+            stunden = compute_time_difference(interval_start_decimal, interval_end_decimal) - Decimal(str(pause))
             stunden = max(stunden, Decimal(str('4')))
             total_stunden = stunden * Decimal(str(persons))
             total_stunden_pl = stunden * Decimal(str(persons_pl))
