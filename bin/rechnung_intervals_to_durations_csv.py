@@ -158,6 +158,12 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
             computed_hours.append(f"{date},{total_stunden_str},{total_stunden_pl_str}")
 
     print("\n".join(computed_hours))  # to compare replace in stunden.csv "[0-9]{7},[a-zA-Z ]+," with ""
+    print()
+
+    last_rechnung_nr = first_rechnung_nr + len(date_list) - 1
+    print()
+    print(f'rechungen_{first_rechnung_nr:03}-bis-{last_rechnung_nr:03}_stunden.pdf')
+    print()
 
 
 def main():
