@@ -115,8 +115,8 @@ def parse_csv(csv_file_path: str):
             raise ValueError(f"Invalid numbers at line {line_index + 1}")
 
         date = line[STUNDEN_CSV_COLUMN_DATE]
-        kn_nr = line[STUNDEN_CSV_COLUMN_KN_NR]  # ab, auf, um
-        bau = line[STUNDEN_CSV_COLUMN_BAU].strip()
+        kn_nr = line[STUNDEN_CSV_COLUMN_KN_NR]
+        bau = line[STUNDEN_CSV_COLUMN_BAU].strip()  # ab, auf, um
         stunden = float(line[STUNDEN_CSV_COLUMN_STUNDEN])
         stunden_pl = float(line[STUNDEN_CSV_COLUMN_STUNDEN_PL])
         tuple_list = date_to_tuple_list.setdefault(date, [])
@@ -448,7 +448,8 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
             total_stunden_pl += stunden_pl
 
             bau_string = ' / '.join(map(lambda x: x.strip().capitalize() + 'bau', bau.split('+')))
-            info_column = f"{j + 1}. KN NR: {kn_nr} {bau_string}"
+            base_item_name = f'KN NR: {kn_nr}' if len(kn_nr) == 7 and kn_nr.isnumeric() else kn_nr
+            info_column = f"{j + 1}. {base_item_name} {bau_string}"
             computation_column = format_computation_column(stunden, price_per_stunden)
             result_column = f"{format_final_price(kn_price)} Euro netto"
 
