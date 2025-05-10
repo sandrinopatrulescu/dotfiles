@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         youtubeCustomVolumeChanger
 // @namespace    http://tampermonkey.net/
-// @version      2025-05-01
+// @version      2025-05-10_17-47
 // @description  YouTube custom volume changer
 // @author       AiWonder
 // @match        https://www.youtube.com/watch?v=*
@@ -49,7 +49,8 @@
     customVolumeContainer.appendChild(customVolumeSlider);
     customVolumeContainer.appendChild(customVolumeInput);
 
-    window.addEventListener('load', function () {
+    /* https://stackoverflow.com/questions/34077641/how-to-detect-page-navigation-on-youtube-and-modify-its-appearance-seamlessly */
+    window.addEventListener('yt-navigate-finish', function () {
         const startDiv = document.getElementById('start');
 
         const player = document.querySelector(".html5-video-player");
@@ -77,7 +78,7 @@
         observeAttribute(volumePanel, 'aria-valuenow', (newValue) => {
             customVolumeSlider.value = newValue;
             customVolumeInput.value = newValue;
-            console.log("Volume changed to " + newValue);
+            console.log("[youtubeCustomVolumeChanger] Volume changed to " + newValue);
         });
 
         startDiv.appendChild(customVolumeContainer);

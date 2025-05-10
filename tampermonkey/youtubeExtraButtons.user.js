@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         youtubeExtraButtons
 // @namespace    http://tampermonkey.net/
-// @version      2025-05-01
+// @version      2025-05-10_17-47
 // @description  YouTube extra buttons
 // @author       AiWonder
 // @match        https://www.youtube.com/watch?v=*
@@ -39,7 +39,8 @@
     buttonsContainer.appendChild(copyUTButton);
     buttonsContainer.appendChild(copyDUTButton);
 
-    window.addEventListener('load', function () {
+    /* https://stackoverflow.com/questions/34077641/how-to-detect-page-navigation-on-youtube-and-modify-its-appearance-seamlessly */
+    window.addEventListener('yt-navigate-finish', function () {
         const startDiv = document.getElementById('start');
 
         const duration = document.getElementsByClassName('ytp-time-duration')[0].innerText;
