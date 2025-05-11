@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         youtubeExtraButtons
 // @namespace    http://tampermonkey.net/
-// @version      2025-05-10_17-47
+// @version      2025-05-11_17-44-25
 // @description  YouTube extra buttons
 // @author       AiWonder
 // @match        https://www.youtube.com/watch?v=*
@@ -13,44 +13,74 @@
 (function () {
     'use strict';
 
-    function writeTextToClipboard(text) {
-        navigator.clipboard.writeText(text)
-            .then(() => {
-                console.log(`Copied to clipboard: ${text}`);
-            })
-            .catch(err => {
-                console.error("Failed to copy:", text);
-                console.error("Err:", err);
-            });
-    }
+    const scriptName = GM_info.script.name;
 
-    const buttonsContainer = document.createElement('div');
+    const setUp = function () {
+        function writeTextToClipboard(text) {
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    console.log(`[${scriptName}] Copied to clipboard: ${text}`);
+                })
+                .catch(err => {
+                    console.error(`[${scriptName}] Failed to copy:`, text);
+                    console.error(`[${scriptName}] Err:`, err);
+                });
+        }
 
-    const copyUTButton = document.createElement("button");
-    copyUTButton.id = "copyUTButton";
-    copyUTButton.innerText = 'UT';
-    copyUTButton.title = 'Copy url title';
+        const buttonsContainerId = 'buttonsContainer';
+        if (document.getElementById(buttonsContainerId)) {
+            console.debug(`[${scriptName}] element with id ${buttonsContainerId} already exists. Skipping logic`);
+            return;
+        }
 
-    const copyDUTButton = document.createElement("button");
-    copyDUTButton.id = "copyDUTButton";
-    copyDUTButton.innerText = 'DUT';
-    copyDUTButton.title = 'Copy duration url title';
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.id = buttonsContainerId;
+        buttonsContainer.style.order = '999';
 
-    buttonsContainer.appendChild(copyUTButton);
-    buttonsContainer.appendChild(copyDUTButton);
+        const copyUTButton = document.createElement("button");
+        copyUTButton.id = "copyUTButton";
+        copyUTButton.innerText = 'UT';
+        copyUTButton.title = 'Copy url title';
 
-    /* https://stackoverflow.com/questions/34077641/how-to-detect-page-navigation-on-youtube-and-modify-its-appearance-seamlessly */
-    window.addEventListener('yt-navigate-finish', function () {
+        const copyDUTButton = document.createElement("button");
+        copyDUTButton.id = "copyDUTButton";
+        copyDUTButton.innerText = 'DUT';
+        copyDUTButton.title = 'Copy duration url title';
+
+        buttonsContainer.appendChild(copyUTButton);
+        buttonsContainer.appendChild(copyDUTButton);
+
+
+        const getDurationTitleAndUrl = () => {
+            const duration = document.getElementsByClassName('ytp-time-duration')[0].innerText;
+            const title = document.title.replace(' - YouTube', '');
+            const url = location.href;
+
+            return [duration, title, url];
+        }
+
         const startDiv = document.getElementById('start');
+        if (!startDiv) {
+            console.error(`[${scriptName}] failed to find element for injection`);
+            return;
+        }
 
-        const duration = document.getElementsByClassName('ytp-time-duration')[0].innerText;
-        const title = document.title.replace(' - YouTube', '');
-        const url = location.href;
 
-        copyUTButton.onclick = () => writeTextToClipboard(`${url} ${title}`);
-        copyDUTButton.onclick = () => writeTextToClipboard(`${duration} ${url} ${title}`);
-
+        copyUTButton.onclick = () => {
+            const [, title, url] = getDurationTitleAndUrl();
+            writeTextToClipboard(`${url} ${title}`);
+        };
+        copyDUTButton.onclick = () => {
+            const [duration, title, url] = getDurationTitleAndUrl();
+            writeTextToClipboard(`${duration} ${url} ${title}`);
+        };
 
         startDiv.appendChild(buttonsContainer);
-    });
+    };
+
+    const delaySetUp = function () {
+        setTimeout(setUp, 500);
+    }
+
+    delaySetUp();
 })();
