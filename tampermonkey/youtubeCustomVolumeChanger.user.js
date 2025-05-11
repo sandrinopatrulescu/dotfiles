@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         youtubeCustomVolumeChanger
 // @namespace    http://tampermonkey.net/
-// @version      2025-05-10_17-47
+// @version      2025-05-11_13-04
 // @description  YouTube custom volume changer
 // @author       AiWonder
 // @match        https://www.youtube.com/watch?v=*
@@ -12,20 +12,26 @@
 
 (function () {
     'use strict';
+    console.debug("[youtubeCustomVolumeChanger] starting");
 
     function observeAttribute(target, attribute, onValueChange) {
         const observer = new MutationObserver(mutations => {
             mutations.forEach(mutation => {
                 if (mutation.type === "attributes" && mutation.attributeName === attribute) {
+                    const oldValue = mutation.oldValue;
                     const newValue = target.getAttribute(attribute);
-                    onValueChange(newValue);
+
+                    if (oldValue !== newValue) {
+                        onValueChange(newValue);
+                    }
                 }
             });
         });
 
         observer.observe(target, {
             attributes: true,
-            attributeFilter: [attribute]
+            attributeFilter: [attribute],
+            attributeOldValue: true,
         });
     }
 
@@ -50,7 +56,10 @@
     customVolumeContainer.appendChild(customVolumeInput);
 
     /* https://stackoverflow.com/questions/34077641/how-to-detect-page-navigation-on-youtube-and-modify-its-appearance-seamlessly */
-    window.addEventListener('yt-navigate-finish', function () {
+    const event = 'yt-navigate-finish';
+    window.addEventListener(event, function () {
+        console.debug(`[youtubeCustomVolumeChanger] started event ${event} listener`)
+
         const startDiv = document.getElementById('start');
 
         const player = document.querySelector(".html5-video-player");
