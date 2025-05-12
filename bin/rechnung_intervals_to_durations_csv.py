@@ -155,7 +155,7 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
 
             total_stunden_str = int(total_stunden) if total_stunden % 1 == 0 else total_stunden
             total_stunden_pl_str = int(total_stunden_pl) if total_stunden_pl % 1 == 0 else total_stunden_pl
-            computed_hours.append(f"{date},kn_nr,bau,{total_stunden_str},{total_stunden_pl_str}")
+            computed_hours.append(f"{date},KN_NR,BAU,{total_stunden_str},{total_stunden_pl_str}")
 
     print("\n".join(computed_hours))  # to compare replace in stunden.csv "[0-9]{7},[a-zA-Z ]+," with ""
     print()
