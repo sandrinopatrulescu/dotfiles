@@ -132,7 +132,7 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
 
     for i, (date, rechnung_infos) in enumerate(date_list):
         rechnung_nr = first_rechnung_nr + i
-        print(f"\n\n\t### RECHNUNG NR: {rechnung_nr} {date} ###")
+        print("\n" * 3 + f"### RECHNUNG NR: {rechnung_nr} {date} ###\n")
         for j, (interval_start, pause, interval_end, persons, persons_pl) in enumerate(rechnung_infos):
             if not (persons >= persons_pl >= 0):
                 sys.stderr.write(f"Condition persons >= persons_pl >= 0 is not respected: {persons} >= {persons_pl} >= 0\n")
@@ -145,13 +145,12 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
             total_stunden = stunden * Decimal(str(persons))
             total_stunden_pl = stunden * Decimal(str(persons_pl))
             page_nr += 1
-            print("-" * 5 + f" PAGE {page_nr:02} START " + "-" * 5)
+            print(" " * 3 + f" PAGE {page_nr:02}\n")
             print(f"{stunden} ST x {persons} P = {total_stunden} ST")
             print(f"PL x {persons_pl}")
             print()
             print(f"RECHNUNG {rechnung_nr}")
-            print("-" * 5 + f" PAGE {page_nr:02} END " + "-" * 5)
-            print()
+            print("\n" * 3)
 
             total_stunden_str = int(total_stunden) if total_stunden % 1 == 0 else total_stunden
             total_stunden_pl_str = int(total_stunden_pl) if total_stunden_pl % 1 == 0 else total_stunden_pl

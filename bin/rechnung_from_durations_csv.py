@@ -512,6 +512,12 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
     date_range = f"{date_list[0][0]} - {date_list[-1][0]}"
     print(f"email subject: rechnungen {first_rechnung_nr} bis {last_rechnung_nr} | {date_range}")
     print(f"email body: Ins gesamt {total_formatted} Euro.")
+    print("\nTODO:")
+    print("1. Send rechungen stunden PDF")
+    print("2. Send rechnung PDFs")
+    print("3. Send total")
+    print("4. Backup files")
+    print("5. Prepare email")
 
 
 def test_round_half_down_2_digit():
