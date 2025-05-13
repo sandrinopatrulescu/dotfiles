@@ -204,7 +204,7 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
     print()
 
     # write computed_hours_strings_concatenated to a temporary files
-    temp_file_name = next(tempfile._get_candidate_names())
+    temp_file_name = next(tempfile._get_candidate_names()) + '.csv'
     temp_file_path = os.path.join(tempfile.gettempdir(), temp_file_name)
     file = open(temp_file_path, 'w')
     file.write(computed_hours_strings_concatenated + "\n")
