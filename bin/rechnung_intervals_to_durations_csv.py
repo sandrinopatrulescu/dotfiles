@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 import csv
+import os
 import re
 import sys
+import tempfile
 from datetime import datetime
 from decimal import Decimal
 from typing import Dict, List, Tuple
@@ -190,6 +192,7 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
             total_stunden_pl_str = int(total_stunden_pl) if total_stunden_pl % 1 == 0 else total_stunden_pl
             computed_hours_strings.append(f"{date},{kn_nr},{bau},{total_stunden_str},{total_stunden_pl_str}")
     computed_hours_strings.append("# date,kn_nr,bau,hours,hours_pl")
+    computed_hours_strings.append("# example: 09.05.2025,2503052,ab ,16,4")
 
     computed_hours_strings_concatenated = "\n".join(computed_hours_strings)
     print(computed_hours_strings_concatenated)  # to compare replace in stunden.csv "[0-9]{7},[a-zA-Z ]+," with ""
@@ -199,6 +202,14 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
     print()
     print(f'rechungen_{first_rechnung_nr:03}-bis-{last_rechnung_nr:03}_stunden.pdf')
     print()
+
+    # write computed_hours_strings_concatenated to a temporary files
+    temp_file_name = next(tempfile._get_candidate_names())
+    temp_file_path = os.path.join(tempfile.gettempdir(), temp_file_name)
+    file = open(temp_file_path, 'w')
+    file.write(computed_hours_strings_concatenated + "\n")
+    file.close()
+    print(f"maybe run: cp {temp_file_path} durations.csv")
 
 
 def main():
