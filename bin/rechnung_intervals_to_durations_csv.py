@@ -7,14 +7,36 @@ from decimal import Decimal
 from typing import Dict, List, Tuple
 
 # region defaults
+ROW_WIDTH_TO_COLUMN_NAME_TO_COLUMN_INDEX = {
+    6: {
+        'DATE': 0,
+        'START': 1,
+        'PAUSE': 2,
+        'END': 3,
+        'PERSONS': 4,
+        'PERSONS_PL': 5,
+    },
+    8: {
+        'DATE': 0,
+        'KN_NR': 1,
+        'BAU': 2,
+        'START': 3,
+        'PAUSE': 4,
+        'END': 5,
+        'PERSONS': 6,
+        'PERSONS_PL': 7,
+    },
+}
+
+valid_row_widths = ROW_WIDTH_TO_COLUMN_NAME_TO_COLUMN_INDEX.keys()
 
 
-STUNDEN_CSV_COLUMN_DATE = 0
-STUNDEN_CSV_COLUMN_START = 1
-STUNDEN_CSV_COLUMN_PAUSE = 2
-STUNDEN_CSV_COLUMN_END = 3
-STUNDEN_CSV_COLUMN_PERSONS = 4
-STUNDEN_CSV_COLUMN_PERSONS_PL = 5
+def is_valid_row_width(row_width: int) -> bool:
+    return row_width in valid_row_widths
+
+
+def get_column_index(row_width: int, column_name: str) -> int:
+    return ROW_WIDTH_TO_COLUMN_NAME_TO_COLUMN_INDEX[row_width].get(column_name)
 
 
 # endregion
@@ -66,7 +88,7 @@ def is_valid_hour_format(s):
         return False
 
 
-WorkSessionInfo = Tuple[str, float, str, int, int]
+WorkSessionInfo = Tuple[str, str, str, float, str, int, int]
 RechnungInfo = List[WorkSessionInfo]
 DateToRechnung = Dict[str, RechnungInfo]
 
@@ -78,19 +100,30 @@ def parse_csv(csv_file_path: str):
     date_to_tuple_list: DateToRechnung = {}
 
     for line_index, line in enumerate(csv_reader):
-        if len(line) == 0:
+        row_width = len(line)
+        if row_width == 0:
             continue
 
         first_field = line[0]
         if first_field.startswith("#") or (line_index == 0 and first_field in ['datum', 'date']):
             continue  # skip header and/or comment lines
 
-        date = line[STUNDEN_CSV_COLUMN_DATE]
-        start = line[STUNDEN_CSV_COLUMN_START]
-        pause = line[STUNDEN_CSV_COLUMN_PAUSE]
-        end = line[STUNDEN_CSV_COLUMN_END]
-        persons = line[STUNDEN_CSV_COLUMN_PERSONS]
-        persons_pl = line[STUNDEN_CSV_COLUMN_PERSONS_PL]
+        def get_column_value(column_name: str, default_value=None):
+            if not is_valid_row_width(row_width):
+                message = f"Invalid row width: {row_width} at line {line_index + 1}. Should be one of {valid_row_widths}"
+                raise ValueError(message)
+
+            column_index = get_column_index(row_width, column_name)
+            return default_value if column_index is None else line[column_index]
+
+        date = get_column_value('DATE')
+        kn_nr = get_column_value('KN_NR', 'KN_NR')
+        bau = get_column_value('BAU', 'BAU')
+        start = get_column_value('START')
+        pause = get_column_value('PAUSE')
+        end = get_column_value('END')
+        persons = get_column_value('PERSONS')
+        persons_pl = get_column_value('PERSONS_PL')
 
         if not is_valid_date(date):
             raise ValueError(f"Invalid date {date} at line {line_index + 1}")
@@ -110,7 +143,7 @@ def parse_csv(csv_file_path: str):
         persons_pl = int(persons_pl)
 
         tuple_list = date_to_tuple_list.setdefault(date, [])
-        tuple_list.append((start, pause, end, persons, persons_pl))
+        tuple_list.append((kn_nr, bau, start, pause, end, persons, persons_pl))
 
     return sorted(date_to_tuple_list.items(), key=lambda item: date_str_to_date(item[0]).strftime('%Y.%m.%d'))
 
@@ -133,9 +166,10 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
     for i, (date, rechnung_infos) in enumerate(date_list):
         rechnung_nr = first_rechnung_nr + i
         print("\n" * 3 + f"### RECHNUNG NR: {rechnung_nr} {date} ###\n")
-        for j, (interval_start, pause, interval_end, persons, persons_pl) in enumerate(rechnung_infos):
+        for j, (kn_nr, bau, interval_start, pause, interval_end, persons, persons_pl) in enumerate(rechnung_infos):
             if not (persons >= persons_pl >= 0):
-                sys.stderr.write(f"Condition persons >= persons_pl >= 0 is not respected: {persons} >= {persons_pl} >= 0\n")
+                sys.stderr.write(
+                    f"Condition persons >= persons_pl >= 0 is not respected: {persons} >= {persons_pl} >= 0\n")
                 exit(1)
 
             interval_start_decimal = hour_string_to_decimal(interval_start)
@@ -154,7 +188,7 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
 
             total_stunden_str = int(total_stunden) if total_stunden % 1 == 0 else total_stunden
             total_stunden_pl_str = int(total_stunden_pl) if total_stunden_pl % 1 == 0 else total_stunden_pl
-            computed_hours.append(f"{date},KN_NR,BAU,{total_stunden_str},{total_stunden_pl_str}")
+            computed_hours.append(f"{date},{kn_nr},{bau},{total_stunden_str},{total_stunden_pl_str}")
 
     print("\n".join(computed_hours))  # to compare replace in stunden.csv "[0-9]{7},[a-zA-Z ]+," with ""
     print()
