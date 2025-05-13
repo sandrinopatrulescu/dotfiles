@@ -160,7 +160,7 @@ def compute_time_difference(start: Decimal, end: Decimal):
 
 
 def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr: int):
-    computed_hours = []
+    computed_hours_strings = []
     page_nr = 0
 
     for i, (date, rechnung_infos) in enumerate(date_list):
@@ -188,9 +188,11 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
 
             total_stunden_str = int(total_stunden) if total_stunden % 1 == 0 else total_stunden
             total_stunden_pl_str = int(total_stunden_pl) if total_stunden_pl % 1 == 0 else total_stunden_pl
-            computed_hours.append(f"{date},{kn_nr},{bau},{total_stunden_str},{total_stunden_pl_str}")
+            computed_hours_strings.append(f"{date},{kn_nr},{bau},{total_stunden_str},{total_stunden_pl_str}")
+    computed_hours_strings.append("# date,kn_nr,bau,hours,hours_pl")
 
-    print("\n".join(computed_hours))  # to compare replace in stunden.csv "[0-9]{7},[a-zA-Z ]+," with ""
+    computed_hours_strings_concatenated = "\n".join(computed_hours_strings)
+    print(computed_hours_strings_concatenated)  # to compare replace in stunden.csv "[0-9]{7},[a-zA-Z ]+," with ""
     print()
 
     last_rechnung_nr = first_rechnung_nr + len(date_list) - 1
