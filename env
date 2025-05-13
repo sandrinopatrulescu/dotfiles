@@ -99,23 +99,33 @@ export WTMP="/mnt/c/Users/sandr/AppData/Local/Temp"
 PROMPT_COMMAND=__prompt_command
 __prompt_command() {
     local exitCode="$?"                # This needs to be first
+    local setXStatus
+
+    local psClear
+    local Red
+    local Yellow
+    local BrightMagenta
+
+    local basePS1
+    local branchName
+    local exitCodeInPrompt
 
     # save the old status of xtrace and then disable it
-    local setXStatus="$(shopt -po xtrace)"
+    setXStatus="$(shopt -po xtrace)"
     shopt -uo xtrace
 
     # declare ANSI escape codes for formatting
-    local psClear='\[\e[0m\]'
-    local Red='\[\e[0;31m\]'
-    local Yellow='\[\e[33m\]'
-    local BrightMagenta='\[\e[95m\]'
+    psClear='\[\e[0m\]'
+    Red='\[\e[0;31m\]'
+    Yellow='\[\e[33m\]'
+    BrightMagenta='\[\e[95m\]'
     # https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
 
     #
     VENV_NOTICE="$([ -z ${VIRTUAL_ENV+x} ] || echo "${BrightMagenta}($(basename "$VIRTUAL_ENV"))${psClear} ")"
-    local basePS1="\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\W\[\033[00m\]"
-    local branchName="${Yellow}$(__git_ps1)${psClear}"
-    local exitCodeInPrompt="$([ $exitCode != 0 ] && echo " ${Red}${exitCode}${psClear}")"
+    basePS1="\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\W\[\033[00m\]"
+    branchName="${Yellow}$(__git_ps1)${psClear}"
+    exitCodeInPrompt="$([ $exitCode != 0 ] && echo " ${Red}${exitCode}${psClear}")"
 
     # set the new prompt
     PS1="${VENV_NOTICE}${basePS1}${branchName}${exitCodeInPrompt}$ "
