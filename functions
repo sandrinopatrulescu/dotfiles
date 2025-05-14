@@ -1673,6 +1673,27 @@ rechnung-stunden() {
     printf "Gesamtbetrag \t \t\t\t\t     \t %7.2f Euro \n" "${totalGross//./,}"
 }
 
+rechnung-old-wrapper() {
+    local intervalsCsvPath
+    local firstRechnungNr
+    local outputFile
+    local durationsCsvPathTmp
+
+    [ $# -eq 2 ] || {
+        echo "usage: ${FUNCNAME[0]} <path to intervals.csv> <first rechnung nr>";
+        return 1
+    }
+
+    intervalsCsvPath="${1}"
+    firstRechnungNr="${2}"
+
+    outputFile="${FUNCNAME[0]}_$(fdatei).txt"
+    rechnung_intervals_to_durations_csv.py "${intervalsCsvPath}" "${firstRechnungNr}" | tee "${outputFile}"
+    durationsCsvPathTmp="$(tail -1 "${outputFile}" | cut -d' ' -f4)"
+    cp "${durationsCsvPathTmp}" durations.csv
+    rechnung_from_durations_csv.py durations.csv "${firstRechnungNr}" | tee --append "${outputFile}"
+}
+
 e2r() { # shows the value in RON for 1 EUR (from BNR)
     curl -s "https://www.cursbnr.ro/insert/cursvalutar.php?diff=0&cb=0" | /usr/bin/grep  -oP "1 EUR = \K[0-9.]+"
 }

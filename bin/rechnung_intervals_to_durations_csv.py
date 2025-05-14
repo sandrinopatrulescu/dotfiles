@@ -47,7 +47,7 @@ def get_column_index(row_width: int, column_name: str) -> int:
 def get_input_args():
     effective_program_arguments = len(sys.argv) - 1
     if not 1 <= effective_program_arguments <= 2:
-        message = f"Usage: python rechnung_intervals_to_durations_csv.py <csv_file_path>\n"
+        message = f"Usage: python rechnung_intervals_to_durations_csv.py <csv_file_path> [<first rechnung nr>=1]\n"
         sys.stderr.write(message)
         sys.exit(1)
 
