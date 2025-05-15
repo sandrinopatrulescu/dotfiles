@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 import csv
+import imaplib
+import mimetypes
 import os
 import re
 import subprocess
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal, ROUND_HALF_DOWN
+from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from enum import Enum
 from typing import Dict, List, Tuple
 
@@ -103,7 +109,7 @@ def parse_csv(csv_file_path: str):
 
     for line_index, line in enumerate(csv_reader):
         if len(line) == 0:
-         continue
+            continue
 
         first_field = line[0]
         if first_field.startswith("#") or (line_index == 0 and first_field in ['datum', 'date']):
@@ -396,7 +402,7 @@ class DocGenerator:
 
         file_name_stem = f"rechnung_{rechnung_nr:03}_{year}"
 
-        DocGenerator.save_doc_and_pdf(doc, file_name_stem)
+        return DocGenerator.save_doc_and_pdf(doc, file_name_stem)
 
     @staticmethod
     def save_doc_and_pdf(doc: Document, file_name_stem: str):
@@ -410,8 +416,11 @@ class DocGenerator:
                 "--outdir", os.getcwd(),
                 doc_filename
             ], check=True)
+
+            return f"{file_name_stem}.pdf"
         except subprocess.CalledProcessError as e:
             print("LibreOffice PDF conversion failed:", e)
+            return None
 
 
 def round_half_down(value: Decimal, digits=2):
@@ -419,7 +428,76 @@ def round_half_down(value: Decimal, digits=2):
     return value.quantize(Decimal(quantize_str), rounding=ROUND_HALF_DOWN)
 
 
+def create_email_draft(connection_info: Tuple[str, str, str, int], message_info: Tuple[str, str, str, List[str]]):
+    (address, password, imap_server, imap_port) = connection_info
+    (recipient, subject, body, files) = message_info
+
+    # --- Create MIME message with attachments ---
+    msg = MIMEMultipart()
+    msg["From"] = address
+    msg["To"] = recipient
+    msg["Subject"] = subject
+    msg.attach(MIMEText(body, "plain"))
+
+    for filepath in files:
+        if not os.path.isfile(filepath):
+            print(f"⚠️ File not found: {filepath}")
+            continue
+
+        ctype, encoding = mimetypes.guess_type(filepath)
+        if ctype is None or encoding is not None:
+            ctype = "application/octet-stream"
+        maintype, subtype = ctype.split("/", 1)
+
+        with open(filepath, "rb") as f:
+            part = MIMEBase(maintype, subtype)
+            part.set_payload(f.read())
+            encoders.encode_base64(part)
+            part.add_header("Content-Disposition", f'attachment; filename="{os.path.basename(filepath)}"')
+            msg.attach(part)
+
+    # Convert to bytes
+    raw_message = msg.as_bytes()
+
+    # --- Connect email service ---
+    now = datetime.now(timezone.utc)
+    mail = imaplib.IMAP4_SSL(imap_server, imap_port)
+    mail.login(address, password)
+
+    # select the mailbox and create the email draft
+    mailbox = '"Draft"'
+    mail.select(mailbox)
+    result = mail.append(mailbox, '', imaplib.Time2Internaldate(now), raw_message)
+
+    if result[0] == 'OK':
+        print("✅ Draft created successfully.")
+    else:
+        print("❌ Failed to create draft:", result)
+
+        status, folders = mail.list()
+        for folder in folders:
+            print(folder.decode())
+
+    mail.logout()
+
+
+def create_rechnungs_email_draft(subject: str, body: str, files: List[str]):
+    env_var_prefix = 'OTHERS_M_EMAIL'
+
+    address = os.getenv(f'{env_var_prefix}_ADDRESS')
+    password = os.getenv(f'{env_var_prefix}_APP_PASSWORD')
+    imap_server = os.getenv(f'{env_var_prefix}_IMAP_SERVER')
+    imap_port = int(os.getenv(f'{env_var_prefix}_IMAP_PORT'))
+    recipient = os.getenv(f'{env_var_prefix}_RECIPIENT')
+
+    connection_info = (address, password, imap_server, imap_port)
+    message_info = (recipient, subject, body, files)
+    create_email_draft(connection_info, message_info)
+
+
 def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr: int, price_per_stunden: float):
+    last_rechnung_nr = first_rechnung_nr + len(date_list) - 1
+    email_files = [f'rechungen_{first_rechnung_nr:03}-bis-{last_rechnung_nr:03}_stunden.pdf']
     doc_generator = DocGenerator()
     format_row_string = lambda x, y, z: f"{x:<32}\t{y:>25}\t{z:<25}\n"
     format_computation_column = lambda hours, price: f"{hours:04.2f} St x {price:5.2f} Euro".replace(".",
@@ -497,7 +575,8 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
         print(f"RECHNUNG {rechnung_nr}\t{rechnung_date}")
         print(result)
 
-        doc_generator.generate_doc(rechnung_nr, rechnung_date, price_table_data, issue_date)
+        rechnung_pdf_name = doc_generator.generate_doc(rechnung_nr, rechnung_date, price_table_data, issue_date)
+        email_files.append(rechnung_pdf_name)
 
         print("\n" * 2)
 
@@ -508,16 +587,20 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
 
     print()
 
-    last_rechnung_nr = first_rechnung_nr + len(date_list) - 1
     date_range = f"{date_list[0][0]} - {date_list[-1][0]}"
-    print(f"email subject: rechnungen {first_rechnung_nr} bis {last_rechnung_nr} | {date_range}")
-    print(f"email body: Ins gesamt {total_formatted} Euro.")
+    email_subject = f"rechnungen {first_rechnung_nr} bis {last_rechnung_nr} | {date_range}"
+    email_body = f"Ins gesamt {total_formatted} Euro."
+
+    print(f"email subject: {email_subject}")
+    print(f"email body: {email_body}")
     print("\nTODO:")
     print("1. Send rechungen stunden PDF")
     print("2. Send rechnung PDFs")
     print("3. Send total")
     print("4. Backup files")
-    print("5. Prepare email")
+    print("5. Prepare email - should be crated draft automatically")
+
+    create_rechnungs_email_draft(email_subject, email_body, email_files)
 
 
 def test_round_half_down_2_digit():
