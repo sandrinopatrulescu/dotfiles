@@ -600,7 +600,8 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
     print("4. Backup files")
     print("5. Prepare email - should be crated draft automatically")
 
-    create_rechnungs_email_draft(email_subject, email_body, email_files)
+    print("WARN! Email draft creation is disabled until interactive mode is implemented and used.")
+    # create_rechnungs_email_draft(email_subject, email_body, email_files)
 
 
 def test_round_half_down_2_digit():
