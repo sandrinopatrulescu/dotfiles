@@ -1688,10 +1688,10 @@ rechnung-old-wrapper() {
     firstRechnungNr="${2}"
 
     outputFile="${FUNCNAME[0]}_$(fdatei).txt"
-    rechnung_intervals_to_durations_csv.py "${intervalsCsvPath}" "${firstRechnungNr}" | tee "${outputFile}"
+    rechnung_intervals_to_durations_csv.py "${intervalsCsvPath}" "${firstRechnungNr}" "--interactive" | tee "${outputFile}"
     durationsCsvPathTmp="$(tail -1 "${outputFile}" | cut -d' ' -f4)"
     cp "${durationsCsvPathTmp}" durations.csv
-    rechnung_from_durations_csv.py durations.csv "${firstRechnungNr}" | tee --append "${outputFile}"
+    rechnung_from_durations_csv.py durations.csv "${firstRechnungNr}" "" "--interactive" | tee --append "${outputFile}"
 }
 
 e2r() { # shows the value in RON for 1 EUR (from BNR)

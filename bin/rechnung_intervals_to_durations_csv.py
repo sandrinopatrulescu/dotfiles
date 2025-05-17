@@ -8,6 +8,8 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Dict, List, Tuple
 
+import pyperclip
+
 # region defaults
 ROW_WIDTH_TO_COLUMN_NAME_TO_COLUMN_INDEX = {
     6: {
@@ -46,8 +48,8 @@ def get_column_index(row_width: int, column_name: str) -> int:
 
 def get_input_args():
     effective_program_arguments = len(sys.argv) - 1
-    if not 1 <= effective_program_arguments <= 2:
-        message = f"Usage: python rechnung_intervals_to_durations_csv.py <csv_file_path> [<first rechnung nr>=1]\n"
+    if not 1 <= effective_program_arguments <= 3:
+        message = f"Usage: python rechnung_intervals_to_durations_csv.py <csv_file_path> [<first rechnung nr>=1] [--interactive]\n"
         sys.stderr.write(message)
         sys.exit(1)
 
@@ -56,7 +58,8 @@ def get_input_args():
 
     csv_file_path = sys.argv[1]
     first_rechnung_nr = int(get_argument_or_default(2, 1))
-    return csv_file_path, first_rechnung_nr
+    interactive = get_argument_or_default(3, "") == "--interactive"
+    return csv_file_path, first_rechnung_nr, interactive
 
 
 def date_str_to_date(date_str: str):
@@ -161,10 +164,11 @@ def compute_time_difference(start: Decimal, end: Decimal):
     return (end - start) + (end < start) * hours_per_day
 
 
-def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr: int):
+def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr: int, interactive: bool):
     computed_hours_strings = []
     page_nr = 0
 
+    nr_of_pages = sum(map(lambda x: len(x[1]), date_list))
     for i, (date, rechnung_infos) in enumerate(date_list):
         rechnung_nr = first_rechnung_nr + i
         print("\n" * 3 + f"### RECHNUNG NR: {rechnung_nr} {date} ###\n")
@@ -181,11 +185,19 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
             total_stunden = stunden * Decimal(str(persons))
             total_stunden_pl = stunden * Decimal(str(persons_pl))
             page_nr += 1
-            print(" " * 3 + f" PAGE {page_nr:02}\n")
-            print(f"{stunden} ST x {persons} P = {total_stunden} ST")
-            print(f"PL x {persons_pl}")
+
+            text_to_copy = f"{stunden} ST x {persons} P = {total_stunden} ST" + '\n'
+            text_to_copy += f"PL x {persons_pl}" + '\n'
+            text_to_copy += '\n'
+            text_to_copy += f"RECHNUNG {rechnung_nr}"
+
+            print(" " * 3 + f" PAGE {page_nr:02}/{nr_of_pages:00}\n")
+            print(text_to_copy)
             print()
-            print(f"RECHNUNG {rechnung_nr}")
+            while interactive:
+                pyperclip.copy(text_to_copy)
+                if input("Text copied to clipboard. Type 'ok' to continue: ") == "ok":
+                    break
             print("\n" * 3)
 
             total_stunden_str = int(total_stunden) if total_stunden % 1 == 0 else total_stunden
@@ -199,8 +211,17 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
     print()
 
     last_rechnung_nr = first_rechnung_nr + len(date_list) - 1
+    stunden_file = f'rechungen_{first_rechnung_nr:03}-bis-{last_rechnung_nr:03}_stunden.pdf'
     print()
-    print(f'rechungen_{first_rechnung_nr:03}-bis-{last_rechnung_nr:03}_stunden.pdf')
+    print()
+    while interactive:
+        pyperclip.copy(stunden_file)
+        if input(f"Prepare {stunden_file} (copied to clipboard) and type 'ok' to continue: ") == "ok":
+            if not os.path.isfile(stunden_file):
+                print(f'{stunden_file} not found')
+                continue
+            break
+    print(stunden_file)
     print()
 
     # write computed_hours_strings_concatenated to a temporary files
@@ -219,9 +240,9 @@ def main():
     # TODO: add warning about different hours for different people for same (date, kn_nr)
     # TODO: move to rechnung_from_durations_csv.py
     # TODO: [AFTER MOVING to rechnung_from_durations_csv.py] use the args parser: <mode> <csv file> [<first rechnung nr>] [<price_per_stunden>]
-    csv_file_path, first_rechnung_nr = get_input_args()
+    csv_file_path, first_rechnung_nr, interactive = get_input_args()
     date_list = parse_csv(csv_file_path)
-    compute_values(date_list, first_rechnung_nr)
+    compute_values(date_list, first_rechnung_nr, interactive)
 
 
 if __name__ == "__main__":

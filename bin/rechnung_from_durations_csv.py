@@ -59,18 +59,28 @@ TABLE_CELL_SIDE_MARGIN_TWIPS = inches_to_twips(TABLE_CELL_SIDE_PADDING_INCHES)
 
 def get_input_args():
     effective_program_arguments = len(sys.argv) - 1
-    if not 1 <= effective_program_arguments <= 3:
-        message = f"Usage: python rechnung_from_durations_csv.py <csv_file_path> [<first_rechnung_nr>=1] [<price_per_stunden>={PRICE_PER_STUNDEN}]\n"
+    if not 1 <= effective_program_arguments <= 4:
+        message = f"Usage: python rechnung_from_durations_csv.py <csv_file_path> [<first_rechnung_nr>=1] [<price_per_stunden>={PRICE_PER_STUNDEN}] --interactive\n"
         sys.stderr.write(message)
         sys.exit(1)
 
-    def get_argument_or_default(index: int, default: any):
-        return sys.argv[index] if len(sys.argv) > index else default
+    def get_argument_or_default(index: int, default_if_none: any, default_if_empty_str=None):
+        if index < len(sys.argv):
+            value = sys.argv[index]
+            if value is None:
+                return default_if_none
+            elif value == "":
+                return default_if_empty_str
+            else:
+                return value
+
+        return default_if_none
 
     csv_file_path = sys.argv[1]
     first_rechnung_nr = int(get_argument_or_default(2, 1))
-    price_per_stunden = float(get_argument_or_default(3, PRICE_PER_STUNDEN))
-    return csv_file_path, first_rechnung_nr, price_per_stunden
+    price_per_stunden = float(get_argument_or_default(3, PRICE_PER_STUNDEN, PRICE_PER_STUNDEN))
+    interactive = get_argument_or_default(4, "") == "--interactive"
+    return csv_file_path, first_rechnung_nr, price_per_stunden, interactive
 
 
 def date_str_to_date(date_str: str):
@@ -495,7 +505,8 @@ def create_rechnungs_email_draft(subject: str, body: str, files: List[str]):
     create_email_draft(connection_info, message_info)
 
 
-def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr: int, price_per_stunden: float):
+def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr: int, price_per_stunden: float,
+                   interactive: bool):
     last_rechnung_nr = first_rechnung_nr + len(date_list) - 1
     email_files = [f'rechungen_{first_rechnung_nr:03}-bis-{last_rechnung_nr:03}_stunden.pdf']
     doc_generator = DocGenerator()
@@ -600,8 +611,10 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
     print("4. Backup files")
     print("5. Prepare email - should be crated draft automatically")
 
-    print("WARN! Email draft creation is disabled until interactive mode is implemented and used.")
-    # create_rechnungs_email_draft(email_subject, email_body, email_files)
+    if interactive:
+        create_rechnungs_email_draft(email_subject, email_body, email_files)
+    else:
+        print('Skipping creating the email draft because interactive mode is disabled.')
 
 
 def test_round_half_down_2_digit():
@@ -617,9 +630,9 @@ def test_round_half_down_2_digit():
 def main():
     test_round_half_down_2_digit()
 
-    csv_file_path, first_rechnung_nr, price_per_stunden = get_input_args()
+    csv_file_path, first_rechnung_nr, price_per_stunden, interactive = get_input_args()
     date_list = parse_csv(csv_file_path)
-    compute_values(date_list, first_rechnung_nr, price_per_stunden)
+    compute_values(date_list, first_rechnung_nr, price_per_stunden, interactive)
 
 
 if __name__ == "__main__":
