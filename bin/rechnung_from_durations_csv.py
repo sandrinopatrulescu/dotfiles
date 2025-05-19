@@ -610,6 +610,7 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
     print("3. Send total")
     print("4. Backup files")
     print("5. Prepare email - should be crated draft automatically")
+    print("6. email-ul e pregătit. mai rămâne să-l trimit dacă e ok")
 
     if interactive:
         create_rechnungs_email_draft(email_subject, email_body, email_files)

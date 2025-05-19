@@ -191,7 +191,8 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
             text_to_copy += '\n'
             text_to_copy += f"RECHNUNG {rechnung_nr}"
 
-            print(" " * 3 + f" PAGE {page_nr:02}/{nr_of_pages:00}\n")
+            page_details = f"date: {date} kn_nr: {kn_nr} bau: {bau} start: {interval_start_decimal} pause: {pause} end: {interval_end_decimal}"
+            print(" " * 3 + f" PAGE {page_nr:02}/{nr_of_pages:00}: {page_details}\n")
             print(text_to_copy)
             print()
             while interactive:
@@ -211,12 +212,13 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
     print()
 
     last_rechnung_nr = first_rechnung_nr + len(date_list) - 1
-    stunden_file = f'rechungen_{first_rechnung_nr:03}-bis-{last_rechnung_nr:03}_stunden.pdf'
+    stunden_file_stem = f'rechungen_{first_rechnung_nr:03}-bis-{last_rechnung_nr:03}_stunden'
+    stunden_file = f'{stunden_file_stem}.pdf'
     print()
     print()
     while interactive:
-        pyperclip.copy(stunden_file)
-        if input(f"Prepare {stunden_file} (copied to clipboard) and type 'ok' to continue: ") == "ok":
+        pyperclip.copy(stunden_file_stem)
+        if input(f"Prepare {stunden_file} (copied stem to clipboard) and type 'ok' to continue: ") == "ok":
             if not os.path.isfile(stunden_file):
                 print(f'{stunden_file} not found')
                 continue
