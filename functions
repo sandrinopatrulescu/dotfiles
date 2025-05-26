@@ -1678,17 +1678,20 @@ rechnung-old-wrapper() {
     local firstRechnungNr
     local outputFile
     local durationsCsvPathTmp
+    local interactivity1="--interactive"
 
     [ $# -eq 2 ] || {
-        echo "usage: ${FUNCNAME[0]} <path to intervals.csv> <first rechnung nr>";
+        echo "usage: [SKIP_INTERACTIVITY_1=true] ${FUNCNAME[0]} <path to intervals.csv> <first rechnung nr>";
         return 1
     }
 
     intervalsCsvPath="${1}"
     firstRechnungNr="${2}"
 
+    if [[ "$SKIP_INTERACTIVITY_1" == "true" ]]; then interactivity1=""; fi
+
     outputFile="${FUNCNAME[0]}_$(fdatei).txt"
-    rechnung_intervals_to_durations_csv.py "${intervalsCsvPath}" "${firstRechnungNr}" "--interactive" | tee "${outputFile}"
+    rechnung_intervals_to_durations_csv.py "${intervalsCsvPath}" "${firstRechnungNr}" "${interactivity1}" | tee "${outputFile}"
     durationsCsvPathTmp="$(tail -1 "${outputFile}" | cut -d' ' -f4)"
     cp "${durationsCsvPathTmp}" durations.csv
     rechnung_from_durations_csv.py durations.csv "${firstRechnungNr}" "" "--interactive" | tee --append "${outputFile}"
