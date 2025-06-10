@@ -93,16 +93,17 @@ def is_valid_hour_format(s):
         return False
 
 
-WorkSessionInfo = Tuple[str, str, str, float, str, int, int]
-RechnungInfo = List[WorkSessionInfo]
-DateToRechnung = Dict[str, RechnungInfo]
+WorkInterval = Tuple[str, float, str, int, int]
+# maps (kn_nr, bau) -> list of (start,pause,end,persons,persons_pl)
+RechnungInfo = Dict[Tuple[str, str], List[WorkInterval]]
+DateToRechnungInfo = Dict[str, RechnungInfo]
 
 
 def parse_csv(csv_file_path: str):
     csv_file = open(csv_file_path, mode='r')
     csv_reader = csv.reader(csv_file, delimiter=',')
 
-    date_to_tuple_list: DateToRechnung = {}
+    date_to_rechnung_info: DateToRechnungInfo = {}
 
     for line_index, line in enumerate(csv_reader):
         row_width = len(line)
@@ -147,10 +148,12 @@ def parse_csv(csv_file_path: str):
         persons = int(persons)
         persons_pl = int(persons_pl)
 
-        tuple_list = date_to_tuple_list.setdefault(date, [])
-        tuple_list.append((kn_nr, bau, start, pause, end, persons, persons_pl))
+        rechnung_info = date_to_rechnung_info.setdefault(date, {})
+        work_intervals = rechnung_info.setdefault((kn_nr, bau), [])
+        work_interval = (start, pause, end, persons, persons_pl)
+        work_intervals.append(work_interval)
 
-    return sorted(date_to_tuple_list.items(), key=lambda item: date_str_to_date(item[0]).strftime('%Y.%m.%d'))
+    return sorted(date_to_rechnung_info.items(), key=lambda item: date_str_to_date(item[0]).strftime('%Y.%m.%d'))
 
 
 def hour_string_to_decimal(value: str):
@@ -164,34 +167,46 @@ def compute_time_difference(start: Decimal, end: Decimal):
     return (end - start) + (end < start) * hours_per_day
 
 
-def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr: int, interactive: bool):
+def compute_values(date_to_rechnung_info: List[Tuple[str, RechnungInfo]], first_rechnung_nr: int, interactive: bool):
     computed_hours_strings = []
     page_nr = 0
 
-    nr_of_pages = sum(map(lambda x: len(x[1]), date_list))
-    for i, (date, rechnung_infos) in enumerate(date_list):
+    nr_of_pages = sum(map(lambda x: len(x[1]), date_to_rechnung_info))
+    for i, (date, rechnung_infos) in enumerate(date_to_rechnung_info):  # all rechnungs
         rechnung_nr = first_rechnung_nr + i
         print("\n" * 3 + f"### RECHNUNG NR: {rechnung_nr} {date} ###\n")
-        for j, (kn_nr, bau, interval_start, pause, interval_end, persons, persons_pl) in enumerate(rechnung_infos):
-            if not (persons >= persons_pl >= 0):
-                sys.stderr.write(
-                    f"Condition persons >= persons_pl >= 0 is not respected: {persons} >= {persons_pl} >= 0\n")
-                exit(1)
+        for j, ((kn_nr, bau), work_intervals) in enumerate(rechnung_infos.items()):  # all work sessions in a rechnung
+            text_to_copy = ''
+            page_details = f"date={date} kn_nr={kn_nr} bau={bau}: "
+            work_session_total_stunden = 0
+            work_session_total_stunden_pl = 0
 
-            interval_start_decimal = hour_string_to_decimal(interval_start)
-            interval_end_decimal = hour_string_to_decimal(interval_end)
-            stunden = compute_time_difference(interval_start_decimal, interval_end_decimal) - Decimal(str(pause))
-            stunden = max(stunden, Decimal(str('4')))
-            total_stunden = stunden * Decimal(str(persons))
-            total_stunden_pl = stunden * Decimal(str(persons_pl))
-            page_nr += 1
+            for k, (interval_start, pause, interval_end, persons, persons_pl) in enumerate(
+                    work_intervals):  # all intervals in a work session
+                if not (persons >= persons_pl >= 0):
+                    sys.stderr.write(
+                        f"Condition persons >= persons_pl >= 0 is not respected: {persons} >= {persons_pl} >= 0\n")
+                    exit(1)
 
-            text_to_copy = f"{stunden} ST x {persons} P = {total_stunden} ST" + '\n'
-            text_to_copy += f"PL x {persons_pl}" + '\n'
-            text_to_copy += '\n'
+                interval_start_decimal = hour_string_to_decimal(interval_start)
+                interval_end_decimal = hour_string_to_decimal(interval_end)
+                stunden = compute_time_difference(interval_start_decimal, interval_end_decimal) - Decimal(str(pause))
+                stunden = max(stunden, Decimal(str('4')))
+                total_stunden = stunden * Decimal(str(persons))
+                total_stunden_pl = stunden * Decimal(str(persons_pl))
+
+                work_session_total_stunden += total_stunden
+                work_session_total_stunden_pl += total_stunden_pl
+
+                text_to_copy += f"{stunden} ST x {persons} P = {total_stunden} ST" + '\n'
+                text_to_copy += f"PL x {persons_pl}" + '\n'
+                text_to_copy += '\n'
+
+                interval_details = f" (start={interval_start_decimal},pause={pause},end={interval_end_decimal})"
+                page_details += interval_details
             text_to_copy += f"RECHNUNG {rechnung_nr}"
 
-            page_details = f"date: {date} kn_nr: {kn_nr} bau: {bau} start: {interval_start_decimal} pause: {pause} end: {interval_end_decimal}"
+            page_nr += 1
             print(" " * 3 + f" PAGE {page_nr:02}/{nr_of_pages:00}: {page_details}\n")
             print(text_to_copy)
             print()
@@ -201,9 +216,12 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
                     break
             print("\n" * 3)
 
-            total_stunden_str = int(total_stunden) if total_stunden % 1 == 0 else total_stunden
-            total_stunden_pl_str = int(total_stunden_pl) if total_stunden_pl % 1 == 0 else total_stunden_pl
-            computed_hours_strings.append(f"{date},{kn_nr},{bau},{total_stunden_str},{total_stunden_pl_str}")
+            int_no_decimals = lambda x: int(x) if x % 1 == 0 else x
+
+            total_stunden_str = int_no_decimals(work_session_total_stunden)
+            total_stunden_pl_str = int_no_decimals(work_session_total_stunden_pl)
+            computed_hours_string = f"{date},{kn_nr},{bau},{total_stunden_str},{total_stunden_pl_str}"
+            computed_hours_strings.append(computed_hours_string)
     computed_hours_strings.append("# date,kn_nr,bau,hours,hours_pl")
     computed_hours_strings.append("# example: 09.05.2025,2503052,ab ,16,4")
 
@@ -211,7 +229,7 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
     print(computed_hours_strings_concatenated)  # to compare replace in stunden.csv "[0-9]{7},[a-zA-Z ]+," with ""
     print()
 
-    last_rechnung_nr = first_rechnung_nr + len(date_list) - 1
+    last_rechnung_nr = first_rechnung_nr + len(date_to_rechnung_info) - 1
     stunden_file_stem = f'rechungen_{first_rechnung_nr:03}-bis-{last_rechnung_nr:03}_stunden'
     stunden_file = f'{stunden_file_stem}.pdf'
     print()
@@ -243,8 +261,8 @@ def main():
     # TODO: move to rechnung_from_durations_csv.py
     # TODO: [AFTER MOVING to rechnung_from_durations_csv.py] use the args parser: <mode> <csv file> [<first rechnung nr>] [<price_per_stunden>]
     csv_file_path, first_rechnung_nr, interactive = get_input_args()
-    date_list = parse_csv(csv_file_path)
-    compute_values(date_list, first_rechnung_nr, interactive)
+    date_to_rechnung_info = parse_csv(csv_file_path)
+    compute_values(date_to_rechnung_info, first_rechnung_nr, interactive)
 
 
 if __name__ == "__main__":
