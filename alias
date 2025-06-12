@@ -124,7 +124,7 @@ alias generate_viewform_links_daily='/mnt/e/git/ac-all/CurlPython2/generate_view
 alias generate_viewform_links_old="/mnt/e/git/ac-all/CurlPython2/generate_viewform_links_old.py"
 alias complete_forms="/mnt/e/Scratch/CurlPython2/complete_forms.py"
 alias forticonnect="title forti && fortivpnc; fortivpns"
-alias remminac="remmina -c /home/kamui/.local/share/remmina/group_rdp_artsoft-172_192-168-1-182.remmina"
+alias remminac="remmina -c /home/kamui/.local/share/remmina/$REMMINA_FILE"
 alias accz="acc 0" # artsoft consult connect wait zero seconds
 
 alias systemctl="_ systemctl"
