@@ -253,28 +253,34 @@ function lenostubeYouTubePlaylistLengthCalculator_SortDescending() {
 }
 
 (function removeFromWatchLater() {
+    const timeout = 300;
     const moreButton = document.querySelector("#button-shape > button");
     if (!moreButton) {
         console.log("More button not found");
     }
     moreButton.click();
 
-    setTimeout(() => {}, 5000);
-    const saveButton = Array.from(document.querySelectorAll("yt-formatted-string"))
-        .find(el => el.textContent.trim() === "Save");
-    if (!saveButton) {
-        console.log("Save button not found");
-    }
-    saveButton.click();
+    function clickWatchLaterLabel() {
+        const checkboxLabel = document.getElementById('checkbox-label');
+        if (!checkboxLabel) {
+            console.log("Checkbox label not found");
+        }
 
-    setTimeout(() => {}, 5000);
-    const checkboxLabel = document.getElementById('checkbox-label');
-    if (!checkboxLabel) {
-        console.log("Checkbox label not found");
+        const name = checkboxLabel.children[0].textContent;
+        if (name === "Watch later") {
+            alert('Found watch later button');
+        }
     }
 
-    const name = checkboxLabel.children[0].textContent;
-    if (name === "Watch later") {
-        alert('Found watch later button');
+    function clickSaveButton() {
+        const saveButton = Array.from(document.querySelectorAll("yt-formatted-string"))
+            .find(el => el.textContent.trim() === "Save");
+        if (!saveButton) {
+            console.log("Save button not found");
+        }
+        saveButton.click();
+        setTimeout(clickWatchLaterLabel, timeout);
     }
+
+    setTimeout(clickSaveButton, timeout);
 })()
