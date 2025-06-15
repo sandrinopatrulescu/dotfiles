@@ -11,11 +11,16 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 
 
+SEPARATOR = ','
+CSV_INDEX_URL = 0
+CSV_INDEX_TITLE = 1
+
+
 def read_file(videos_file_path):
     lines = open(videos_file_path, 'r').read().splitlines()
     if len(lines) > 0 and lines[0].startswith('videoId'):
         lines.pop(0)
-    return list(map(lambda line: line.split(','), lines))
+    return list(map(lambda line: line.split(SEPARATOR), lines))
 
 
 def get_youtube():
@@ -112,7 +117,10 @@ def main(playlist_id, videos_file_path):
     if input(f'Type "{ok_word}" to continue: ') != ok_word:
         sys.exit(1)
 
-    for i, [video_id_or_url, title, *_] in enumerate(video_list):
+    for i, line in enumerate(video_list):
+        video_id_or_url = line[CSV_INDEX_URL]
+        title = line[CSV_INDEX_TITLE]
+
         video_id = video_id_or_url.split('=')[-1]
         timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         print_and_log(f'[{timestamp}] {i + 1}/{len(video_list)} {video_id} {title}', end=' ')
