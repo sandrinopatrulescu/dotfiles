@@ -253,7 +253,7 @@ function lenostubeYouTubePlaylistLengthCalculator_SortDescending() {
 }
 
 (function removeFromWatchLater() {
-    const timeout = 300;
+    const timeout = 900;
     const moreButton = document.querySelector("#button-shape > button");
     if (!moreButton) {
         console.log("More button not found");
@@ -268,7 +268,7 @@ function lenostubeYouTubePlaylistLengthCalculator_SortDescending() {
 
         const name = checkboxLabel.children[0].textContent;
         if (name === "Watch later") {
-            alert('Found watch later button');
+            checkboxLabel.click();
         }
     }
 

@@ -101,6 +101,10 @@ __prompt_command() {
     local exitCode="$?"                # This needs to be first
     local setXStatus
 
+    # save the old status of xtrace and then disable it
+    setXStatus="$(shopt -po xtrace)"
+    shopt -uo xtrace
+
     local psClear
     local Red
     local Yellow
@@ -111,10 +115,6 @@ __prompt_command() {
     local branchName
     local latestCommitHashAbbreviated
     local exitCodeInPrompt
-
-    # save the old status of xtrace and then disable it
-    setXStatus="$(shopt -po xtrace)"
-    shopt -uo xtrace
 
     # declare ANSI escape codes for formatting
     psClear='\[\e[0m\]'
