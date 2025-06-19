@@ -25,6 +25,7 @@ echo "timestamp: $timestamp"
 
 unzip -q "$latestTakeoutZip"
 mv "Takeout" "$latestTakeout"
+rm -r "$gitDir/playlists"
 cp -r "${latestTakeout}/YouTube and YouTube Music/"* "$gitDir"
 
 
