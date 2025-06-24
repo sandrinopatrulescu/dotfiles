@@ -1576,7 +1576,7 @@ extract-youtube-cookies() {
     currentInstall="$(system-install)"
     echo "${YOUTUBE_COOKIES_CHROME_PROFILE_INSTALLATIONS}" | \grep -q "${currentInstall}" || { echo "Cannot run on install ${currentInstall}"; return 1; }
     yt-dlp --cookies-from-browser chrome:"${YOUTUBE_COOKIES_CHROME_PROFILE}" --cookies "${YOUTUBE_COOKIES_FILE}" \
-        --skip-download "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+        --skip-download -v --print "%(title)s" "${YOUTUBE_COOKIES_VIDEO_URL}"
     # importing cookies: yt-dlp --cookies "${YOUTUBE_COOKIES_FILE}" <URL>
 }
 
@@ -1743,6 +1743,11 @@ glr() { # computes G.L. r in RON
     echo
     echo "glr_r_diff = xSource - glr_r = ${glr_r_diff}"
     echo "glr_r_split_diff = xSourceSplit - glr_r_split = ${glr_r_split_diff}"
+}
+
+entries-in-2aqrcsv() {
+    lines="$(wc -l < "$YT_TAKEOUT/custom/2 add queue re.csv" )"
+    echo "$((lines - 1))"
 }
 # }}}
 
