@@ -34,30 +34,10 @@ def rotate_monitor(monitor, rotation):
 
 def main():
     parser = argparse.ArgumentParser(description="Rotate a monitor using xrandr.")
-    parser.add_argument("-m", "--monitor", help="Monitor name (e.g., HDMI-1, eDP-1)")
-    parser.add_argument("-r", "--rotation", help=f"Rotation mode: {VALID_ROTATIONS}")
+    parser.add_argument("monitor", help="Monitor name (e.g., HDMI-1, eDP-1)", choices=get_connected_monitors())
+    parser.add_argument("rotation", help=f"Rotation mode: {VALID_ROTATIONS}", choices=VALID_ROTATIONS)
 
     args = parser.parse_args()
-    monitors = get_connected_monitors()
-
-    if not args.monitor or not args.rotation:
-        print("Usage: rotate_monitor.py -m <monitor> -r <rotation>")
-        print("\nAvailable monitors:")
-        for m in monitors:
-            print(f"  - {m}")
-        print(f"\nValid rotation options: {VALID_ROTATIONS}")
-        sys.exit(1)
-
-    if args.monitor not in monitors:
-        print(f"❌ Monitor '{args.monitor}' not found.")
-        print("Available monitors:")
-        for m in monitors:
-            print(f"  - {m}")
-        sys.exit(1)
-
-    if args.rotation not in VALID_ROTATIONS:
-        print(f"❌ Invalid rotation '{args.rotation}'. Valid options are: {', '.join(VALID_ROTATIONS)}")
-        sys.exit(1)
 
     rotate_monitor(args.monitor, args.rotation)
 
