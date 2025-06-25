@@ -35,7 +35,7 @@ def rotate_monitor(monitor, rotation):
 def main():
     parser = argparse.ArgumentParser(description="Rotate a monitor using xrandr.")
     parser.add_argument("-m", "--monitor", help="Monitor name (e.g., HDMI-1, eDP-1)")
-    parser.add_argument("-r", "--rotation", help="Rotation mode: normal, left, right, or inverted")
+    parser.add_argument("-r", "--rotation", help=f"Rotation mode: {VALID_ROTATIONS}")
 
     args = parser.parse_args()
     monitors = get_connected_monitors()
@@ -45,7 +45,7 @@ def main():
         print("\nAvailable monitors:")
         for m in monitors:
             print(f"  - {m}")
-        print("\nValid rotation options: normal, left, right, inverted")
+        print(f"\nValid rotation options: {VALID_ROTATIONS}")
         sys.exit(1)
 
     if args.monitor not in monitors:
