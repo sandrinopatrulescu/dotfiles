@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
 import argparse
+import re
 import subprocess
 import sys
-import re
 
 VALID_ROTATIONS = ["normal", "left", "right", "inverted"]
+
 
 def get_connected_monitors():
     try:
@@ -21,6 +22,7 @@ def get_connected_monitors():
             monitors.append(match.group(1))
     return monitors
 
+
 def rotate_monitor(monitor, rotation):
     try:
         subprocess.run(['xrandr', '--output', monitor, '--rotate', rotation], check=True)
@@ -28,6 +30,7 @@ def rotate_monitor(monitor, rotation):
     except subprocess.CalledProcessError:
         print(f"❌ Failed to rotate {monitor} to {rotation}")
         sys.exit(1)
+
 
 def main():
     parser = argparse.ArgumentParser(description="Rotate a monitor using xrandr.")
@@ -57,6 +60,7 @@ def main():
         sys.exit(1)
 
     rotate_monitor(args.monitor, args.rotation)
+
 
 if __name__ == "__main__":
     main()
