@@ -1,6 +1,14 @@
+#!/usr/bin/env python3
+import argparse
+import pydoc
 from decimal import Decimal
 from enum import Enum
 from typing import Any, Dict
+
+
+def handle_list(_):
+    pydoc.pager('\n'.join('Hello World %d!' % x for x in range(200)))  # TODO implement using texttable
+    print("Not implemented")
 
 
 class TextInputFields(str, Enum):
@@ -72,7 +80,7 @@ def get_invoice_data_from_email(email_id: str) -> Invoice:
     pass  # TODO
 
 
-def create_draft(email_id: str):
+def handle_add(email_id: str):
     # TODO:
     #   get_invoice_data_from_email
     #       get email by id
@@ -84,10 +92,21 @@ def create_draft(email_id: str):
 
 
 def main():
-    # TODO: 2 modes
-    #  1. showing of the latest emails: id, date, time, sender, text (with \n), attachment names in curly braces -> use texttable
-    #  2. input for creating draft: id of the email
-    pass
+    descr = "Program to list received rechnung emails or to create rechnung email draft based on one of those emails"
+    parser = argparse.ArgumentParser(description=descr)
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    # list command
+    list_parser = subparsers.add_parser("list", help="List the emails")
+    list_parser.set_defaults(func=handle_list)
+
+    # add command
+    add_parser = subparsers.add_parser("add", help="Create rechnung email draft based on an email_id")
+    add_parser.add_argument("email_id", help="Email ID for the input rechnung data")
+    add_parser.set_defaults(func=lambda handler_args: handle_add(handler_args.email_id))
+
+    args = parser.parse_args()
+    args.func(args)
 
 
 if __name__ == "__main__":
