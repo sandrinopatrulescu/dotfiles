@@ -1,9 +1,22 @@
 #!/usr/bin/env python3
 import argparse
+import os
 import pydoc
+import tempfile
 from decimal import Decimal
 from enum import Enum
 from typing import Any, Dict
+
+import requests
+from dotenv import load_dotenv
+
+
+def load_env():
+    env_file = os.environ.get("ALEX_RECHNUNG_ENV_FILE")
+    load_dotenv(env_file)
+
+
+load_env()
 
 
 def handle_list(_):
@@ -89,6 +102,22 @@ def handle_add(email_id: str):
     #   docx and pdf generation
     #   create draft
     pass
+    print(get_clients_file())
+
+
+def get_clients_file():
+    url = os.environ.get("CLIENTS_SHEET_URL")
+    response = requests.get(url)
+
+    if not response.ok:
+        print(response.text)
+        raise Exception(response.status_code)
+
+    clients_file = os.path.join(tempfile.gettempdir(), "clients.csv")
+    with open(clients_file, "wb") as f:
+        f.write(response.content)
+
+    return clients_file
 
 
 def main():
