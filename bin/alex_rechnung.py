@@ -1,27 +1,83 @@
 #!/usr/bin/env python3
 import argparse
+import email
+import imaplib
 import os
 import pydoc
 import tempfile
 from decimal import Decimal
+from email.header import decode_header
+from email.utils import parseaddr
+from email.utils import parsedate_to_datetime
 from enum import Enum
 from typing import Any, Dict
 
 import requests
 from dotenv import load_dotenv
+from texttable import Texttable
 
 
 def load_env():
-    env_file = os.environ.get("ALEX_RECHNUNG_ENV_FILE")
+    env_file = os.path.expandvars(os.environ.get("ALEX_RECHNUNG_ENV_FILE"))
     load_dotenv(env_file)
 
 
-load_env()
+def get_imap_connection():
+    email_address = os.getenv("INPUT_EMAIL_ADDRESS")
+    app_password = os.getenv("INPUT_EMAIL_APP_PASSWORD")
+    imap_server = os.getenv("INPUT_EMAIL_IMAP_SERVER")
+
+    mail = imaplib.IMAP4_SSL(imap_server)
+    mail.login(email_address, app_password)
+    mail.select("rechnungs", readonly=True)
+
+    return mail
 
 
 def handle_list(_):
-    pydoc.pager('\n'.join('Hello World %d!' % x for x in range(200)))  # TODO implement using texttable
-    print("Not implemented")
+    mail = get_imap_connection()
+    status, messages = mail.search(None, "ALL")
+    email_ids = messages[0].split()
+
+    table = Texttable(max_width=200)
+    table.header(["ID", "Date", "From", "Subject", "Body", "Attachments"])
+
+    emails_shown = 5
+    for email_id in list(reversed(email_ids))[:emails_shown]:
+        print(email_id, end=' ')
+        status, msg_data = mail.fetch(email_id, "(RFC822)")
+        raw_email = msg_data[0][1]
+        msg = email.message_from_bytes(raw_email)
+
+        subject, encoding = decode_header(msg["Subject"])[0]
+        if isinstance(subject, bytes):
+            subject = subject.decode(encoding or "utf-8")
+
+        from_email_address = parseaddr(msg["From"])[0]
+        dt_utc = parsedate_to_datetime(msg["Date"])
+        local_dt = dt_utc.astimezone()
+
+        if msg.is_multipart():
+            for part in msg.walk():
+                if part.get_content_type() == "text/plain":
+                    body = part.get_payload(decode=True).decode()
+                    break
+        else:
+            body = msg.get_payload(decode=True).decode()
+
+        attachments = []
+        for part in msg.walk():
+            # Skip if not an attachment
+            if part.get_content_disposition() == "attachment":
+                filename = part.get_filename()
+                if filename:
+                    attachments.append(filename)
+
+        row = [email_id, str(local_dt), from_email_address, subject, body, ';'.join(attachments)]
+        table.add_row(row)
+
+    print()
+    pydoc.pager(table.draw())
 
 
 class TextInputFields(str, Enum):
@@ -35,13 +91,13 @@ class TextInputFields(str, Enum):
 
 class Client:
     def __init__(self, identifier: str, vat: Decimal, address_name: str, address_street: str, address_city: str,
-                 email: str):
+                 email_address: str):
         self.identifier = identifier
         self.vat = vat
         self.address_name = address_name
         self.address_street = address_street
         self.address_city = address_city
-        self.email = email
+        self.email = email_address
 
 
 class Invoice:
@@ -121,6 +177,8 @@ def get_clients_file():
 
 
 def main():
+    load_env()
+
     descr = "Program to list received rechnung emails or to create rechnung email draft based on one of those emails"
     parser = argparse.ArgumentParser(description=descr)
     subparsers = parser.add_subparsers(dest="command", required=True)
