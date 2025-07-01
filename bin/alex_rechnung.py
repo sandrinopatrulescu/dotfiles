@@ -47,6 +47,23 @@ def get_email_by_id(mail, email_id: str):
         raise Exception(msg_data)
 
 
+def extract_email_body(msg):
+    if msg.is_multipart():
+        for part in msg.walk():
+            if part.get_content_type() == "text/plain" and not part.get("Content-Disposition"):
+                charset = part.get_content_charset() or part.get_charset() or "utf-8"
+                try:
+                    body = part.get_payload(decode=True).decode(charset, errors="replace")
+                except (LookupError, UnicodeDecodeError):
+                    body = part.get_payload(decode=True).decode("utf-8", errors="replace")
+                break
+    else:
+        charset = msg.get_content_charset() or msg.get_charset() or "utf-8"
+        body = msg.get_payload(decode=True).decode(charset, errors="replace")
+
+    return body
+
+
 def handle_list(emails_requested: int):
     mail = get_imap_connection()
     status, messages = mail.search(None, "ALL")
@@ -73,13 +90,7 @@ def handle_list(emails_requested: int):
         dt_utc = parsedate_to_datetime(msg["Date"])
         local_dt = dt_utc.astimezone()
 
-        if msg.is_multipart():
-            for part in msg.walk():
-                if part.get_content_type() == "text/plain":
-                    body = part.get_payload(decode=True).decode()
-                    break
-        else:
-            body = msg.get_payload(decode=True).decode()
+        body = extract_email_body(msg)
 
         attachments = []
         for part in msg.walk():
@@ -89,9 +100,10 @@ def handle_list(emails_requested: int):
                 if filename:
                     attachments.append(filename)
 
-        row = [email_id, str(local_dt), from_email_address, subject, body, ';'.join(attachments)]
+        row = [email_id, local_dt, from_email_address, subject, body, attachments]
         table.add_row(row)
 
+    mail.close()
     pydoc.pager(table.draw())
 
 
