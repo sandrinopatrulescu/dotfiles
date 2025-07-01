@@ -16,6 +16,8 @@ import requests
 from dotenv import load_dotenv
 from texttable import Texttable
 
+DEFAULT_LIST_SIZE = 5
+
 
 def load_env():
     env_file = os.path.expandvars(os.environ.get("ALEX_RECHNUNG_ENV_FILE"))
@@ -34,17 +36,22 @@ def get_imap_connection():
     return mail
 
 
-def handle_list(_):
+def handle_list(emails_requested: int):
     mail = get_imap_connection()
     status, messages = mail.search(None, "ALL")
     email_ids = messages[0].split()
 
+    emails_count = len(email_ids)
+    emails_available = min(emails_requested, emails_count)
+    emails_available_ids = list(reversed(email_ids))[:emails_available]
+    print("emails found: ", emails_count)
+    print(f"emails available: {emails_available} ids: {emails_available_ids}")
+
     table = Texttable(max_width=200)
     table.header(["ID", "Date", "From", "Subject", "Body", "Attachments"])
 
-    emails_shown = 5
-    for email_id in list(reversed(email_ids))[:emails_shown]:
-        print(email_id, end=' ')
+    for email_index, email_id in enumerate(emails_available_ids):
+        print(f"Obtaining email {email_index + 1}/{emails_available} with id {email_id}...")
         status, msg_data = mail.fetch(email_id, "(RFC822)")
         raw_email = msg_data[0][1]
         msg = email.message_from_bytes(raw_email)
@@ -76,7 +83,6 @@ def handle_list(_):
         row = [email_id, str(local_dt), from_email_address, subject, body, ';'.join(attachments)]
         table.add_row(row)
 
-    print()
     pydoc.pager(table.draw())
 
 
@@ -185,7 +191,14 @@ def main():
 
     # list command
     list_parser = subparsers.add_parser("list", help="List the emails")
+    list_parser.add_argument(
+        "-n", "--limit",
+        type=int,
+        default=DEFAULT_LIST_SIZE,
+        help=f"Number of emails to list (default: {DEFAULT_LIST_SIZE})"
+    )
     list_parser.set_defaults(func=handle_list)
+    list_parser.set_defaults(func=lambda handler_args: handle_list(handler_args.limit))
 
     # add command
     add_parser = subparsers.add_parser("add", help="Create rechnung email draft based on an email_id")
