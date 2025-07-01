@@ -64,6 +64,29 @@ def extract_email_body(msg):
     return body
 
 
+def get_email_data(msg):
+    subject, encoding = decode_header(msg["Subject"])[0]
+    if isinstance(subject, bytes):
+        subject = subject.decode(encoding or "utf-8")
+
+    sender = parseaddr(msg["From"])[0]
+
+    dt_utc = parsedate_to_datetime(msg["Date"])
+    local_dt = dt_utc.astimezone()
+
+    body = extract_email_body(msg)
+
+    attachments = []
+    for part in msg.walk():
+        # Skip if not an attachment
+        if part.get_content_disposition() == "attachment":
+            filename = part.get_filename()
+            if filename:
+                attachments.append(filename)
+
+    return local_dt, sender, subject, body, attachments
+
+
 def handle_list(emails_requested: int):
     mail = get_imap_connection()
     status, messages = mail.search(None, "ALL")
@@ -81,26 +104,8 @@ def handle_list(emails_requested: int):
     for email_index, email_id in enumerate(emails_available_ids):
         print(f"Obtaining email {email_index + 1}/{emails_available} with id {email_id}...")
         msg = get_email_by_id(mail, email_id)
-
-        subject, encoding = decode_header(msg["Subject"])[0]
-        if isinstance(subject, bytes):
-            subject = subject.decode(encoding or "utf-8")
-
-        from_email_address = parseaddr(msg["From"])[0]
-        dt_utc = parsedate_to_datetime(msg["Date"])
-        local_dt = dt_utc.astimezone()
-
-        body = extract_email_body(msg)
-
-        attachments = []
-        for part in msg.walk():
-            # Skip if not an attachment
-            if part.get_content_disposition() == "attachment":
-                filename = part.get_filename()
-                if filename:
-                    attachments.append(filename)
-
-        row = [email_id, local_dt, from_email_address, subject, body, attachments]
+        local_dt, sender, subject, body, attachments = get_email_data(msg)
+        row = [email_id, local_dt, sender, subject, body, attachments]
         table.add_row(row)
 
     mail.close()
