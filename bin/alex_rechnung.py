@@ -36,6 +36,17 @@ def get_imap_connection():
     return mail
 
 
+def get_email_by_id(mail, email_id: str):
+    status, msg_data = mail.fetch(email_id, "(RFC822)")
+    if status == "OK":
+        raw_email = msg_data[0][1]
+        msg = email.message_from_bytes(raw_email)
+        return msg
+    else:
+        print(f"Failed to get email by id: {email_id}. Status: {status}")
+        raise Exception(msg_data)
+
+
 def handle_list(emails_requested: int):
     mail = get_imap_connection()
     status, messages = mail.search(None, "ALL")
@@ -52,9 +63,7 @@ def handle_list(emails_requested: int):
 
     for email_index, email_id in enumerate(emails_available_ids):
         print(f"Obtaining email {email_index + 1}/{emails_available} with id {email_id}...")
-        status, msg_data = mail.fetch(email_id, "(RFC822)")
-        raw_email = msg_data[0][1]
-        msg = email.message_from_bytes(raw_email)
+        msg = get_email_by_id(mail, email_id)
 
         subject, encoding = decode_header(msg["Subject"])[0]
         if isinstance(subject, bytes):
