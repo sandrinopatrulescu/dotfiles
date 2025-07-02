@@ -338,7 +338,7 @@ class DocGenerator:
         price_table.columns[DocGenerator.PriceTableColumns.ComputationHourPrice.value].width = Inches(
             0.76) + table_cell_side_padding
         price_table.columns[DocGenerator.PriceTableColumns.ResultValue.value].width = Inches(
-            0.56) + table_cell_side_padding
+            0.59) + table_cell_side_padding
         price_table.columns[DocGenerator.PriceTableColumns.ResultDetails.value].width = Inches(
             0.81) + table_cell_side_padding + Inches(RESULT_DETAILS_LEFT_SIDE_MARGIN_INCHES)
         price_table.columns[DocGenerator.PriceTableColumns.Info.value].width = table_width - sum(
@@ -514,7 +514,7 @@ def swap_strings(text: str, string1: str, string2: str):
 
 
 def format_price(price: float, width: int = 0):
-    unswapped_price = f"{price:{width}.2f}"
+    unswapped_price = f"{price:{width},.2f}"
     return swap_strings(unswapped_price, ",", ".")
 
 
@@ -526,7 +526,7 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
     format_row_string = lambda x, y, z: f"{x:<32}\t{y:>25}\t{z:<25}\n"
     format_computation_column = lambda hours, price: f"{hours:04.2f} St x {price:5.2f} Euro".replace(".",
                                                                                                      DECIMAL_SEPARATOR)
-    format_final_price = lambda price: format_price(price, 7)
+    format_final_price = lambda price: format_price(price, 8)
     format_price_no_justify = lambda price: format_price(price, 0)
     row_width = 83
     row_group_separator = "-" * row_width + "\n"
