@@ -505,6 +505,19 @@ def create_rechnungs_email_draft(subject: str, body: str, files: List[str]):
     create_email_draft(connection_info, message_info)
 
 
+def swap_strings(text: str, string1: str, string2: str):
+    placeholder = "___SWAP_TMP___"
+    text_new_string1_to_placeholder = text.replace(string1, placeholder)
+    text_new_string2_to_string1 = text_new_string1_to_placeholder.replace(string2, string1)
+    text_new_placeholder_to_string2 = text_new_string2_to_string1.replace(placeholder, string2)
+    return text_new_placeholder_to_string2
+
+
+def format_price(price: float, width: int = 0):
+    unswapped_price = f"{price:{width}.2f}"
+    return swap_strings(unswapped_price, ",", ".")
+
+
 def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr: int, price_per_stunden: float,
                    interactive: bool):
     last_rechnung_nr = first_rechnung_nr + len(date_list) - 1
@@ -513,8 +526,8 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
     format_row_string = lambda x, y, z: f"{x:<32}\t{y:>25}\t{z:<25}\n"
     format_computation_column = lambda hours, price: f"{hours:04.2f} St x {price:5.2f} Euro".replace(".",
                                                                                                      DECIMAL_SEPARATOR)
-    format_final_price = lambda price: f"{price:7.2f}".replace(".", DECIMAL_SEPARATOR)
-    format_price_no_justify = lambda price: f"{price:.2f}".replace(".", DECIMAL_SEPARATOR)
+    format_final_price = lambda price: format_price(price, 7)
+    format_price_no_justify = lambda price: format_price(price, 0)
     row_width = 83
     row_group_separator = "-" * row_width + "\n"
 
