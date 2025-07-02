@@ -1749,6 +1749,13 @@ entries-in-2aqrcsv() {
     lines="$(wc -l < "$YT_TAKEOUT/custom/2 add queue re.csv" )"
     echo "$((lines - 1))"
 }
+
+google-takeout-youtube-video-id-occurrences() {
+    local keyword="$1"
+    local file="${2:-$YT_TAKEOUT/history/watch-history.json}"
+
+    jq -r --arg keyword "$keyword" '.[] | select(.titleUrl? | type == "string" and contains($keyword)) | .time' "$file"
+}
 # }}}
 
 
