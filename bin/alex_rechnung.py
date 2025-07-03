@@ -31,7 +31,7 @@ def get_imap_connection():
 
     mail = imaplib.IMAP4_SSL(imap_server)
     mail.login(email_address, app_password)
-    mail.select("rechnungs", readonly=True)
+    mail.select("rechnungen", readonly=True)
 
     return mail
 
@@ -156,7 +156,7 @@ def extract_text_fields(email_body: str) -> Dict[TextInputFields, Any]:
             errors.append(f"Line {line_number} doesn't have space separation: {line}")
             continue
 
-        field_name = tokens[0]
+        field_name = tokens[0].lower()
         field_value = tokens[1]
         field_enum: TextInputFields
         try:
