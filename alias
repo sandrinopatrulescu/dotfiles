@@ -297,6 +297,8 @@ alias minecraft-server='cd $MINECRAFT_SERVER'
 alias yt_playlist_archive_2ndary_chat='CHAT_ID=$TELEGRAM_CHAT_ID_SECONDARY_ACCOUNT yt_playlist_archive'
 
 alias bat="batcat"
+
+alias fdater='date +%d.%m.%Y;' # format date rechnung
 # }}}
 
 
