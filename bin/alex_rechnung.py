@@ -96,7 +96,7 @@ def extract_data_from_part(part, save_files: bool):
     elif content_type == "text/html":
         return 'html', extract_text_from_html_part(part)
     elif content_type == "text/plain":
-        return 'text', []  # TODO handle text
+        return 'text', []
     else:
         filename = part.get_filename()
         if filename is not None:
@@ -119,18 +119,19 @@ def extract_email_body_lines_and_files(msg, save_files: bool):
             data_list.append(data)
 
     html_list = type_to_data_list.get('html', [])
-    text_list = type_to_data_list.get('text', [])
     html_list_size = len(html_list)
-    text_list_size = len(text_list)
     body_lines = []
     if html_list_size == 0:
         print("[WARN] no html data found")
-        if text_list_size == 0:
-            raise Exception("No html nor text data found")
-        elif text_list_size > 0:
-            body_lines = text_list[0]
-            if text_list_size > 1:
-                print("[WARN] text_list_size > 1")
+        raise Exception("Text parsing not implemented")
+        # text_list = type_to_data_list.get('text', [])
+        # text_list_size = len(text_list)
+        # if text_list_size == 0:
+        #     raise Exception("No html nor text data found")
+        # elif text_list_size > 0:
+        #     body_lines = text_list[0]
+        #     if text_list_size > 1:
+        #         print("[WARN] text_list_size > 1")
     elif html_list_size > 0:
         body_lines = html_list[0]
         if html_list_size > 1:
