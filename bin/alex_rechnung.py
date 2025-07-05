@@ -58,7 +58,18 @@ def extract_text_from_html_part(part):
     html = decode_string(html_encoded)
     bs = BeautifulSoup(html, "html.parser")
     string_list = list(bs.strings)
-    return string_list
+
+    cleaned_string_list = []
+    for string in string_list:
+        string_to_add = string
+        if string == "\n":
+            continue
+        elif string.endswith('\xa0'):
+            string_to_add = string_to_add[:-1]
+
+        cleaned_string_list.append(string_to_add)
+
+    return cleaned_string_list
 
 
 def extract_data_from_part(part):
