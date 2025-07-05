@@ -118,14 +118,15 @@ def get_email_data(msg):
     if isinstance(subject, bytes):
         subject = subject.decode(encoding or "utf-8")
 
-    sender = parseaddr(msg["From"])[0]
+    sender_name_and_address = parseaddr(msg["From"])
+    sender_address = sender_name_and_address[1]
 
     dt_utc = parsedate_to_datetime(msg["Date"])
     local_dt = dt_utc.astimezone()
 
     body, files = extract_email_body_lines_and_files(msg)
 
-    return local_dt, sender, subject, body, files
+    return local_dt, sender_address, subject, body, files
 
 
 def get_files_names(msg):
@@ -148,18 +149,26 @@ def handle_list(emails_requested: int):
     emails_available_ids = list(reversed(email_ids))[:emails_available]
     print("emails found: ", emails_count)
     print(f"emails available: {emails_available} ids: {emails_available_ids}")
+    print()
 
     table = Texttable(max_width=200)
     table.header(["ID", "Date", "From", "Subject", "Body", "Attachments"])
 
     for email_index, email_id in enumerate(emails_available_ids):
-        print(f"Obtaining email {email_index + 1}/{emails_available} with id {email_id}...")
-        msg = get_email_by_id(mail, email_id)
-        local_dt, sender, subject, body_lines, files = get_email_data(msg)
-        # TODO extract them from 'files' instead and remove/replace 'get_files_names'
-        files_names = get_files_names(msg)
-        row = [email_id, local_dt, sender, subject, '\n'.join(body_lines), files_names]
-        table.add_row(row)
+        try:
+            print(f"Obtaining email {email_index + 1}/{emails_available} with id {email_id}...", end='', flush=True)
+            msg = get_email_by_id(mail, email_id)
+            local_dt, sender, subject, body_lines, files = get_email_data(msg)
+            # TODO extract them from 'files' instead and remove/replace 'get_files_names'
+            files_names = get_files_names(msg)
+
+            row = [email_id, local_dt, sender, subject, '\n'.join(body_lines), files_names]
+            print(f": {local_dt} | {sender} | {subject} | {body_lines} | {files_names}")
+            table.add_row(row)
+        except Exception as e:
+            print(e)
+        finally:
+            print()
 
     mail.close()
     pydoc.pager(table.draw())
