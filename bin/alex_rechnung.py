@@ -72,7 +72,7 @@ def extract_text_from_html_part(part):
     return cleaned_string_list
 
 
-def extract_data_from_part(part, only_file_names: bool):
+def extract_data_from_part(part, save_files: bool):
     content_type = part.get_content_type()
 
     if content_type in {'multipart/alternative', 'multipart/related', 'multipart/mixed'}:
@@ -84,17 +84,17 @@ def extract_data_from_part(part, only_file_names: bool):
     else:
         filename = part.get_filename()
         if filename is not None:
-            file = filename if only_file_names else None  # TODO handle only_file_names=False
+            file = filename if save_files else None  # TODO handle save_files=False
             return 'file', file
         else:
             raise Exception(f"Unknown content type: {content_type}")
 
 
-def extract_email_body_lines_and_files(msg, only_file_names: bool):
+def extract_email_body_lines_and_files(msg, save_files: bool):
     type_to_data_list = {}
     parts = list(msg.walk()) if msg.is_multipart() else [msg]
     for part_index, part in enumerate(parts):
-        data_type, data = extract_data_from_part(part, only_file_names)
+        data_type, data = extract_data_from_part(part, save_files)
         if data_type != 'none':
             data_list = type_to_data_list.setdefault(data_type, [])
             data_list.append(data)
@@ -122,7 +122,7 @@ def extract_email_body_lines_and_files(msg, only_file_names: bool):
     return body_lines, files
 
 
-def get_email_data(msg, only_file_names: bool):
+def get_email_data(msg, save_files: bool):
     subject, encoding = decode_header(msg["Subject"])[0]
     if isinstance(subject, bytes):
         subject = subject.decode(encoding or "utf-8")
@@ -133,7 +133,7 @@ def get_email_data(msg, only_file_names: bool):
     dt_utc = parsedate_to_datetime(msg["Date"])
     local_dt = dt_utc.astimezone()
 
-    body, files = extract_email_body_lines_and_files(msg, only_file_names)
+    body, files = extract_email_body_lines_and_files(msg, save_files)
 
     return local_dt, sender_address, subject, body, files
 
