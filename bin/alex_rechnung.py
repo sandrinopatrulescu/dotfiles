@@ -72,7 +72,7 @@ def extract_text_from_html_part(part):
     return cleaned_string_list
 
 
-def extract_data_from_part(part):
+def extract_data_from_part(part, only_file_names: bool):
     content_type = part.get_content_type()
 
     if content_type in {'multipart/alternative', 'multipart/related', 'multipart/mixed'}:
@@ -80,23 +80,21 @@ def extract_data_from_part(part):
     elif content_type == "text/html":
         return 'html', extract_text_from_html_part(part)
     elif content_type == "text/plain":
-        pass  # TODO handle text
-        return 'text', []
+        return 'text', []  # TODO handle text
     else:
         filename = part.get_filename()
         if filename is not None:
-            pass  # TODO handle files
-            return 'file', filename
+            file = filename if only_file_names else None  # TODO handle only_file_names=False
+            return 'file', file
         else:
             raise Exception(f"Unknown content type: {content_type}")
 
 
-def extract_email_body_lines_and_files(msg):
-    # TODO: extract all html, text, file, prefer html over text
+def extract_email_body_lines_and_files(msg, only_file_names: bool):
     type_to_data_list = {}
     parts = list(msg.walk()) if msg.is_multipart() else [msg]
     for part_index, part in enumerate(parts):
-        data_type, data = extract_data_from_part(part)
+        data_type, data = extract_data_from_part(part, only_file_names)
         if data_type != 'none':
             data_list = type_to_data_list.setdefault(data_type, [])
             data_list.append(data)
@@ -124,7 +122,7 @@ def extract_email_body_lines_and_files(msg):
     return body_lines, files
 
 
-def get_email_data(msg):
+def get_email_data(msg, only_file_names: bool):
     subject, encoding = decode_header(msg["Subject"])[0]
     if isinstance(subject, bytes):
         subject = subject.decode(encoding or "utf-8")
@@ -135,19 +133,9 @@ def get_email_data(msg):
     dt_utc = parsedate_to_datetime(msg["Date"])
     local_dt = dt_utc.astimezone()
 
-    body, files = extract_email_body_lines_and_files(msg)
+    body, files = extract_email_body_lines_and_files(msg, only_file_names)
 
     return local_dt, sender_address, subject, body, files
-
-
-def get_files_names(msg):
-    files_names = []
-    for part in msg.walk():
-        filename = part.get_filename()
-        if filename:
-            files_names.append(filename)
-
-    return files_names
 
 
 def handle_list(emails_requested: int):
@@ -168,13 +156,13 @@ def handle_list(emails_requested: int):
     for email_index, email_id in enumerate(emails_available_ids):
         try:
             print(f"Obtaining email {email_index + 1}/{emails_available} with id {email_id}...", end='', flush=True)
+
             msg = get_email_by_id(mail, email_id)
-            local_dt, sender, subject, body_lines, files = get_email_data(msg)
-            # TODO extract them from 'files' instead and remove/replace 'get_files_names'
-            files_names = get_files_names(msg)
+            local_dt, sender, subject, body_lines, files_names = get_email_data(msg, True)
+
+            print(f": {local_dt} | {sender} | {subject} | {body_lines} | {files_names}")
 
             row = [email_id, local_dt, sender, subject, '\n'.join(body_lines), files_names]
-            print(f": {local_dt} | {sender} | {subject} | {body_lines} | {files_names}")
             table.add_row(row)
         except Exception as e:
             print(e)
