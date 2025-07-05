@@ -6,6 +6,7 @@ import os
 import pydoc
 import quopri
 import tempfile
+from datetime import datetime
 from decimal import Decimal
 from email.header import decode_header
 from email.utils import parseaddr
@@ -19,6 +20,12 @@ from dotenv import load_dotenv
 from texttable import Texttable
 
 DEFAULT_LIST_SIZE = 5
+
+timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+script_name = os.path.basename(__file__)
+files_directory = os.path.join(tempfile.gettempdir(), script_name, timestamp)
+
+print(f"Using directory: {files_directory}")
 
 
 def load_env():
@@ -72,6 +79,15 @@ def extract_text_from_html_part(part):
     return cleaned_string_list
 
 
+def save_file(name: str, content: Any, directory: str):
+    os.makedirs(directory, exist_ok=True)
+    file_path = os.path.join(directory, name)
+    with open(file_path, "wb") as file:
+        file.write(content)
+
+    return file_path
+
+
 def extract_data_from_part(part, save_files: bool):
     content_type = part.get_content_type()
 
@@ -84,7 +100,10 @@ def extract_data_from_part(part, save_files: bool):
     else:
         filename = part.get_filename()
         if filename is not None:
-            file = filename if save_files else None  # TODO handle save_files=False
+            file = filename
+            if save_files:
+                content = part.get_payload(decode=True)
+                file = save_file(filename, content, files_directory)
             return 'file', file
         else:
             raise Exception(f"Unknown content type: {content_type}")
@@ -158,14 +177,12 @@ def handle_list(emails_requested: int):
             print(f"Obtaining email {email_index + 1}/{emails_available} with id {email_id}...", end='', flush=True)
 
             msg = get_email_by_id(mail, email_id)
-            local_dt, sender, subject, body_lines, files_names = get_email_data(msg, True)
+            local_dt, sender, subject, body_lines, files_names = get_email_data(msg, False)
 
             print(f": {local_dt} | {sender} | {subject} | {body_lines} | {files_names}")
 
             row = [email_id, local_dt, sender, subject, '\n'.join(body_lines), files_names]
             table.add_row(row)
-        except Exception as e:
-            print(e)
         finally:
             print()
 
