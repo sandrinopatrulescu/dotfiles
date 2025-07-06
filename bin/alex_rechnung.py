@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import csv
 import email
 import imaplib
 import os
@@ -202,17 +203,6 @@ class TextInputFields(str, Enum):
     nettobetrag = 'nettobetrag'
 
 
-class Client:
-    def __init__(self, identifier: str, vat: Decimal, address_name: str, address_street: str, address_city: str,
-                 email_address: str):
-        self.identifier = identifier
-        self.vat = vat
-        self.address_name = address_name
-        self.address_street = address_street
-        self.address_city = address_city
-        self.email = email_address
-
-
 class Invoice:
     def __init__(self, invoice_number: str, client_identifier: str, ort: str, leistungsdatum: str, tatigkeit: str,
                  nettobetrag: Decimal, files: list):
@@ -303,6 +293,53 @@ def email_data_to_invoice(text_fields, files_names):
     return invoice
 
 
+class ClientsCsvColumns(str, Enum):
+    identifier = 'identifier'
+    vat = 'vat'
+    address_name = 'address_name'
+    address_street = 'address_street'
+    address_city = 'address_city'
+    email = 'email'
+
+
+class Client:
+    def __init__(self, identifier: str, vat: Decimal, address_name: str, address_street: str, address_city: str,
+                 email_address: str):
+        self.identifier = identifier
+        self.vat = vat
+        self.address_name = address_name
+        self.address_street = address_street
+        self.address_city = address_city
+        self.email = email_address
+
+
+def extract_clients_from_csv(csv_file):
+    identifier_to_client: Dict[str, Client] = dict()
+
+    with open(csv_file, newline='', encoding='utf-8') as f:
+        reader = csv.reader(f)
+
+        column_name_to_index: Dict[ClientsCsvColumns, int] = dict()
+        header_row = next(reader)
+        columns_used = [column.value for column in ClientsCsvColumns]
+        for column_index, cell in enumerate(header_row):
+            if cell in columns_used:
+                column_name_to_index[ClientsCsvColumns(cell)] = column_index
+
+        for row in reader:
+            identifier = row[column_name_to_index[ClientsCsvColumns.identifier]]
+            vat = Decimal(row[column_name_to_index[ClientsCsvColumns.vat]].replace(',', '.'))
+            address_name = row[column_name_to_index[ClientsCsvColumns.address_name]]
+            address_street = row[column_name_to_index[ClientsCsvColumns.address_street]]
+            address_city = row[column_name_to_index[ClientsCsvColumns.address_city]]
+            email_address = row[column_name_to_index[ClientsCsvColumns.email]]
+
+            client = Client(identifier, vat, address_name, address_street, address_city, email_address)
+            identifier_to_client.setdefault(identifier, client)
+
+    return identifier_to_client
+
+
 def get_invoice_data_from_email(email_id: str) -> Invoice:
     imap_client = get_imap_client()
     _, _, _, body_lines, files_names = get_email_data(imap_client, email_id, True)
@@ -314,13 +351,16 @@ def get_invoice_data_from_email(email_id: str) -> Invoice:
 
 def handle_add(email_id: str):
     # TODO:
-    #   get_client(client_identifier: str) -> dynamic reading of the clients sheet
     #   compute vat and Rechnungsbetrag
     #   docx and pdf generation
     #   create draft
     invoice = get_invoice_data_from_email(email_id)
-    print(get_clients_file())
-    print(list(map(lambda x: (x, getattr(invoice, x)), filter(lambda x: not x.startswith("__"), dir(invoice)))))
+    clients_file = get_clients_file()
+    identifier_to_client = extract_clients_from_csv(clients_file)
+    get_own_data = lambda o: list(map(lambda x: (x, getattr(o, x)), filter(lambda x: not x.startswith("__"), dir(o))))
+    print(get_own_data(invoice))
+    print('\n'.join([f'{identifier} -> {get_own_data(client)}' for identifier, client in identifier_to_client.items()]))
+    print()
 
 
 def get_clients_file():
