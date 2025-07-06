@@ -33,16 +33,16 @@ def load_env():
     load_dotenv(env_file)
 
 
-def get_imap_connection():
+def get_imap_client():
     email_address = os.getenv("INPUT_EMAIL_ADDRESS")
     app_password = os.getenv("INPUT_EMAIL_APP_PASSWORD")
     imap_server = os.getenv("INPUT_EMAIL_IMAP_SERVER")
 
-    mail = imaplib.IMAP4_SSL(imap_server)
-    mail.login(email_address, app_password)
-    mail.select("rechnungen", readonly=True)
+    imap_client = imaplib.IMAP4_SSL(imap_server)
+    imap_client.login(email_address, app_password)
+    imap_client.select("rechnungen", readonly=True)
 
-    return mail
+    return imap_client
 
 
 def get_email_by_id(mail, email_id: str):
@@ -159,8 +159,8 @@ def get_email_data(msg, save_files: bool):
 
 
 def handle_list(emails_requested: int):
-    mail = get_imap_connection()
-    status, messages = mail.search(None, "ALL")
+    imap_client = get_imap_client()
+    status, messages = imap_client.search(None, "ALL")
     email_ids = messages[0].split()
 
     emails_count = len(email_ids)
@@ -177,7 +177,7 @@ def handle_list(emails_requested: int):
         try:
             print(f"Obtaining email {email_index + 1}/{emails_available} with id {email_id}...", end='', flush=True)
 
-            msg = get_email_by_id(mail, email_id)
+            msg = get_email_by_id(imap_client, email_id)
             local_dt, sender, subject, body_lines, files_names = get_email_data(msg, False)
 
             print(f": {local_dt} | {sender} | {subject} | {body_lines} | {files_names}")
@@ -187,7 +187,7 @@ def handle_list(emails_requested: int):
         finally:
             print()
 
-    mail.close()
+    imap_client.close()
     pydoc.pager(table.draw())
 
 
