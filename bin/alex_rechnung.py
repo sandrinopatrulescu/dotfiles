@@ -5,6 +5,7 @@ import imaplib
 import os
 import pydoc
 import quopri
+import re
 import tempfile
 from datetime import datetime
 from decimal import Decimal
@@ -257,20 +258,69 @@ def extract_text_fields(email_body: str) -> Dict[TextInputFields, Any]:
     return fields
 
 
+def number_string_to_decimal(value: str):
+    if bool(re.search(r'[^0-9.,]', value)):
+        raise Exception(f"Cannot convert {value} to a decimal. Reason: invalid characters")
+    elif value.isdigit():
+        parsed_value = value
+    else:  # at least 1 separator exist
+        dot_index = value.rfind('.')
+        comma_index = value.rfind(',')
+
+        has_two_separators = -1 not in {dot_index, comma_index}
+        decimal_separator = '.' if dot_index > comma_index else ','
+
+        if has_two_separators and decimal_separator == '.':
+            raise Exception(f"Cannot convert {value} to a decimal. Reason: decimal separator must be ',' (comma)")
+        else:
+            parsed_value = value.replace('.', '').replace(',', '.')
+
+    return Decimal(parsed_value)
+
+
+def test_number_string_to_decimal():
+    assert number_string_to_decimal('0') == Decimal('0')
+    assert number_string_to_decimal('1') == Decimal('1')
+    assert number_string_to_decimal('5') == Decimal('5')
+    assert number_string_to_decimal('5,5') == Decimal('5.5')
+    assert number_string_to_decimal('5,') == Decimal('5')
+    assert number_string_to_decimal('1.066') == Decimal('1066')
+    assert number_string_to_decimal('1066,50') == Decimal('1066.50')
+    assert number_string_to_decimal('1.066,50') == Decimal('1066.50')
+    assert number_string_to_decimal('1.234.567,89') == Decimal('1234567.89')
+
+
+def email_data_to_invoice(text_fields, files_names):
+    invoice_number = text_fields[TextInputFields.invoice_number]
+    client_identifier = text_fields[TextInputFields.client_identifier]
+    ort = text_fields[TextInputFields.ort]
+    leistungsdatum = text_fields[TextInputFields.leistungsdatum]
+    tatigkeit = text_fields[TextInputFields.tatigkeit]
+    nettobetrag = number_string_to_decimal(text_fields[TextInputFields.nettobetrag])
+
+    invoice = Invoice(invoice_number, client_identifier, ort, leistungsdatum, tatigkeit, nettobetrag, files_names)
+
+    return invoice
+
+
 def get_invoice_data_from_email(email_id: str) -> Invoice:
-    pass  # TODO
+    imap_client = get_imap_client()
+    _, _, _, body_lines, files_names = get_email_data(imap_client, email_id, True)
+    text_fields = extract_text_fields("\n".join(body_lines))
+
+    invoice = email_data_to_invoice(text_fields, files_names)
+    return invoice
 
 
 def handle_add(email_id: str):
     # TODO:
-    #   get_invoice_data_from_email
-    #       get email by id
     #   get_client(client_identifier: str) -> dynamic reading of the clients sheet
     #   compute vat and Rechnungsbetrag
     #   docx and pdf generation
     #   create draft
-    pass
+    invoice = get_invoice_data_from_email(email_id)
     print(get_clients_file())
+    print(list(map(lambda x: (x, getattr(invoice, x)), filter(lambda x: not x.startswith("__"), dir(invoice)))))
 
 
 def get_clients_file():
@@ -281,7 +331,7 @@ def get_clients_file():
         print(response.text)
         raise Exception(response.status_code)
 
-    clients_file = os.path.join(tempfile.gettempdir(), "clients.csv")
+    clients_file = os.path.join(files_directory, "clients.csv")
     with open(clients_file, "wb") as f:
         f.write(response.content)
 
@@ -316,4 +366,5 @@ def main():
 
 
 if __name__ == "__main__":
+    test_number_string_to_decimal()
     main()
