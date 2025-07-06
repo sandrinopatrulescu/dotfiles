@@ -45,8 +45,8 @@ def get_imap_client():
     return imap_client
 
 
-def get_email_by_id(mail, email_id: str):
-    status, msg_data = mail.fetch(email_id, "(RFC822)")
+def get_email_by_id(imap_client, email_id: str):
+    status, msg_data = imap_client.fetch(email_id, "(RFC822)")
     if status == "OK":
         raw_email = msg_data[0][1]
         msg = email.message_from_bytes(raw_email)
@@ -142,7 +142,9 @@ def extract_email_body_lines_and_files(msg, save_files: bool):
     return body_lines, files
 
 
-def get_email_data(msg, save_files: bool):
+def get_email_data(imap_client, email_id, save_files: bool):
+    msg = get_email_by_id(imap_client, email_id)
+
     subject, encoding = decode_header(msg["Subject"])[0]
     if isinstance(subject, bytes):
         subject = subject.decode(encoding or "utf-8")
@@ -177,8 +179,7 @@ def handle_list(emails_requested: int):
         try:
             print(f"Obtaining email {email_index + 1}/{emails_available} with id {email_id}...", end='', flush=True)
 
-            msg = get_email_by_id(imap_client, email_id)
-            local_dt, sender, subject, body_lines, files_names = get_email_data(msg, False)
+            local_dt, sender, subject, body_lines, files_names = get_email_data(imap_client, email_id, False)
 
             print(f": {local_dt} | {sender} | {subject} | {body_lines} | {files_names}")
 
