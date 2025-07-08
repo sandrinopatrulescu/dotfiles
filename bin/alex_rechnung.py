@@ -214,6 +214,15 @@ class Invoice:
         self.nettobetrag = nettobetrag
         self.files = files
 
+        # computed later
+        self.mehrwertsteuer = Decimal(0)
+        self.rechnungsbetrag = Decimal(0)
+
+    def compute_vat_and_gross(self, vat: Decimal):
+        self.mehrwertsteuer = vat / Decimal(100) * self.nettobetrag
+        # TODO: handle like-0.005 values
+        self.rechnungsbetrag = self.nettobetrag + self.mehrwertsteuer
+
 
 def extract_text_fields(email_body: str) -> Dict[TextInputFields, Any]:
     fields: Dict[TextInputFields, Any] = {}
@@ -351,12 +360,20 @@ def get_invoice_data_from_email(email_id: str) -> Invoice:
 
 def handle_add(email_id: str):
     # TODO:
-    #   compute vat and Rechnungsbetrag
     #   docx and pdf generation
     #   create draft
     invoice = get_invoice_data_from_email(email_id)
+
+    # region TODO: MAYBE extract into method
     clients_file = get_clients_file()
     identifier_to_client = extract_clients_from_csv(clients_file)
+    if invoice.client_identifier not in identifier_to_client.keys():
+        raise Exception(f"Client {invoice.client_identifier} not found in the list of clients.")
+    client = identifier_to_client[invoice.client_identifier]
+    # endregion
+
+    invoice.compute_vat_and_gross(client.vat)
+
     get_own_data = lambda o: list(map(lambda x: (x, getattr(o, x)), filter(lambda x: not x.startswith("__"), dir(o))))
     print(get_own_data(invoice))
     print('\n'.join([f'{identifier} -> {get_own_data(client)}' for identifier, client in identifier_to_client.items()]))
