@@ -1798,6 +1798,41 @@ compute-age-web() {
     echo "$url"
     nohup xdg-open "$url" &>/dev/null &
 }
+
+compute-age-web2() {
+    local input_date_raw
+
+    local input_date_formatted
+    local url html
+    local html_file
+
+    input_date_raw="$1"
+
+    # Validate input format YYYY-MM-DD
+    if ! [[ "$input_date_raw" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+        echo "❌ Invalid date format. Use: YYYY-MM-DD"
+        return 1
+    fi
+
+    # Validate that it's a real date
+    if ! date -d "$input_date_raw" &>/dev/null; then
+        echo "❌ Invalid date value: $input_date_raw"
+        return 1
+    fi
+
+    input_date_formatted="$(LC_TIME=en_US.UTF-8 date -d "$input_date_raw" +"%Y/%B/%d")"
+
+    # Build URL and fetch HTML
+    url="https://howlongagogo.com/date/${input_date_formatted}"
+    html=$(curl -s "$url")
+
+    html_file="/tmp/${FUNCNAME[0]}_$(fdatei).html"
+    echo "$html" > "$html_file"
+
+    echo "$html_file"
+    echo "$url"
+    nohup xdg-open "$url" &>/dev/null &
+}
 # }}}
 
 
