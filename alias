@@ -299,6 +299,8 @@ alias yt_playlist_archive_2ndary_chat='CHAT_ID=$TELEGRAM_CHAT_ID_SECONDARY_ACCOU
 alias bat="batcat"
 
 alias fdater='date +%d.%m.%Y | tee >(xclip -selection clipboard)' # format date rechnung
+
+alias restart-network="systemctl restart NetworkManager" # found by: <distro> <upstream> restart network
 # }}}
 
 

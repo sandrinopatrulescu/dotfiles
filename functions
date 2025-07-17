@@ -1756,6 +1756,48 @@ google-takeout-youtube-video-id-occurrences() {
 
     jq -r --arg keyword "$keyword" '.[] | select(.titleUrl? | type == "string" and contains($keyword)) | .time' "$file"
 }
+
+compute-age-web() {
+    local birth_date
+
+    local year month day
+    local today
+    local url html
+    local html_file
+
+    birth_date="$1"
+
+    # Validate input format YYYY-MM-DD
+    if ! [[ "$birth_date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+        echo "❌ Invalid date format. Use: YYYY-MM-DD"
+        return 1
+    fi
+
+    # Parse components
+    year="${birth_date:0:4}"
+    month="${birth_date:5:2}"
+    day="${birth_date:8:2}"
+
+    # Validate that it's a real date
+    if ! date -d "$birth_date" &>/dev/null; then
+        echo "❌ Invalid date value: $birth_date"
+        return 1
+    fi
+
+    # Use today's date
+    today=$(date +%m/%d/%Y)
+
+    # Build URL and fetch HTML
+    url="https://www.calculator.net/age-calculator.html?ageat=$today&today=$month/$day/$year&x=Calculate"
+    html=$(curl -s "$url")
+
+    html_file="/tmp/${FUNCNAME[0]}_$(fdatei).html"
+    echo "$html" > "$html_file"
+
+    echo "$html_file"
+    echo "$url"
+    nohup xdg-open "$url" &>/dev/null &
+}
 # }}}
 
 
