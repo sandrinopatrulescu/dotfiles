@@ -1833,6 +1833,64 @@ compute-age-web2() {
     echo "$url"
     nohup xdg-open "$url" &>/dev/null &
 }
+
+ffmpeg_cut() {
+    if [[ $# -ne 3 ]]; then
+        echo "Usage: ${FUNCNAME[0]} <input_file> <start_timestamp> <end_timestamp>"
+        return 1
+    fi
+
+    local input_file
+    local start
+    local end
+
+    local ts_regex
+
+    input_file="$1"
+    start="$2"
+    end="$3"
+
+    ts_regex='^([0-9]{1,2}:)?[0-5]?[0-9]:[0-5][0-9](\.[0-9]+)?$'
+
+    # Check if file exists
+    if [[ ! -f "$input_file" ]]; then
+        echo "Error: File does not exist: $input_file"
+        return 1
+    fi
+
+    # Validate timestamps
+    if [[ ! "$start" =~ $ts_regex ]]; then
+        echo "Error: Invalid start timestamp: $start"
+        return 1
+    fi
+    if [[ ! "$end" =~ $ts_regex ]]; then
+        echo "Error: Invalid end timestamp: $end"
+        return 1
+    fi
+
+    # Replace ":" with "-" in timestamps for filename
+    local start_safe="${start//:/-}"
+    local end_safe="${end//:/-}"
+
+    # Get output path
+    local dir=$(dirname "$input_file")
+    local base=$(basename "$input_file")
+    local stem="${base%.*}"
+    local ext="${base##*.}"
+
+    local output_file="${dir}/${stem}_${start_safe}_to_${end_safe}.${ext}"
+
+    # Print and run the ffmpeg command
+    local cmd="ffmpeg -i \"$input_file\" -ss $start -to $end \"$output_file\""
+    echo "Running: $cmd"
+    eval "$cmd"
+
+    echo "Ran: $cmd"
+    echo "Output saved to: $output_file"
+
+    # Copy output path to clipboard
+    echo -n "$output_file" | xclip -selection clipboard
+}
 # }}}
 
 
