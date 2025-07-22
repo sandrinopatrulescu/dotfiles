@@ -1891,6 +1891,10 @@ ffmpeg_cut() {
     # Copy output path to clipboard
     echo -n "$output_file" | xclip -selection clipboard
 }
+
+bookmarks_backup_dir() {
+    echo "${BACKUP_BOOKMARKS_DIR}/bookmarks$(fdatei).html"
+}
 # }}}
 
 
