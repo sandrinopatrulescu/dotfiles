@@ -1895,6 +1895,41 @@ ffmpeg_cut() {
 bookmarks_backup_dir() {
     echo "${BACKUP_BOOKMARKS_DIR}/bookmarks$(fdatei).html"
 }
+
+
+extract-youtube-playlist-videos-data() {
+
+    local playlist_id
+    local timestamp
+    local baseStem
+
+    [ $# -ne 1 ] && {
+        echo "usage: ${FUNCNAME[0]} <playlist_id>"; return 1
+    }
+
+    playlist_id="$1"
+
+    timestamp=$(fdatei)
+    baseStem="${playlist_id}_${timestamp}"
+
+
+    yt-dlp --flat-playlist -J "https://www.youtube.com/playlist?list=${playlist_id}" > "${baseStem}_1_raw.json"
+
+    jq < "${baseStem}_1_raw.json" > "${baseStem}_2_formatted.json"
+
+    jq -r '
+        .entries[] |
+        .id as $id |
+        "https://www.youtube.com/watch?v=\($id)"
+      ' < "${baseStem}_2_formatted.json" > "${baseStem}_3_urls.csv"
+    echo "id,title,webpage_url,upload_date,timestamp,duration,duration_string" >> "${baseStem}_4_final.csv"
+
+    cat "${baseStem}_3_urls.csv"  | while read -r url; do \
+            yt-dlp  --print "%(id)s,%(title)s,%(webpage_url)s,%(upload_date)s,%(timestamp>%Y-%m-%d_%H-%M-%S)s,%(duration)s,%(duration_string)s" "${url}"
+        done >> "${baseStem}_4_final.csv"
+
+    echo "Created $(realpath "${baseStem}_4_final.csv")"
+}
 # }}}
 
 
