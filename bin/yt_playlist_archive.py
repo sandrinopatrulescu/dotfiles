@@ -13,7 +13,7 @@ import tempfile
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Callable
+from typing import Optional, Callable, Any, Dict
 
 import psutil
 import requests
@@ -23,6 +23,25 @@ from requests.adapters import HTTPAdapter
 from telegram.request import HTTPXRequest
 from urllib3 import Retry
 from yt_dlp import YoutubeDL
+
+
+# region shared state
+class SharedState:
+    def __init__(self):
+        self.__shared_state_lock = asyncio.Lock()
+        self.__simulation: Optional[bool] = None
+
+    async def get_simulation(self):
+        async with self.__shared_state_lock:
+            return self.__simulation
+
+    async def set_simulation(self, simulation: bool):
+        async with self.__shared_state_lock:
+            self.__simulation = simulation
+
+
+shared_state = SharedState()
+# endregion
 
 # region force single instance of the program
 # source: https://stackoverflow.com/questions/63525619/how-can-i-disable-multiple-instances-of-a-python-script
@@ -229,7 +248,7 @@ async def download_video_and_send_to_telegram(position: int, title: str, url: st
     # download using yt-dlp
 
     # https://github.com/yt-dlp/yt-dlp/#embedding-yt-dlp
-    ydl_options = {
+    ydl_options: Dict[str, Any] = {
         'paths': {'home': videos_dir},
         'no_warnings': True,
         'retries': 50,
@@ -325,7 +344,9 @@ async def process_video(mode: str, position: int, title: str, url: str):
         failed_ones.append((position, title, url, "video is deleted/private"))
         return
 
-    if mode == 'telegram':
+    if mode == 'simulation':
+        log.info(f"Simulating calling process video w/ args: {(mode, position, title, url)}")
+    elif mode == 'telegram':
         await download_video_and_send_to_telegram(position, title, url)
     elif mode == 'wayback-machine':
         await save_to_wayback_machine(position, title, url)
@@ -337,10 +358,14 @@ async def process_video(mode: str, position: int, title: str, url: str):
 
 
 async def send_telegram_message(text: str):
+    simulation = await shared_state.get_simulation()
     retries = 50
     for _ in range(retries):
         try:
-            await telegram_bot.send_message(TELEGRAM_CHAT_ID, text)
+            if simulation:
+                log.info(f"Simulating sending telegram message w/ args {(TELEGRAM_CHAT_ID, text)}")
+            else:
+                await telegram_bot.send_message(TELEGRAM_CHAT_ID, text)
             return
         except Exception as e:
             if _ == retries - 1:
@@ -357,6 +382,8 @@ SPLIT_TOKEN = COLUMN_DELIMITER + VIDEO_URL_BASE
 
 async def read_and_process_csv(mode: str, playlist_csv_file_path: str, start_position: Optional[int],
                                end_position: Optional[int]):
+    simulation = mode == "simulation"
+    await shared_state.set_simulation(simulation)
     with open(playlist_csv_file_path, mode="r", newline="", encoding="utf-8") as file:
 
         sent_file_name = False
@@ -395,7 +422,7 @@ async def main():
     parser = argparse.ArgumentParser(description="Process a playlist reference with optional start and end positions.")
 
     # Required arguments
-    mode_list = ['telegram', 'wayback-machine', 'both']
+    mode_list = ['simulation', 'telegram', 'wayback-machine', 'both']
     parser.add_argument(
         'mode',
         type=str,
