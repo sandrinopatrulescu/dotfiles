@@ -133,7 +133,7 @@ append-path /e/LinuxPrograms/phantomjs-2.1.1-linux-x86_64/bin/
 append-path "/opt/mssql-tools18/bin"
 append-path "$ANDROID_SDK/emulator"
 append-path "$ANDROID_SDK/tools"
-append-path "${HOME}/.nvm/versions/node/v20.6.1/bin/node"
+append-path "${HOME}/.nvm/versions/node/v22.17.1/bin"
 append-path ~/.config/composer/vendor/bin
 
 export NVM_DIR="$HOME/.nvm"
