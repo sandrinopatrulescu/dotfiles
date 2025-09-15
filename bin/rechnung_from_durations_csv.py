@@ -13,7 +13,7 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from enum import Enum
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Any
 
 from docx import Document
 from docx.enum.table import WD_TABLE_ALIGNMENT
@@ -64,7 +64,7 @@ def get_input_args():
         sys.stderr.write(message)
         sys.exit(1)
 
-    def get_argument_or_default(index: int, default_if_none: any, default_if_empty_str=None):
+    def get_argument_or_default(index: int, default_if_none: Any, default_if_empty_str=None):
         if index < len(sys.argv):
             value = sys.argv[index]
             if value is None:
@@ -549,9 +549,9 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
             total_stunden_price += kn_price
             total_stunden_pl += stunden_pl
 
-            bau_string = ' / '.join(map(lambda x: x.strip().capitalize() + 'bau', bau.split('+')))
+            bau_string = ' ' + ' / '.join(map(lambda x: x.strip().capitalize() + 'bau', bau.split('+')))
             base_item_name = f'KN NR: {kn_nr}' if len(kn_nr) == 7 and kn_nr.isnumeric() else kn_nr
-            info_column = f"{j + 1}. {base_item_name} {bau_string}"
+            info_column = f"{j + 1}. {base_item_name}{bau_string}"
             computation_column = format_computation_column(stunden, price_per_stunden)
             result_column = f"{format_final_price(kn_price)} Euro netto"
 
