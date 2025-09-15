@@ -154,7 +154,7 @@ alias blre="systemctl restart bluetooth.service" # bluetooth restart
 
 # https://unix.stackexchange.com/questions/267562/show-only-physical-disks-when-using-df-and-mount
 alias df="df -x tmpfs -x efivarfs" # skip tmpfs df https://serverfault.com/questions/1002671/how-to-hide-tempfs-from-the-df-output-on-centos-7-in-ssh
-alias dfh="df -h"
+alias dfh="date; fdatei; df -h"
 
 alias dmesg="sudo dmesg"
 alias cats="pygmentize -g -O linenos=1" # cat syntax (highlight). source: linux cat code with syntax highlighting https://stackoverflow.com/questions/7851134/syntax-highlighting-colorizing-cat
@@ -247,6 +247,7 @@ alias work="cd /mnt/e/work"
 alias worzy="cd /mnt/e/work/1-ac/worzy"
 
 alias yt-dlp-update="pip install yt-dlp -U"
+alias yt-dlp-mp3="yt-dlp -x --audio-format mp3 --audio-quality 0"
 
 alias mkdirp="mkdir -p"
 
@@ -301,6 +302,7 @@ alias bat="batcat"
 alias fdater='date +%d.%m.%Y | tee >(xclip -selection clipboard)' # format date rechnung
 
 alias restart-network="systemctl restart NetworkManager" # found by: <distro> <upstream> restart network
+alias list-installed-programs="ls -l -r --sort=time --time=birth --full-time /var/lib/dpkg/info | less"
 # }}}
 
 

@@ -1931,6 +1931,10 @@ extract-youtube-playlist-videos-data() {
     (head -n 1 "${baseStem}_4_detailed.csv" && tail -n +2 "${baseStem}_4_detailed.csv" | sort -t',' -k5,5) > "${baseStem}_5_sorted.csv"
     echo "Created $(realpath "${baseStem}_5_sorted.csv")"
 }
+
+ping-t() { # ping and show timestamp. source: https://stackoverflow.com/a/49586970/17299754
+    ping "$1" | while read pong; do echo "$(date): $pong"; done; 
+};
 # }}}
 
 
