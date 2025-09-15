@@ -549,7 +549,9 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
             total_stunden_price += kn_price
             total_stunden_pl += stunden_pl
 
-            bau_string = ' ' + ' / '.join(map(lambda x: x.strip().capitalize() + 'bau', bau.split('+')))
+            baus_short_capitalized = map(lambda x: x.strip().capitalize(), bau.split('+'))
+            baus = list(map(lambda z: z + 'bau', filter(lambda y: len(y) > 0, baus_short_capitalized)))
+            bau_string = '' if len(baus) == 0 else  ' ' + ' / '.join(baus)
             base_item_name = f'KN NR: {kn_nr}' if len(kn_nr) == 7 and kn_nr.isnumeric() else kn_nr
             info_column = f"{j + 1}. {base_item_name}{bau_string}"
             computation_column = format_computation_column(stunden, price_per_stunden)
