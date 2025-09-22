@@ -1570,7 +1570,7 @@ system-install() {
     echo "$(hostname)_$(os-birth)"
 }
 
-extract-youtube-cookies() {
+youtube-cookies-extract() {
     local currentInstall
 
     currentInstall="$(system-install)"
@@ -1578,6 +1578,14 @@ extract-youtube-cookies() {
     yt-dlp --cookies-from-browser chrome:"${YOUTUBE_COOKIES_CHROME_PROFILE}" --cookies "${YOUTUBE_COOKIES_FILE}" \
         --skip-download -v --print "%(title)s" "${YOUTUBE_COOKIES_VIDEO_URL}"
     # importing cookies: yt-dlp --cookies "${YOUTUBE_COOKIES_FILE}" <URL>
+}
+
+youtube-cookies-check() {
+    # https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp
+    echo "### Without cookies ###"
+    yt-dlp --cookies --skip-download -v --print "%(title)s" "${YOUTUBE_COOKIES_VIDEO_URL}"
+    echo "### With cookies ###"
+    yt-dlp --cookies "${YOUTUBE_COOKIES_FILE}" --skip-download -v --print "%(title)s" "${YOUTUBE_COOKIES_VIDEO_URL}"
 }
 
 timer() {
