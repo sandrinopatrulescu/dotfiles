@@ -190,8 +190,8 @@ def compute_values(date_to_rechnung_info: List[Tuple[str, RechnungInfo]], first_
 
                 interval_start_decimal = hour_string_to_decimal(interval_start)
                 interval_end_decimal = hour_string_to_decimal(interval_end)
-                stunden = compute_time_difference(interval_start_decimal, interval_end_decimal) - Decimal(str(pause))
-                stunden = max(stunden, Decimal(str('4')))
+                stunden_not_maximized = compute_time_difference(interval_start_decimal, interval_end_decimal) - Decimal(str(pause))
+                stunden = max(stunden_not_maximized, Decimal(str('4')))
                 total_stunden = stunden * Decimal(str(persons))
                 total_stunden_pl = stunden * Decimal(str(persons_pl))
 
