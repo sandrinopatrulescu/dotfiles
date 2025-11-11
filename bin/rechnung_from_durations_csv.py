@@ -334,13 +334,13 @@ class DocGenerator:
         table_cell_side_padding = Inches(TABLE_CELL_SIDE_PADDING_INCHES)
         # base column widths were obtained using "Minimize column width"
         price_table.columns[DocGenerator.PriceTableColumns.ComputationStunden.value].width = Inches(
-            0.70) + table_cell_side_padding
+            0.83785) + table_cell_side_padding
         price_table.columns[DocGenerator.PriceTableColumns.ComputationHourPrice.value].width = Inches(
             0.76) + table_cell_side_padding
         price_table.columns[DocGenerator.PriceTableColumns.ResultValue.value].width = Inches(
-            0.59) + table_cell_side_padding
+            0.67) + table_cell_side_padding
         price_table.columns[DocGenerator.PriceTableColumns.ResultDetails.value].width = Inches(
-            0.81) + table_cell_side_padding + Inches(RESULT_DETAILS_LEFT_SIDE_MARGIN_INCHES)
+            0.80) + table_cell_side_padding + Inches(RESULT_DETAILS_LEFT_SIDE_MARGIN_INCHES)
         price_table.columns[DocGenerator.PriceTableColumns.Info.value].width = table_width - sum(
             map(lambda y: price_table.columns[y.value].width,
                 filter(lambda x: x != DocGenerator.PriceTableColumns.Info, list(DocGenerator.PriceTableColumns))))
