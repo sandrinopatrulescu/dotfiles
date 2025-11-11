@@ -1942,7 +1942,12 @@ extract-youtube-playlist-videos-data() {
 
 ping-t() { # ping and show timestamp. source: https://stackoverflow.com/a/49586970/17299754
     ping "$1" | while read pong; do echo "$(date): $pong"; done; 
-};
+}
+
+adbIdNonEmulator() {
+    adb devices | awk 'NR > 1 && $1 !~ /emulator/ && length($1) > 0 {print $1}'
+}
+
 # }}}
 
 

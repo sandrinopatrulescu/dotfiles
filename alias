@@ -166,7 +166,9 @@ alias umount="sudo umount"
 
 alias earthrise="cd /e/Volunteering/Earthrise"
 alias hermes="cd /e/Volunteering/Hermes"
-alias scrcpy="scrcpy -s L2N4C19712034847"
+alias scrcpypv='scrcpy -s $(adbIdNonEmulator)' # scrcpy physical verbose
+alias scrcpyp='nohup scrcpy -s $(adbIdNonEmulator) >/dev/null 2>&1' # scrcpy physical
+alias scrcpypb='scrcpyp & disown' # scrcpy physical background
 alias realpath="realpath -e" # find path of file
 alias sfind="sudo find"
 alias sfindr="sudo find /"

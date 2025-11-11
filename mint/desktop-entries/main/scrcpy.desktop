@@ -1,8 +1,8 @@
 [Desktop Entry]
 Version=1.1
 Type=Application
-Name=scrcpy
+Name=scrcpy physical
 Comment=
 Icon=
-Exec=scrcpy -s L2N4C19712034847
+Exec=/usr/bin/bash -i -c scrcpyp
 Actions=
