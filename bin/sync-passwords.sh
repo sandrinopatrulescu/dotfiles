@@ -67,6 +67,16 @@ function get_remote_passwords_mtime ()
 
 }
 
+function git-backup () {
+    if ((isDryRun == 0)); then
+        echo "DRY RUN ${FUNCNAME[0]} ${1}"
+    else 
+        git -C "${LOCAL_LOCATION}" add "${DB_FILE_NAME}"
+        git -C "${LOCAL_LOCATION}" commit -m "$(date +%Y-%m-%d_%H-%M-%S.%N) ${1}"
+        git -C "${LOCAL_LOCATION}" push
+    fi
+}
+
 function sync_passwords ()
 {
 
@@ -77,6 +87,7 @@ function sync_passwords ()
 	# In case there is no remote yet
 	if [ $? -ne 0 ]; then
 		printf "No remote passwords database found!\n"
+        git-backup "ANTE-EXPORT"
 		printf "Exporting...\t"
 		passwords_export
 		printf "Done!\n"
@@ -94,6 +105,7 @@ function sync_passwords ()
 
         # Handle local being newer than remote
         if [ "$local_mtime_in_seconds_since_epoch" -gt "$remote_mtime_in_seconds_since_epoch" ]; then
+                git-backup "ANTE-EXPORT"
                 printf "Local passwords file found to be newer than remote!\n"
                 printf "Exporting...\t"
                 if ((isDryRun == 0)); then echo "DRY RUN"; else passwords_export; fi
@@ -102,9 +114,11 @@ function sync_passwords ()
 
         # Handle remote being newer than local
         elif [ "$local_mtime_in_seconds_since_epoch" -lt "$remote_mtime_in_seconds_since_epoch" ]; then
+                git-backup "ANTE-IMPORT"
                 printf "Local passwords file found to be older than remote!\n"
                 printf "Importing...\t"
                 if ((isDryRun == 0)); then echo "DRY RUN"; else passwords_import; fi
+                git-backup "POST-IMPORT"
                 printf "Done!\n"
 		return 0
 
