@@ -1687,9 +1687,10 @@ rechnung-old-wrapper() {
     local outputFile
     local durationsCsvPathTmp
     local interactivity1="--interactive"
+    local interactivity2="--interactive"
 
     [ $# -eq 2 ] || {
-        echo "usage: [SKIP_INTERACTIVITY_1=true] ${FUNCNAME[0]} <path to intervals.csv> <first rechnung nr>";
+        echo "usage: [SKIP_INTERACTIVITY_1=true] [SKIP_INTERACTIVITY_2=true] ${FUNCNAME[0]} <path to intervals.csv> <first rechnung nr>";
         return 1
     }
 
@@ -1697,12 +1698,13 @@ rechnung-old-wrapper() {
     firstRechnungNr="${2}"
 
     if [[ "$SKIP_INTERACTIVITY_1" == "true" ]]; then interactivity1=""; fi
+    if [[ "$SKIP_INTERACTIVITY_2" == "true" ]]; then interactivity2=""; fi
 
     outputFile="${FUNCNAME[0]}_$(fdatei).txt"
     rechnung_intervals_to_durations_csv.py "${intervalsCsvPath}" "${firstRechnungNr}" "${interactivity1}" | tee "${outputFile}"
     durationsCsvPathTmp="$(tail -1 "${outputFile}" | cut -d' ' -f4)"
     cp "${durationsCsvPathTmp}" durations.csv
-    rechnung_from_durations_csv.py durations.csv "${firstRechnungNr}" "" "--interactive" | tee --append "${outputFile}"
+    rechnung_from_durations_csv.py durations.csv "${firstRechnungNr}" "" "${interactivity2}" | tee --append "${outputFile}"
 }
 
 e2r() { # shows the value in RON for 1 EUR (from BNR)
