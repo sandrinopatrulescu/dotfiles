@@ -162,7 +162,7 @@ def hour_string_to_decimal(value: str):
     return Decimal(str(hour)) + (Decimal(str(minutes)) / Decimal(str(minutes_per_hour)))
 
 
-def compute_time_difference(start: Decimal, end: Decimal):
+def compute_time_difference(start: Decimal, end: Decimal) -> Decimal:
     hours_per_day = Decimal('24')
     return (end - start) + (end < start) * hours_per_day
 
@@ -190,8 +190,9 @@ def compute_values(date_to_rechnung_info: List[Tuple[str, RechnungInfo]], first_
 
                 interval_start_decimal = hour_string_to_decimal(interval_start)
                 interval_end_decimal = hour_string_to_decimal(interval_end)
-                stunden_not_maximized = compute_time_difference(interval_start_decimal, interval_end_decimal) - Decimal(str(pause))
-                stunden = max(stunden_not_maximized, Decimal(str('4')))
+                stunden_not_maximized: Decimal = compute_time_difference(interval_start_decimal, interval_end_decimal) - Decimal(str(pause))
+                min_stunden = Decimal(str('4'))
+                stunden = max(stunden_not_maximized, min_stunden)
                 total_stunden = stunden * Decimal(str(persons))
                 total_stunden_pl = stunden * Decimal(str(persons_pl))
 
