@@ -27,6 +27,7 @@ from docx.table import _Row, _Cell, _Column, Table
 
 
 PRICE_PER_STUNDEN = 25.0
+PRICE_PER_STUNDEN_FAHRZEIT = 28.0
 PRICE_PER_STUNDEN_PL = 3.0
 VAT_RATE = 19
 
@@ -545,7 +546,8 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
         price_table_data = []
 
         for j, (kn_nr, bau, stunden, stunden_pl) in enumerate(tuple_list):
-            kn_price = stunden * price_per_stunden
+            current_price_per_stunden = PRICE_PER_STUNDEN_FAHRZEIT if kn_nr == "Fahrzeit" else price_per_stunden
+            kn_price = stunden * current_price_per_stunden
             total_stunden_price += kn_price
             total_stunden_pl += stunden_pl
 
@@ -554,7 +556,7 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
             bau_string = '' if len(baus) == 0 else  ' ' + ' / '.join(baus)
             base_item_name = f'KN NR: {kn_nr}' if len(kn_nr) == 7 and kn_nr.isnumeric() else kn_nr
             info_column = f"{j + 1}. {base_item_name}{bau_string}"
-            computation_column = format_computation_column(stunden, price_per_stunden)
+            computation_column = format_computation_column(stunden, current_price_per_stunden)
             result_column = f"{format_final_price(kn_price)} Euro netto"
 
             result += format_row_string(info_column, computation_column, result_column)
