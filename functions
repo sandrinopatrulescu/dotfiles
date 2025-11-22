@@ -1950,6 +1950,17 @@ adbIdNonEmulator() {
     adb devices | awk 'NR > 1 && $1 !~ /emulator/ && length($1) > 0 {print $1}'
 }
 
+clickupBackup() {
+    # 1. download file
+    # 2. cd to dir
+    cd $BACKUP_CLICKUP_DIR
+    newFile="$(ls -rt1 9*.csv | tail -1)"
+    cp "$newFile" all.csv
+    git add .
+    git commit -m "$(fdatei)"
+    git show --name-status HEAD
+}
+
 # }}}
 
 
