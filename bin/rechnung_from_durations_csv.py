@@ -16,7 +16,7 @@ from enum import Enum
 from typing import Dict, List, Tuple, Any
 
 from docx import Document
-from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
 from docx.enum.text import WD_LINE_SPACING
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
@@ -377,6 +377,7 @@ class DocGenerator:
 
             for column_index, text in column_index_and_text_pairs:
                 cell = price_table.cell(i, column_index)
+                cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
                 paragraph = cell.paragraphs[0]
                 paragraph.clear()
                 run = paragraph.add_run(text.strip())
