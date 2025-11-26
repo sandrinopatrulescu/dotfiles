@@ -384,35 +384,38 @@ async def read_and_process_csv(mode: str, playlist_csv_file_path: str, start_pos
                                end_position: Optional[int]):
     simulation = mode == "simulation"
     await shared_state.set_simulation(simulation)
-    with open(playlist_csv_file_path, mode="r", newline="", encoding="utf-8") as file:
 
-        sent_file_name = False
-        entries_processed = 0
+    file = open(playlist_csv_file_path, mode="r", newline="", encoding="utf-8")
 
-        # Iterate through lines in csv
-        for position, line in enumerate(file.read().splitlines()):
-            if position == 0:  # skip header
-                continue
-            if start_position is not None and position < start_position:
-                continue
-            if end_position is not None and position > end_position:
-                break
+    sent_file_name = False
+    entries_processed = 0
 
-            if not sent_file_name:
-                text = f"Processing {playlist_csv_file_path} in mode {mode} from position {start_position} to {end_position}"
-                await send_telegram_message(metadata + text)
-                sent_file_name = True
+    # Iterate through lines in csv
+    for position, line in enumerate(file.read().splitlines()):
+        if position == 0:  # skip header
+            continue
+        if start_position is not None and position < start_position:
+            continue
+        if end_position is not None and position > end_position:
+            break
 
-            index_title_end = line.find(SPLIT_TOKEN)
-            index_url_start = index_title_end + 1
-            index_url_end = index_url_start + URL_LENGTH
+        if not sent_file_name:
+            text = f"Processing {playlist_csv_file_path} in mode {mode} from position {start_position} to {end_position}"
+            await send_telegram_message(metadata + text)
+            sent_file_name = True
 
-            title = line[:index_title_end]
-            url = line[index_title_end + 1:index_url_end]
+        index_title_end = line.find(SPLIT_TOKEN)
+        index_url_start = index_title_end + 1
+        index_url_end = index_url_start + URL_LENGTH
 
-            log.info(f'{position}. {title} ({url})')
-            await process_video(mode, position, title, url)
-            entries_processed += 1
+        title = line[:index_title_end]
+        url = line[index_title_end + 1:index_url_end]
+
+        log.info(f'{position}. {title} ({url})')
+        await process_video(mode, position, title, url)
+        entries_processed += 1
+
+    file.close()
 
     # log and send the result
     await log_and_send_result(f"Finished processing {entries_processed} entries")
