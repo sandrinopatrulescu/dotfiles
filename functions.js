@@ -284,3 +284,34 @@ function lenostubeYouTubePlaylistLengthCalculator_SortDescending() {
 
     setTimeout(clickSaveButton, timeout);
 })()
+
+(function keepYouTubeControlsVisible() {
+    /* https://www.google.com/search?q=youtube+always+display+progress+bar -> https://stackoverflow.com/questions/65586000/keep-youtube-controls-always-visible -> https://stackoverflow.com/a/65586795 */
+    setInterval(() => {
+        /* Keep controls visible */
+        const container = document.querySelector('#movie_player');
+        container.classList.remove('ytp-autohide');
+
+        /* Getting played time */
+        const video = document.querySelector('.video-stream');
+        const hours = Math.floor(video.currentTime / 3600);
+        let minutes = Math.floor(video.currentTime / 60) - (hours * 60); /* fixed by https://stackoverflow.com/a/79523904/17299754 */
+        let seconds = Math.round(video.currentTime % 60);
+        if (seconds < 10) seconds = `0${seconds}`;
+        if (hours > 0 && minutes < 10) minutes = `0${minutes}`;
+
+        /* Displaying played time */
+        const timeDisplay = document.querySelector('.ytp-time-current');
+        timeDisplay.innerText = `${(hours > 0 ? `${hours}:` : '')}${minutes}:${seconds}`;
+
+        /* Progress bar */
+        const percentagePlayed = video.currentTime / video.duration;
+        const progressBar = document.querySelector('.ytp-play-progress');
+        progressBar.style = `left: 0px; transform: scaleX(${percentagePlayed})`;
+
+        /* Buffered bar */
+        const percentageBuffered = video.buffered.end(0) / video.duration;
+        const bufferedBar = document.querySelector('.ytp-load-progress');
+        bufferedBar.style = `left: 0px; transform: scaleX(${percentageBuffered})`;
+    }, 10);
+})()
