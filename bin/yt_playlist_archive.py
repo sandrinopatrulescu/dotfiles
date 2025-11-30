@@ -381,8 +381,8 @@ URL_LENGTH = len(VIDEO_URL_BASE) + VIDEO_ID_LENGTH
 SPLIT_TOKEN = COLUMN_DELIMITER + VIDEO_URL_BASE
 
 
-def run_on_reboot_script():
-    script_name = 'on-reboot.sh'
+def run_yt_dlp_update_script():
+    script_name = 'yt-dlp-update2.sh'
     result = subprocess.run(
         os.path.join(os.getenv('DOTSB'), script_name), # command + args as a list
         check=True,           # raise CalledProcessError if exit code != 0
@@ -398,7 +398,7 @@ async def read_and_process_csv(mode: str, playlist_csv_file_path: str, start_pos
     simulation = mode == "simulation"
     await shared_state.set_simulation(simulation)
 
-    script_name, result = run_on_reboot_script()
+    script_name, result = run_yt_dlp_update_script()
     on_reboot_text = f"{script_name}: {result}."
 
     file = open(playlist_csv_file_path, mode="r", newline="", encoding="utf-8")
