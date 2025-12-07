@@ -13,7 +13,12 @@ bot = telegram.Bot(token=BOT_TOKEN)
 
 async def run():
     if sys.argv[1] == '-m':
-        await bot.send_message(chat_id=CHAT_ID, text=sys.argv[2])
+        message = sys.argv[2]
+        try:
+            await bot.send_message(chat_id=CHAT_ID, text=message)
+        except telegram.error.TelegramError as e:
+            print(f"Failed to send message: {message}. Error:")
+            print(e)
     else:
         for _ in range(RETRIES + 1):
             try:
