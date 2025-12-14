@@ -577,13 +577,13 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
                 total_static_distance_cost_computation_string = format_computation_column(distance, price_per_km, 'km')
 
                 total_stunden_price += total_fuel_cost + total_static_distance_cost
-                computation_column = f'{total_fuel_cost_computation_string}\n{total_static_distance_cost_computation_string}'
+                computation_column = f'{total_static_distance_cost_computation_string}\n{total_fuel_cost_computation_string}'
                 total_fuel_cost_result_string = f"{format_final_price(total_fuel_cost)} Euro netto"
                 total_static_distance_cost_result_string = f"{format_final_price(total_static_distance_cost)} Euro netto"
-                result_column = f'{total_fuel_cost_result_string}\n{total_static_distance_cost_result_string}'
+                result_column = f'{total_static_distance_cost_result_string}\n{total_fuel_cost_result_string}'
 
-                result += format_row_string(info_column_line1, total_fuel_cost_computation_string, total_fuel_cost_result_string)
-                result += format_row_string(info_column_line2, total_static_distance_cost_computation_string, total_static_distance_cost_result_string)
+                result += format_row_string(info_column_line1, total_static_distance_cost_computation_string, total_static_distance_cost_result_string)
+                result += format_row_string(info_column_line2, total_fuel_cost_computation_string, total_fuel_cost_result_string)
             else:
                 current_price_per_stunden = PRICE_PER_STUNDEN_FAHRZEIT if kn_nr == "Fahrzeit" else price_per_stunden
                 kn_price = stunden * current_price_per_stunden
