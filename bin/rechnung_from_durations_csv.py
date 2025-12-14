@@ -13,7 +13,7 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from enum import Enum
-from typing import Dict, List, Tuple, Any
+from typing import Dict, List, Tuple, Any, Callable
 
 from docx import Document
 from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
@@ -30,6 +30,9 @@ PRICE_PER_STUNDEN = 25.0
 PRICE_PER_STUNDEN_FAHRZEIT = 28.0
 PRICE_PER_STUNDEN_PL = 3.0
 VAT_RATE = 19
+FUEL_PER_100KM = 15
+PRICE_PER_FUEL_UNIT = 1.65
+PRICE_PER_KM = 0.5
 
 DECIMAL_SEPARATOR = ","
 
@@ -363,9 +366,14 @@ class DocGenerator:
             split_index = separator_index + 1
             return computation_text[:split_index], computation_text[split_index:]
 
+        def transpose_and_apply(value: str, sep: str, mapper: Callable):
+            parts = value.split(sep)
+            cols = list(zip(*(mapper(p) for p in parts)))
+            return tuple(sep.join(col) for col in cols)
+
         for i, (name, computation, result) in enumerate(price_table_data):
-            result_value, result_details = split_result_text(result)
-            computation_stunden, computation_hour_price = split_computation_text(computation)
+            result_value, result_details = transpose_and_apply(result, '\n', split_result_text)
+            computation_stunden, computation_hour_price = transpose_and_apply(computation, '\n', split_computation_text)
 
             column_index_and_text_pairs = [
                 (DocGenerator.PriceTableColumns.Info.value, name),
@@ -515,9 +523,13 @@ def swap_strings(text: str, string1: str, string2: str):
     return text_new_placeholder_to_string2
 
 
-def format_price(price: float, width: int = 0):
+def format_price(price: float | Decimal, width: int = 0):
     unswapped_price = f"{price:{width},.2f}"
     return swap_strings(unswapped_price, ",", ".")
+
+
+def as_decimal(value: float | int):
+    return Decimal(str(value))
 
 
 def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr: int, price_per_stunden: float,
@@ -526,8 +538,9 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
     email_files = [f'rechungen_{first_rechnung_nr:03}-bis-{last_rechnung_nr:03}_stunden.pdf']
     doc_generator = DocGenerator()
     format_row_string = lambda x, y, z: f"{x:<32}\t{y:>25}\t{z:<25}\n"
-    format_computation_column = lambda hours, price: f"{hours:04.2f} St x {price:5.2f} Euro".replace(".",
-                                                                                                     DECIMAL_SEPARATOR)
+    def format_computation_column(hours, price, unit = 'St'):
+        return f"{hours:04.2f} {unit} x {price:5.2f} Euro".replace(".", DECIMAL_SEPARATOR)
+
     format_final_price = lambda price: format_price(price, 8)
     format_price_no_justify = lambda price: format_price(price, 0)
     row_width = 83
@@ -540,27 +553,52 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
     for i, (rechnung_date, tuple_list) in enumerate(date_list):
         result = ""
 
-        total_stunden_price = 0
+        total_stunden_price = Decimal('0.000')
         total_stunden_pl = 0
         total_stunden_pl_price = 0
 
         price_table_data = []
 
         for j, (kn_nr, bau, stunden, stunden_pl) in enumerate(tuple_list):
-            current_price_per_stunden = PRICE_PER_STUNDEN_FAHRZEIT if kn_nr == "Fahrzeit" else price_per_stunden
-            kn_price = stunden * current_price_per_stunden
-            total_stunden_price += kn_price
-            total_stunden_pl += stunden_pl
+            if kn_nr == "Fahrkosten":
+                distance = as_decimal(stunden)
+                total_fuel =  distance * as_decimal(FUEL_PER_100KM) / as_decimal(100)
+                total_fuel_string = f'{distance:.0f} km x {FUEL_PER_100KM}/100 L = {format_price(total_fuel)} L'
+                info_column_line1 = f"{j + 1}. {kn_nr}"
+                info_column_line2 = f"{total_fuel_string}"
+                info_column = info_column_line1 + '\n' + info_column_line2
 
-            baus_short_capitalized = map(lambda x: x.strip().capitalize(), bau.split('+'))
-            baus = list(map(lambda z: z + 'bau', filter(lambda y: len(y) > 0, baus_short_capitalized)))
-            bau_string = '' if len(baus) == 0 else  ' ' + ' / '.join(baus)
-            base_item_name = f'KN NR: {kn_nr}' if len(kn_nr) == 7 and kn_nr.isnumeric() else kn_nr
-            info_column = f"{j + 1}. {base_item_name}{bau_string}"
-            computation_column = format_computation_column(stunden, current_price_per_stunden)
-            result_column = f"{format_final_price(kn_price)} Euro netto"
+                price_per_fuel_unit = as_decimal(PRICE_PER_FUEL_UNIT)
+                total_fuel_cost = total_fuel * price_per_fuel_unit
+                total_fuel_cost_computation_string = format_computation_column(total_fuel, price_per_fuel_unit, 'L')
 
-            result += format_row_string(info_column, computation_column, result_column)
+                price_per_km = as_decimal(PRICE_PER_KM)
+                total_static_distance_cost = distance * price_per_km
+                total_static_distance_cost_computation_string = format_computation_column(distance, price_per_km, 'km')
+
+                total_stunden_price += total_fuel_cost + total_static_distance_cost
+                computation_column = f'{total_fuel_cost_computation_string}\n{total_static_distance_cost_computation_string}'
+                total_fuel_cost_result_string = f"{format_final_price(total_fuel_cost)} Euro netto"
+                total_static_distance_cost_result_string = f"{format_final_price(total_static_distance_cost)} Euro netto"
+                result_column = f'{total_fuel_cost_result_string}\n{total_static_distance_cost_result_string}'
+
+                result += format_row_string(info_column_line1, total_fuel_cost_computation_string, total_fuel_cost_result_string)
+                result += format_row_string(info_column_line2, total_static_distance_cost_computation_string, total_static_distance_cost_result_string)
+            else:
+                current_price_per_stunden = PRICE_PER_STUNDEN_FAHRZEIT if kn_nr == "Fahrzeit" else price_per_stunden
+                kn_price = stunden * current_price_per_stunden
+                total_stunden_price += Decimal(kn_price)
+                total_stunden_pl += stunden_pl
+
+                baus_short_capitalized = map(lambda x: x.strip().capitalize(), bau.split('+'))
+                baus = list(map(lambda z: z + 'bau', filter(lambda y: len(y) > 0, baus_short_capitalized)))
+                bau_string = '' if len(baus) == 0 else  ' ' + ' / '.join(baus)
+                base_item_name = f'KN NR: {kn_nr}' if len(kn_nr) == 7 and kn_nr.isnumeric() else kn_nr
+                info_column = f"{j + 1}. {base_item_name}{bau_string}"
+                computation_column = format_computation_column(stunden, current_price_per_stunden)
+                result_column = f"{format_final_price(kn_price)} Euro netto"
+
+                result += format_row_string(info_column, computation_column, result_column)
             price_table_data.append((info_column, computation_column, result_column))
 
         if total_stunden_pl > 0:
@@ -573,14 +611,11 @@ def compute_values(date_list: List[Tuple[str, RechnungInfo]], first_rechnung_nr:
 
         result += row_group_separator
 
-        arbeitsleistung_netto = total_stunden_price + total_stunden_pl_price
+        arbeitsleistung_netto = total_stunden_price + Decimal(total_stunden_pl_price)
         info_column = "Arbeitsleistung Netto:"
         result_column = f"{format_final_price(arbeitsleistung_netto)} Euro netto"
         result += format_row_string(info_column, "", result_column)
         price_table_data.append((info_column, "", result_column))
-
-        def as_decimal(value: float | int):
-            return Decimal(str(value))
 
         mehrwertsteuer_not_rounded = as_decimal(VAT_RATE) / as_decimal(100) * as_decimal(arbeitsleistung_netto)
         mehrwertsteuer = round_half_down(mehrwertsteuer_not_rounded)

@@ -191,7 +191,7 @@ def compute_values(date_to_rechnung_info: List[Tuple[str, RechnungInfo]], first_
                 interval_start_decimal = hour_string_to_decimal(interval_start)
                 interval_end_decimal = hour_string_to_decimal(interval_end)
                 stunden_not_maximized: Decimal = compute_time_difference(interval_start_decimal, interval_end_decimal) - Decimal(str(pause))
-                min_stunden = stunden_not_maximized if kn_nr == 'Fahrzeit' else Decimal(str('4'))
+                min_stunden = stunden_not_maximized if kn_nr in ['Fahrzeit', 'Fahrkosten'] else Decimal(str('4'))
                 stunden = max(stunden_not_maximized, min_stunden)
                 total_stunden = stunden * Decimal(str(persons))
                 total_stunden_pl = stunden * Decimal(str(persons_pl))
