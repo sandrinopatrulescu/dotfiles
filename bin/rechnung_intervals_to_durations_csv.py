@@ -181,33 +181,31 @@ def compute_values(date_to_rechnung_info: List[Tuple[str, RechnungInfo]], first_
             work_session_total_stunden = 0
             work_session_total_stunden_pl = 0
 
-            if kn_nr == 'Fahrkosten':
-                pass # TODO
-            else:
-                for k, (interval_start, pause, interval_end, persons, persons_pl) in enumerate(work_intervals):  # all intervals in a work session
-                    if not (persons >= persons_pl >= 0):
-                        sys.stderr.write(
-                            f"Condition persons >= persons_pl >= 0 is not respected: {persons} >= {persons_pl} >= 0\n")
-                        exit(1)
+            for k, (interval_start, pause, interval_end, persons, persons_pl) in enumerate(
+                    work_intervals):  # all intervals in a work session
+                if not (persons >= persons_pl >= 0):
+                    sys.stderr.write(
+                        f"Condition persons >= persons_pl >= 0 is not respected: {persons} >= {persons_pl} >= 0\n")
+                    exit(1)
 
-                    interval_start_decimal = hour_string_to_decimal(interval_start)
-                    interval_end_decimal = hour_string_to_decimal(interval_end)
-                    stunden_not_maximized: Decimal = compute_time_difference(interval_start_decimal, interval_end_decimal) - Decimal(str(pause))
-                    min_stunden = stunden_not_maximized if kn_nr == 'Fahrzeit' else Decimal(str('4'))
-                    stunden = max(stunden_not_maximized, min_stunden)
-                    total_stunden = stunden * Decimal(str(persons))
-                    total_stunden_pl = stunden * Decimal(str(persons_pl))
+                interval_start_decimal = hour_string_to_decimal(interval_start)
+                interval_end_decimal = hour_string_to_decimal(interval_end)
+                stunden_not_maximized: Decimal = compute_time_difference(interval_start_decimal, interval_end_decimal) - Decimal(str(pause))
+                min_stunden = stunden_not_maximized if kn_nr == 'Fahrzeit' else Decimal(str('4'))
+                stunden = max(stunden_not_maximized, min_stunden)
+                total_stunden = stunden * Decimal(str(persons))
+                total_stunden_pl = stunden * Decimal(str(persons_pl))
 
-                    work_session_total_stunden += total_stunden
-                    work_session_total_stunden_pl += total_stunden_pl
+                work_session_total_stunden += total_stunden
+                work_session_total_stunden_pl += total_stunden_pl
 
-                    text_to_copy += f"{stunden} ST x {persons} P = {total_stunden} ST" + '\n'
-                    text_to_copy += f"PL x {persons_pl}" + '\n'
-                    text_to_copy += '\n'
+                text_to_copy += f"{stunden} ST x {persons} P = {total_stunden} ST" + '\n'
+                text_to_copy += f"PL x {persons_pl}" + '\n'
+                text_to_copy += '\n'
 
-                    interval_details = f" (start={interval_start_decimal},pause={pause},end={interval_end_decimal})"
-                    page_details += interval_details
-                text_to_copy += f"RECHNUNG {rechnung_nr}"
+                interval_details = f" (start={interval_start_decimal},pause={pause},end={interval_end_decimal})"
+                page_details += interval_details
+            text_to_copy += f"RECHNUNG {rechnung_nr}"
 
             page_nr += 1
             print(" " * 3 + f" PAGE {page_nr:02}/{nr_of_pages:00}: {page_details}\n")
