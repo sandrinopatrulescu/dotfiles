@@ -154,7 +154,7 @@ function youtubePlayAllFromChannelOldestFirst() {
     }
 }
 
-function exportPhoneChromeTabs() {
+(function exportPhoneChromeTabs() {
     function exportArrayToFile(array) {
         /*Create a Blob containing the array as text*/
         const blob = new Blob([JSON.stringify(array, null, 4)], {type: 'text/plain'});
@@ -176,14 +176,46 @@ function exportPhoneChromeTabs() {
         URL.revokeObjectURL(link.href);
     }
 
-    const anchorNodeList = document.querySelector("#history-app").shadowRoot
+    const historySyncedDeviceCardNodeList = document.querySelector("#history-app").shadowRoot
         .querySelector("#synced-devices").shadowRoot
-        .querySelector("#synced-device-list > history-synced-device-card:nth-child(1)").shadowRoot
-        .querySelector("#tab-item-list").querySelectorAll("a");
-    const anchorObjectArray = Array.from(anchorNodeList)
-        .map(a => new Object({title: a.title, href: a.href}));
-    exportArrayToFile(anchorObjectArray);
-}
+        .querySelectorAll('history-synced-device-card');
+    const historySyncedDeviceCardList = [...historySyncedDeviceCardNodeList];
+    if (!(historySyncedDeviceCardList.length >= 1)) {
+        alert("Failed to find elements 'history-synced-device-card'");
+    }
+
+    const devices = [];
+    for (let historySyncedDeviceCard of historySyncedDeviceCardList) {
+        const shadowRoot = historySyncedDeviceCard.shadowRoot;
+        const historyItemContainer = shadowRoot.querySelector('#history-item-container');
+        if (historyItemContainer === null) {
+            alert("Failed to find element '#history-item-container'");
+        } else {
+            console.log(shadowRoot);
+            const titleLeftContent = shadowRoot.querySelector('#history-item-container .card-title #title-left-content');
+            const deviceName = titleLeftContent.querySelector('#device-name').innerText;
+            const lastUpdateTime = titleLeftContent.querySelector('#last-update-time').innerText.split('– ')[1];
+
+            const tabItemList = shadowRoot.querySelector('#history-item-container #tab-item-list');
+            const anchorsRaw = tabItemList.querySelectorAll('a');
+            const anchors = Array.from(anchorsRaw)
+                .map(a => new Object({
+                    href: a.href,
+                    title: a.title,
+                    'data-session-id': a.getAttribute('data-session-id'),
+                    'focus-type': a.getAttribute('focus-type'),
+                    'tabindex': a.getAttribute('tabindex'),
+                    'innerHTML': a.innerHTML,
+                }));
+            const device = new Object({
+                'name': deviceName, 'lastUpdateTime': lastUpdateTime, 'items': anchors,
+            });
+            devices.push(device);
+        }
+    }
+
+    exportArrayToFile(devices);
+})();
 
 function changeYoutubeVolume() {
     /*https://www.google.com/search?q=programmatically+set+youtube+video+sound+level*/
