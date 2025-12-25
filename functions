@@ -1961,6 +1961,35 @@ clickupBackup() {
     git show --name-status HEAD
 }
 
+disk-dump() {
+    local path
+
+    [ $# -eq 1 ] || { echo "usage: ${FUNCNAME[0]} <device path (ex: /dev/nvme0n1 OR /dev/sda)>"; return 1; }
+
+    path="$1"
+
+    echo "timestamp: $(date +%Y-%m-%d_%H-%M-%S)"
+    lsblk --all --bytes --ascii --output-all --paths "${path}" >| ./lsblk.txt
+    lsblk --all --bytes --ascii --output-all --paths --zoned "${path}" >| ./lsblk-z.txt
+    sudo smartctl -a "${path}" >| smartctl-a.txt
+    sudo fdisk -xo +Size,Type "${path}" >| fdisk-xo.txt
+    sudo parted "${path}" print free >| parted-print-free.txt
+    sudo blkid -o full "${path}"* >| blkid.txt
+    sudo udevadm info --query=all --name="${path}" >| udevadm-info.txt
+    sudo /usr/bin/df >| df.txt
+    sudo /usr/bin/df -h >| df-h.txt
+
+    # for each partition, do a find
+    while IFS= read -r line; do
+        name=$(echo "${line}" | cut -d' ' -f1)
+        mountpoint=$(echo "${line}" | cut -d' ' -f3)
+        mountpoint_escaped="${mountpoint//\//／}" # replace forward-slash (/) with Fullwidth Solidus (U+FF0F)(／)
+        filename="find_${name}_${mountpoint_escaped}"
+        echo "Running find for: $filename"
+        sudo find "$mountpoint" | sudo tee "$filename" > /dev/null
+    done < <(lsblk -rno NAME,TYPE,MOUNTPOINTS "$path" | grep "part /")
+}
+
 # }}}
 
 
