@@ -1417,6 +1417,28 @@ dev-info() {
     sudo hw-probe -all -check -dump-acpi -decode-acpi
     [ -d hw.info ] && sudo rm -rf hw.info
     sudo cp -r /root/HW_PROBE/LATEST/hw.info .
+
+    disk-dump-all
+}
+
+disk-dump-all() {
+    mkdir -p disk-dump && cd disk-dump
+    disks="$(lsblk -n -d -o PATH)"
+    while IFS= read -r diskPath; do
+        diskType="$(lsblk -n -d -o TYPE "${diskPath}")"
+        [ "${diskType}" == "disk" ] || continue
+
+        diskName="$(lsblk -n -d -o NAME "${diskPath}")"
+        diskModel="$(lsblk -n -d -o MODEL "${diskPath}")"
+        diskSerial="$(lsblk -n -d -o SERIAL "${diskPath}")"
+        outputDirDisk="${diskName}.${diskModel}.${diskSerial}"
+
+        echo "Running disk-dump for: $outputDirDisk - $line"
+        mkdir -p "$outputDirDisk" && cd "$outputDirDisk"
+        disk-dump "$diskPath"
+        cd ..
+    done < <(echo "$disks")
+    cd ..
 }
 
 install-system-service() {
@@ -1982,7 +2004,8 @@ disk-dump() {
     # for each partition, do a find
     while IFS= read -r line; do
         name=$(echo "${line}" | cut -d' ' -f1)
-        mountpoint=$(echo "${line}" | cut -d' ' -f3)
+        mountpoint_hex_escaped=$(echo "${line}" | cut -d' ' -f3) # hex-escaped due to lsblk -r
+        mountpoint="$(echo -e "${mountpoint_hex_escaped}")"
         mountpoint_escaped="${mountpoint//\//／}" # replace forward-slash (/) with Fullwidth Solidus (U+FF0F)(／)
         filename="find_${name}_${mountpoint_escaped}"
         echo "Running find for: $filename"
