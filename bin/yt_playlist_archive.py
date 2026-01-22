@@ -232,13 +232,15 @@ def delete_directory(path: str):
 async def send_file_to_telegram(file_path: str, caption: str, on_failure: Callable[[Exception], None]):
     retries = 30
 
-    for _ in range(retries):
+    for retry_number in range(retries):
+        if retry_number > 0:
+            log.info(f"Retry {retry_number}/{retries} for sending file to telegram")
         try:
             await telegram_bot.send_document(chat_id=TELEGRAM_CHAT_ID, document=open(file_path, 'rb'), caption=caption)
             delete_file(file_path)
             return
         except Exception as e:
-            if _ == retries - 1:
+            if retry_number == retries - 1:
                 on_failure(e)
 
                 delete_file(file_path)
@@ -384,7 +386,7 @@ SPLIT_TOKEN = COLUMN_DELIMITER + VIDEO_URL_BASE
 def run_yt_dlp_update_script():
     script_name = 'yt-dlp-update2.sh'
     result = subprocess.run(
-        os.path.join(os.getenv('DOTSB'), script_name), # command + args as a list
+        os.path.join(os.path.expandvars(os.getenv('DOTSB')), script_name), # command + args as a list
         check=True,           # raise CalledProcessError if exit code != 0
         capture_output=True,  # capture stdout and stderr
         text=True             # return output as str, not bytes
