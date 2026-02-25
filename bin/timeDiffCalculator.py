@@ -74,7 +74,7 @@ def main():
     with open(output_file, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
 
-        # Header
+        # Main table
         writer.writerow(["Original", "Task", "Minutes", "Hours_Minutes"])
 
         # Detail rows
@@ -85,16 +85,23 @@ def main():
         writer.writerow([])
         writer.writerow(["TOTAL", "", total_minutes_sum, total_formatted])
 
-        # Blank line
+        # Blank line before per-task
         writer.writerow([])
 
-        # Per-task totals
-        writer.writerow(["Task", "Minutes", "Hours_Minutes"])
-        for task, minutes in sorted(task_totals.items()):
+        # Per-task totals (sorted by name)
+        sorted_tasks = sorted(task_totals.items())
+
+        # Determine padding width based on number of tasks
+        pad_width = len(str(len(sorted_tasks)))
+
+        for idx, (task, minutes) in enumerate(sorted_tasks, start=1):
+            entry_number = str(idx).zfill(pad_width)
             writer.writerow([
-                task,
+                entry_number,
+                "<intentionally left blank>",
                 minutes,
-                format_hours_minutes(minutes)
+                format_hours_minutes(minutes),
+                task
             ])
 
     print(f"Output written to: {output_file}")
