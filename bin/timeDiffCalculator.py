@@ -44,6 +44,7 @@ def main():
 
     total_minutes_sum = 0
     task_totals = defaultdict(int)
+    task_earliest = {}
     rows = []
 
     with open(input_file, "r", newline="") as f:
@@ -61,6 +62,10 @@ def main():
 
             total_minutes_sum += diff_minutes
             task_totals[task_name] += diff_minutes
+
+            # Track earliest start per task
+            if task_name not in task_earliest or start < task_earliest[task_name]:
+                task_earliest[task_name] = start
 
             rows.append([
                 f"{start_str} - {end_str}",
@@ -88,14 +93,14 @@ def main():
         # Blank line before per-task
         writer.writerow([])
 
-        # Per-task totals (sorted by name)
-        sorted_tasks = sorted(task_totals.items())
-
-        # Determine padding width based on number of tasks
+        # Per-task table sorted by earliest time
+        sorted_tasks = sorted(task_totals.keys(), key=lambda t: task_earliest[t])
         pad_width = len(str(len(sorted_tasks)))
 
-        for idx, (task, minutes) in enumerate(sorted_tasks, start=1):
+        for idx, task in enumerate(sorted_tasks, start=1):
+            minutes = task_totals[task]
             entry_number = str(idx).zfill(pad_width)
+
             writer.writerow([
                 entry_number,
                 "<intentionally left blank>",
