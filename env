@@ -70,6 +70,7 @@ export ANDROID_SDK=$ANDROID_HOME
 export HISTFILESIZE=10000        # increase history file size (default is 500)
 export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)
 export HISTTIMEFORMAT="%F %T "          ## Adds time to history
+export PS4='+ $(date "+%Y-%m-%d_%H-%M-%S.%6N") ${BASH_SOURCE}:${LINENO}: ' # change prompt for set -x
 
 
 # Software Related
