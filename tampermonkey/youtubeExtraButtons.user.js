@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         youtubeExtraButtons
 // @namespace    http://tampermonkey.net/
-// @version      2026-03-12_21-47-42
+// @version      2026-03-12_22-05-10
 // @description  YouTube extra buttons
 // @author       AiWonder
 // @match        https://www.youtube.com/watch?v=*
@@ -10,14 +10,28 @@
 // @updateURL    https://github.com/sandrinopatrulescu/dotfiles/raw/refs/heads/main/tampermonkey/youtubeExtraButtons.user.js
 // ==/UserScript==
 
+function getVideoUploadDate() {
+    const metadata = JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent);
+    const uploadDateIsoString = metadata.uploadDate;
+    const uploadDate = new Date(uploadDateIsoString);
+    const uploadDateString = uploadDate.toLocaleDateString("en-CA");
+    console.log(`${uploadDateIsoString} -> ${uploadDate} -> ${uploadDateString}`);
+    return uploadDateString;
+}
+
 (function () {
     'use strict';
 
     const scriptName = GM_info.script.name;
 
     const setUp = function () {
-        function writeTextToClipboard(text) {
-            navigator.clipboard.writeText(text)
+        function writeTextToClipboard(text, html = undefined) {
+            const item = { 'text/plain': new Blob([text], {type: 'text/plain'}), };
+            if (html) {
+                item['text/html'] = new Blob([html], {type: 'text/html'});
+            }
+
+            navigator.clipboard.write([new ClipboardItem(item)])
                 .then(() => {
                     console.log(`[${scriptName}] Copied to clipboard: ${text}`);
                 })
@@ -47,14 +61,14 @@
         copyDUTButton.innerText = 'DUT';
         copyDUTButton.title = 'Copy duration url title';
 
-        const copyTDUTButton = document.createElement("button");
-        copyTDUTButton.id = "copyTDUTButton";
-        copyTDUTButton.innerText = 'TDUT';
-        copyTDUTButton.title = 'Copy upload-date duration url title';
+        const copyUDUTButton = document.createElement("button");
+        copyUDUTButton.id = "copyUDUTButton";
+        copyUDUTButton.innerText = 'UDUT';
+        copyUDUTButton.title = 'Copy upload-date,duration,url,title';
 
         buttonsContainer.appendChild(copyUTButton);
         buttonsContainer.appendChild(copyDUTButton);
-        buttonsContainer.appendChild(copyTDUTButton);
+        buttonsContainer.appendChild(copyUDUTButton);
 
 
         const getDurationTitleAndUrl = () => {
@@ -80,16 +94,14 @@
             const [duration, title, url] = getDurationTitleAndUrl();
             writeTextToClipboard(`${duration} ${url} ${title}`);
         };
-        copyTDUTButton.onclick = () => {
+        copyUDUTButton.onclick = () => {
             const [duration, title, url] = getDurationTitleAndUrl();
+            const uploadDateString = getVideoUploadDate();
 
-            const metadata = JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent);
-            const uploadDateIsoString = metadata.uploadDate;
-            const uploadDate = new Date(uploadDateIsoString);
-            const uploadDateString = uploadDate.toLocaleDateString("en-CA");
-            console.log(`${uploadDateIsoString} -> ${uploadDate} -> ${uploadDateString}`);
+            const urlToAnchor = (url, title) => `<a href="${url}">${title}</a>`;
+            const [text, html] = [url, urlToAnchor(url, url)].map(x => `${uploadDateString},${duration},${x},${title}`);
 
-            writeTextToClipboard(`${uploadDateString} ${duration} ${url} ${title}`);
+            writeTextToClipboard(text, html);
         }
 
         startDiv.appendChild(buttonsContainer);
