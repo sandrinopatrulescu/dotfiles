@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         youtubeExtraButtons
 // @namespace    http://tampermonkey.net/
-// @version      2025-05-11_17-44-25
+// @version      2026-03-12_21-47-42
 // @description  YouTube extra buttons
 // @author       AiWonder
 // @match        https://www.youtube.com/watch?v=*
@@ -47,8 +47,14 @@
         copyDUTButton.innerText = 'DUT';
         copyDUTButton.title = 'Copy duration url title';
 
+        const copyTDUTButton = document.createElement("button");
+        copyTDUTButton.id = "copyTDUTButton";
+        copyTDUTButton.innerText = 'TDUT';
+        copyTDUTButton.title = 'Copy upload-date duration url title';
+
         buttonsContainer.appendChild(copyUTButton);
         buttonsContainer.appendChild(copyDUTButton);
+        buttonsContainer.appendChild(copyTDUTButton);
 
 
         const getDurationTitleAndUrl = () => {
@@ -74,6 +80,17 @@
             const [duration, title, url] = getDurationTitleAndUrl();
             writeTextToClipboard(`${duration} ${url} ${title}`);
         };
+        copyTDUTButton.onclick = () => {
+            const [duration, title, url] = getDurationTitleAndUrl();
+
+            const metadata = JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent);
+            const uploadDateIsoString = metadata.uploadDate;
+            const uploadDate = new Date(uploadDateIsoString);
+            const uploadDateString = uploadDate.toLocaleDateString("en-CA");
+            console.log(`${uploadDateIsoString} -> ${uploadDate} -> ${uploadDateString}`);
+
+            writeTextToClipboard(`${uploadDateString} ${duration} ${url} ${title}`);
+        }
 
         startDiv.appendChild(buttonsContainer);
     };
