@@ -248,7 +248,7 @@ alias xrdm="xrandr --delmonitor "
 alias work="cd /mnt/e/work"
 alias worzy="cd /mnt/e/work/1-ac/worzy"
 
-alias yt-dlp-update="pip install yt-dlp -U"
+alias yt-dlp-update='pip install -U "yt-dlp[default]"'
 alias yt-dlp-mp3="yt-dlp -x --audio-format mp3 --audio-quality 0"
 
 alias mkdirp="mkdir -p"
