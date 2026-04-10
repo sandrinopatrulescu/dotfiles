@@ -347,3 +347,47 @@ function lenostubeYouTubePlaylistLengthCalculator_SortDescending() {
         bufferedBar.style = `left: 0px; transform: scaleX(${percentageBuffered})`;
     }, 10);
 })()
+
+(function exportFacebookGroupSearch() {
+    function getNthParent(el, n) {
+        let current = el;
+        for (let i = 0; i < n; i++) {
+            if (!current) return undefined;
+            current = current.parentElement;
+        }
+        return current;
+    }
+
+    const pageTitle = document.title;
+    const articles = [...document.querySelectorAll('div[role="article"]')];
+    let articlesConverted = [];
+    const lines = articles.map(e => {
+        const urlElement = e.querySelector('a[role="presentation"]');
+
+        // /div/div[1]/div[1]/div/div[1]/span/div/span/a -> url
+        // /div/div[1]/div[1]/div/div[2]/span/span -> description
+        // common parent is 5-th parent of url
+        const commonParent = getNthParent(urlElement, 5);
+        const groupInfoElement = commonParent.querySelector('div > span > span');
+
+        const url = urlElement.href;
+        const title = urlElement.textContent;
+
+        // Public · 25K members · 50+ posts a day
+        const [visibility, sizeRawText, activity] = groupInfoElement.textContent.split(' · ');
+
+        const sizeRaw = sizeRawText.split(' ')[0];
+        const numberStringToNumber = (value) => parseFloat(value) * (value.includes('K') ? 1000 : 1);
+        const size = numberStringToNumber(sizeRaw);
+
+        const articleConverted = new Object({url, title, size, visibility, activity});
+        articlesConverted.push(articleConverted);
+        return articleConverted;
+    })
+        // .sort((a, b) => b.size - a.size) // optionally: sort
+        .map(e => {
+            return Object.values(e).join("#");
+        })
+        .join("\n");
+    console.log(lines);
+})()
