@@ -94,6 +94,7 @@ nnoremap k gk " move vertically by visual line [5]
 
 " Others
 set history=1000
+set nomodeline
 
 
 "### Part 3: Sources List
