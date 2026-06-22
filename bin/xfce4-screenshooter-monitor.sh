@@ -29,6 +29,7 @@ xdotool key --clearmodifiers "Alt+s"
 sleep "$DELAY_KEY"
 
 # 2) Drag rectangle from top-left to bottom-right of chosen monitor
+eval "$(xdotool getmouselocation --shell)" # save old mouse position
 xdotool mousemove --sync "$x1" "$y1"
 sleep "$DELAY_MOVE"
 
@@ -39,4 +40,5 @@ xdotool mousemove --sync "$x2" "$y2"
 sleep "$DELAY_MOVE"
 
 xdotool mouseup 1
+xdotool mousemove --sync "$X" "$Y" # restore old mouse position
 
