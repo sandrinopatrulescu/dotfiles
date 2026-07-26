@@ -26,7 +26,7 @@ from docx.table import _Row, _Cell, _Column, Table
 # region defaults
 
 
-PRICE_PER_STUNDEN = 25.0
+PRICE_PER_STUNDEN = 28.0
 PRICE_PER_STUNDEN_FAHRZEIT = 28.0
 PRICE_PER_STUNDEN_PL = 3.0
 VAT_RATE = 19
