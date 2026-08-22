@@ -27,9 +27,16 @@ def main(playlist_id, file_name):
         response = request.execute()
         responses.append(response)
         request_params[next_page_token_param_name] = response.get('nextPageToken')
-        print(f'{call_number}: {response["pageInfo"]} total={call_number * response["pageInfo"]["resultsPerPage"]}')
+
+        results_per_page = response["pageInfo"]["resultsPerPage"]
+        print(f'{call_number}: {response["pageInfo"]} total={call_number * results_per_page}')
+
         call_number += 1
         is_first_request = False
+
+        number_of_items = len(response['items'])
+        if number_of_items == 0 or number_of_items < results_per_page:
+            break
 
     items = reduce(lambda acc, x: acc + x['items'], responses, [])
 
