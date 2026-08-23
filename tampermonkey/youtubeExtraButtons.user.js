@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         youtubeExtraButtons
 // @namespace    http://tampermonkey.net/
-// @version      2026-03-12_22-05-10
+// @version      2026-08-23_17-55-21
 // @description  YouTube extra buttons
 // @author       AiWonder
 // @match        https://www.youtube.com/watch?v=*
@@ -10,8 +10,12 @@
 // @updateURL    https://github.com/sandrinopatrulescu/dotfiles/raw/refs/heads/main/tampermonkey/youtubeExtraButtons.user.js
 // ==/UserScript==
 
+function getVideoMetadata() {
+    return JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent);
+}
+
 function getVideoUploadDate() {
-    const metadata = JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent);
+    const metadata = getVideoMetadata();
     const uploadDateIsoString = metadata.uploadDate;
     const uploadDate = new Date(uploadDateIsoString);
     const uploadDateString = uploadDate.toLocaleDateString("en-CA");
@@ -66,9 +70,15 @@ function getVideoUploadDate() {
         copyUDUTButton.innerText = 'UDUT';
         copyUDUTButton.title = 'Copy upload-date,duration,url,title';
 
+        const copyUDAUTButton = document.createElement("button");
+        copyUDAUTButton.id = "copyUDAUT";
+        copyUDAUTButton.innerText = 'UDAUT';
+        copyUDAUTButton.title = 'Copy upload-date,duration,author,url,title';
+
         buttonsContainer.appendChild(copyUTButton);
         buttonsContainer.appendChild(copyDUTButton);
         buttonsContainer.appendChild(copyUDUTButton);
+        buttonsContainer.appendChild(copyUDAUTButton);
 
 
         const getDurationTitleAndUrl = () => {
@@ -103,6 +113,16 @@ function getVideoUploadDate() {
 
             writeTextToClipboard(text, html);
         }
+        copyUDAUTButton.onclick = () => {
+            const [duration, title, url] = getDurationTitleAndUrl();
+            const uploadDateString = getVideoUploadDate();
+            const author = getVideoMetadata().author;
+
+            const urlToAnchor = (url, title) => `<a href="${url}">${title}</a>`;
+            const [text, html] = [url, urlToAnchor(url, url)].map(x => `${uploadDateString},${duration},${author},${x},${title}`);
+
+            writeTextToClipboard(text, html);
+        };
 
         startDiv.appendChild(buttonsContainer);
     };
