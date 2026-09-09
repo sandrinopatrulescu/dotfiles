@@ -2319,12 +2319,22 @@ g++2() {
     g++ -Wall -o $out_file.out "${out_file}.cpp" && ./$out_file.out "$@"
 }
 
+_altslash() {
+    local src
+    local dest
+
+    src="$1"
+    dest="$2"
+
+    echo "$3" | sed -E "s@${src}@${dest}@g"
+}
+
 altslash() { # replace linux dir separator with a filename-friendly alternative
-    echo "$1" | sed -E "s@/@${ALT_SLASH}@g"
+    _altslash "/" "${ALT_SLASH}" "$1"
 }
 
 altslashr() { # replace linux dir separator with a filename-friendly alternative REVERSED
-    echo "$1" | sed -E "s@${ALT_SLASH}@/@g"
+    _altslash "${ALT_SLASH}" "/" "$1"
 }
 
 # }}}
