@@ -95,6 +95,9 @@ export DOTSWB="$DOTSW/bin"
 export LOGDIR="/mnt/c/Users/sandr/logs"
 export WTMP="/mnt/c/Users/sandr/AppData/Local/Temp"
 
+# utilities
+export ALT_SLASH="𝄍" # The symbol 𝄍 is Musical Symbol Repeated Figure-1 (Unicode U+1D10D), which is a shorthand notation used in music to tell the performer to repeat a single rhythmic figure or beat.
+
 
 # ubuntu show return code in terminal prompt -> https://stackoverflow.com/questions/16715103/bash-prompt-with-the-last-exit-code
 PROMPT_COMMAND=__prompt_command

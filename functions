@@ -2319,6 +2319,14 @@ g++2() {
     g++ -Wall -o $out_file.out "${out_file}.cpp" && ./$out_file.out "$@"
 }
 
+altslash() { # replace linux dir separator with a filename-friendly alternative
+    echo "$1" | sed -E "s@/@${ALT_SLASH}@g"
+}
+
+altslashr() { # replace linux dir separator with a filename-friendly alternative REVERSED
+    echo "$1" | sed -E "s@${ALT_SLASH}@/@g"
+}
+
 # }}}
 
 
