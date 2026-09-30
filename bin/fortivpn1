@@ -43,12 +43,12 @@ if {$force_conservative} {
 
 
 set timeout -1
-spawn /opt/forticlient/fortivpn connect artsoft_vpn -u sandrinopatrulescu -p -s -w
+spawn /opt/forticlient/fortivpn connect ${WORK_VPN_NAME} -u ${WORK_USERNAME} -p -s -w
 match_max 100000
 expect -exact "password:"
 send -- "$::env(WORK_PASSWORD)\r"
 expect -exact "\r
-Connect VPN: artsoft_vpn\r
+Connect VPN: $env(WORK_VPN_NAME)\r
 Status: Connecting...\r
 =====================\r
 Confirmation Required\r

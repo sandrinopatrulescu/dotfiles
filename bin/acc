@@ -1,18 +1,18 @@
 #!/bin/bash
-# artsoft consult connect
+# work connect
 shopt -s expand_aliases
 #set -x
 
 source /home/kamui/.functions
 source /home/kamui/.alias
 
-AC_WORKSPACE_INDEX=3
+WORKSPACE_INDEX=3
 
 slay transmission-gtk
 #nohup remmina >/dev/null 2>&1 & sleep 0.2s && wmctrl -a 'kamui@an5: ~'
 
 #pgrep skype.sh >/dev/null || { nohup skype.sh >/dev/null 2>&1 & }
-#sleep 2s && wmctrl -rF 'Skype' -t $AC_WORKSPACE_INDEX
+#sleep 2s && wmctrl -rF 'Skype' -t $WORKSPACE_INDEX
 
 # while not connected to the vpn keep trying with a timeout
 while true; do
@@ -104,4 +104,4 @@ function waitToBoot() {
 }
 
 acrc # connect to rdp
-sleep 3s && wmctrl -r 'Artsoft' -t $AC_WORKSPACE_INDEX
+sleep 3s && wmctrl -r 'Work' -t $WORKSPACE_INDEX # move RDP window to another workspace

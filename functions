@@ -756,15 +756,15 @@ work_password() {
     echo "${WORK_PASSWORD}"
 }
 
-xfracf() { # XFreeRDP Artsoft Consult Fullscreen
+xfracf() { # XFreeRDP work Fullscreen
   xfreerdp /v:"$(work_pc_ip)" /u:"$(work_username)" /p:"$(work_password)" /f
 }
 
-xfracm() { # XFreeRDP Artsoft Consult Multimonitor
+xfracm() { # XFreeRDP work Multimonitor
   xfreerdp /v:"$(work_pc_ip)" /u:"$(work_username)" /p:"$(work_password)" /multimon
 }
 
-xfracfm() { # XFreeRDP Artsoft Consult Fullscreen Multimonitor
+xfracfm() { # XFreeRDP work Fullscreen Multimonitor
   xfreerdp /v:"$(work_pc_ip)" /u:"$(work_username)" /p:"$(work_password)" /f /multimon
 }
 
@@ -952,7 +952,7 @@ ac::internal::ww_ok() {
 }
 
 acvs() { # ac vpn status
-    nmcli con show --active | grep -q "ssl_artsoft"
+    nmcli con show --active | grep -q "${WORK_VPN_NAME}"
     local result=$?
     [ "$1" = "-q" ] && return $result
     [ "$result" -eq 0 ] && echo "VPN is connected" || echo "VPN is not connected"
@@ -967,18 +967,18 @@ acvsq() { # ac vpn status quiet
 acvc() { # ac vpn connect
 #    pgrep skype.sh >/dev/null || { nohup skype.sh >/dev/null 2>&1 & }
     # https://www.google.com/search?q=ubuntu+connect+to+vpn+command+line -> https://askubuntu.com/questions/57339/connect-disconnect-from-vpn-from-the-command-line
-    acvs || nmcli con up id ssl_artsoft
+    acvs || nmcli con up id "${WORK_VPN_NAME}"
 }
 
 acvd() { # ac vpn disconnect
-    acvs && nmcli con down id ssl_artsoft
+    acvs && nmcli con down id "${WORK_VPN_NAME}"
 }
 
 acwl() { # ac wol login
-local execution="$(curl -s "https://cas.artsoft-consult.ro:8443/cas/login?service=http%3A%2F%2Fwol.artsoft-consult.ro%2F&renew=true" | \grep -oP '<input[^>]*name="execution"[^>]*value="\K[^"]*')"
+local execution="$(curl -s "${WORK_WOL_LOGIN}" | \grep -oP '<input[^>]*name="execution"[^>]*value="\K[^"]*')"
 curl --silent --show-error -c /home/kamui/.config/google-chrome/Default/cookie-wol \
-    --location 'https://cas.artsoft-consult.ro:8443/cas/login?service=http://wol.artsoft-consult.ro/&renew=true' \
-    --data-urlencode 'username=sandrinopatrulescu' \
+    --location "${WORK_WOL_LOGIN}" \
+    --data-urlencode "username=$(work_username)" \
     --data-urlencode "password=$(work_password)" \
     --data-urlencode "execution=${execution}" \
     --data-urlencode '_eventId=submit' \
@@ -988,7 +988,7 @@ curl --silent --show-error -c /home/kamui/.config/google-chrome/Default/cookie-w
 
 acwp() { # ac wol ping
 curl --silent --show-error -b /home/kamui/.config/google-chrome/Default/cookie-wol \
-    --location 'https://wol.artsoft-consult.ro/ping' \
+    --location "${WORK_WOL_BASE}/ping" \
     --header 'Content-type: application/json; charset=UTF-8' \
     --data '{"host":false}'
 #    -w "\n%{http_code}\n"
@@ -996,7 +996,7 @@ curl --silent --show-error -b /home/kamui/.config/google-chrome/Default/cookie-w
 
 acww() { # ac wol wake
 curl --silent --show-error -b /home/kamui/.config/google-chrome/Default/cookie-wol \
-    --location 'https://wol.artsoft-consult.ro/wake' \
+    --location "${WORK_WOL_BASE}/wake" \
     --data '{}' \
     -w "\n%{http_code}\n"
 }
@@ -1010,13 +1010,13 @@ acrd() { # ac remmina disconnect
     remmina -q
 }
 
-acds() { # artsoft consult disconnect, w/o skype
+acds() { # work disconnect, w/o skype
     acrd
     acvd
     transmission-autostart.sh
 }
 
-acd() { # artsoft consult disconnect, opposite to acc bin/ script
+acd() { # work disconnect, opposite to acc bin/ script
 #    flatpak kill com.skype.Client
     acds
     exit

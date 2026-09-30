@@ -114,10 +114,10 @@ alias lsa="ls -A"
 alias lns="ln -s"
 
 
-# artsoft internship 2022
+# work internship 2022
 alias fortivpn="/opt/forticlient/fortivpn"
 alias fortivpns="fortivpn status"
-alias fortivpnc="fortivpn connect artsoft_vpn -u sandrinopatrulescu -p -s -w"
+alias fortivpnc='fortivpn connect ${WORK_VPN_NAME} -u ${WORK_USERNAME} -p -s -w'
 alias fortivpnd="fortivpn disconnect"
 alias generate_viewform_links="/mnt/e/git/ac-all/CurlPython2/generate_viewform_links.py"
 alias generate_viewform_links_daily='/mnt/e/git/ac-all/CurlPython2/generate_viewform_links.py $(date +%Y-%m-%d) $(date +%Y-%m-%d)'
@@ -125,7 +125,7 @@ alias generate_viewform_links_old="/mnt/e/git/ac-all/CurlPython2/generate_viewfo
 alias complete_forms="/mnt/e/Scratch/CurlPython2/complete_forms.py"
 alias forticonnect="title forti && fortivpnc; fortivpns"
 alias remminac="remmina -c /home/kamui/.local/share/remmina/$REMMINA_FILE"
-alias accz="acc 0" # artsoft consult connect wait zero seconds
+alias accz="acc 0" # work connect wait zero seconds
 
 alias systemctl="_ systemctl"
 
