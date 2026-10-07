@@ -4,7 +4,7 @@
 [ "$1" == "-q" ] && isVerbose=false || isVerbose=true
 dryRun=${DRY_RUN:-false}
 
-cd /mnt/e/git/sp-backups-z/google-takeout-youtube/custom || { echo "cd failed"; exit 1; }
+cd "${YT_TAKEOUT_CHANNEL_01}/custom" || { echo "cd failed"; exit 1; }
 
 $isVerbose && echo "Is dry run? $dryRun"
 

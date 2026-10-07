@@ -287,13 +287,13 @@ alias tail-follow-latest='tail -f $(ls -1t | head -n1)'
 alias py='python3'
 
 alias logs='cd $LOGS'
-alias google-takeout-youtube='cd /mnt/e/git/sp-backups-z/google-takeout-youtube'
+alias google-takeout-youtube='cd $YT_TAKEOUT_CHANNEL_01'
 alias wallpapers='cd /mnt/e/media/wallpapers'
 
 alias vim-colors='ls /usr/share/vim/vim??/colors/*.vim | sed -E "s@.*(colors/)(.*).vim@\2@"'
 
 alias yt-dlp-h264="yt-dlp -S vcodec:h264"
-alias yt-playlist-item-replace-2aqr='yt_playlist_item_replace.py "PLqRTNdk3LL2hwXxYAW_-KY5kHH4V0U_EL" "/mnt/e/git/sp-backups-z/google-takeout-youtube/custom/2 add queue re LIST.json" "$(find $SCRATCH/yt_playlist_item_replace.py_old-new-csv -type f | sort | tail -1)"'
+alias yt-playlist-item-replace-2aqr='yt_playlist_item_replace.py "PLqRTNdk3LL2hwXxYAW_-KY5kHH4V0U_EL" "${YT_TAKEOUT_CHANNEL_01}/custom/2 add queue re LIST.json" "$(find $SCRATCH/yt_playlist_item_replace.py_old-new-csv -type f | sort | tail -1)"'
 
 alias minecraft-server='cd $MINECRAFT_SERVER'
 

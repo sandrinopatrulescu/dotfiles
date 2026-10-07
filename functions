@@ -1382,7 +1382,7 @@ psgrept() { # ps grep total
 }
 
 findIn2AddQueueRe() {
-    grepi -Rn "$1" "/mnt/e/git/sp-backups-z/google-takeout-youtube/custom/2 add queue re.csv"
+    grepi -Rn "$1" "$YT_TAKEOUT_CHANNEL_01/custom/2 add queue re.csv"
 }
 
 copy () { # copy contents to clipboard
@@ -1593,7 +1593,7 @@ yt_playlist_archive() {
     usage="usage: [CHAT_ID=...] [MODE=...] ${FUNCNAME[0]} <start position> <end position>"
     (( $# == 2 )) || { echo "ERROR: ${usage}"; return 1; }
 
-    takeoutRepo="/mnt/e/git/sp-backups-z/google-takeout-youtube"
+    takeoutRepo="${YT_TAKEOUT_CHANNEL_01}"
     repoUpdated=false
 
     oldpwd="$OLDPWD"
@@ -1808,13 +1808,13 @@ glr() { # computes G.L. r in RON
 }
 
 entries-in-2aqrcsv() {
-    lines="$(wc -l < "$YT_TAKEOUT/custom/2 add queue re.csv" )"
+    lines="$(wc -l < "$YT_TAKEOUT_CHANNEL_01/custom/2 add queue re.csv" )"
     echo "$((lines - 1))"
 }
 
 google-takeout-youtube-video-id-occurrences() {
     local keyword="$1"
-    local file="${2:-$YT_TAKEOUT/history/watch-history.json}"
+    local file="${2:-$YT_TAKEOUT_CHANNEL_01/history/watch-history.json}"
 
     jq -r --arg keyword "$keyword" '.[] | select(.titleUrl? | type == "string" and contains($keyword)) | .time' "$file"
 }

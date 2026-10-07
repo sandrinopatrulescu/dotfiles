@@ -8,7 +8,7 @@ start=$(date +%s)
 
 #region setup
 takeoutDir="/mnt/e/backup/google-takeout-yt_wo_uploads"
-gitDir="/mnt/e/git/sp-backups-z/google-takeout-youtube"
+gitDir="$YT_TAKEOUT_CHANNEL_01"
 
 cd "$takeoutDir"
 [ -d "Takeout" ] && { echo "Takeout dir already exists. Do something about it and run again"; exit 1; }
