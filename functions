@@ -1296,7 +1296,11 @@ login-to-blomp-full() {
     local sleepTime="1h"
     local announceCount=3
     local checkOutputFile
-    announce() { [[  $XDG_SESSION_TYPE =~ x11 ]] && espeak "login-to-blomp finished" && beep; }
+    announce() {
+        if [[ $XDG_SESSION_TYPE =~ x11 ]] && [ "$VERBOSE_AUDIO" = true ]; then
+            espeak "login-to-blomp finished"; beep;
+        fi
+    }
 
     echo "[$(date +%Y-%m-%d_%H-%M-%S)] started  login-to-blomp 1 15"
     login-to-blomp 1 15 # takes ~30m

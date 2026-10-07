@@ -80,6 +80,6 @@ echo "Is 2 add queue re complete?: $([ "$commitMessageSuffix" == " [2aqr COMPLET
 
 end=$(date +%s)
 echo Execution time was $(("$end" - "$start")) seconds.
-espeak "Finished post YouTube takeout."
+[ "$VERBOSE_AUDIO" = true ] && espeak "Finished post YouTube takeout."
 
 yt-takeout-find-missing.sh -q
