@@ -1393,7 +1393,27 @@ copy () { # copy contents to clipboard
     echo -n "$@" | xclip -selection clipboard
 }
 
-dev-info() {
+mount-partition() {
+    local partition="$1"
+    local output mountpoint
+
+    mountpoint="$(lsblk -no MOUNTPOINTS "$partition" | head -n1)"
+
+    if [[ -n "$mountpoint" ]]; then
+        printf '%s\n' "$mountpoint"
+        return 0
+    fi
+
+    output="$(udisksctl mount -b "$partition")" || return 1
+
+    mountpoint="$(\sed -n 's/^Mounted .* at \(.*\)\.$/\1/p' <<< "$output")"
+
+    [[ -n "$mountpoint" ]] || return 1
+
+    printf '%s\n' "$mountpoint"
+}
+
+dev-info() { # used to saved data about devices in dev-info repository
     command -v hw-probe || {
         sudo apt install hw-probe -y
         command -v hw-probe || { echo "Failed to install hw-probe"; return 1; }
@@ -1425,27 +1445,37 @@ dev-info() {
     disk-dump-all
 }
 
-disk-dump-all() {
+disk-dump-all() { # creates a directory with a disk-dump folder for each disk drive
     mkdir -p disk-dump && cd disk-dump
     disks="$(lsblk -n -d -o PATH)"
     while IFS= read -r diskPath; do
         diskType="$(lsblk -n -d -o TYPE "${diskPath}")"
         [ "${diskType}" == "disk" ] || continue
 
-        diskName="$(lsblk -n -d -o NAME "${diskPath}")"
-        diskModel="$(lsblk -n -d -o MODEL "${diskPath}")"
-        diskSerial="$(lsblk -n -d -o SERIAL "${diskPath}")"
-        outputDirDisk="${diskName}.${diskModel}.${diskSerial}"
+        echo
+        echo
+        echo "[$(fdatei)] at disk ${diskPath}"
 
-        echo "Running disk-dump for: $outputDirDisk - $line"
-        mkdir -p "$outputDirDisk" && cd "$outputDirDisk"
-        disk-dump "$diskPath"
-        cd ..
+        disk-dump-with-dir "${diskPath}"
     done < <(echo "$disks")
     cd ..
 }
 
-disk-dump() {
+disk-dump-with-dir() {
+    diskPath="$1"
+
+    diskName="$(lsblk -n -d -o NAME "${diskPath}")"
+    diskModel="$(lsblk -n -d -o MODEL "${diskPath}")"
+    diskSerial="$(lsblk -n -d -o SERIAL "${diskPath}")"
+    outputDirDisk="${diskName}.${diskModel}.${diskSerial}"
+
+    echo "[$(fdatei)] Running disk-dump for: $diskPath - $outputDirDisk"
+    mkdir -p "$outputDirDisk" && cd "$outputDirDisk"
+    disk-dump "$diskPath"
+    cd ..
+}
+
+disk-dump() { # dump info (in CWD) about a disk drive
     local path
 
     [ $# -eq 1 ] || { echo "usage: ${FUNCNAME[0]} <device path (ex: /dev/nvme0n1 OR /dev/sda)>"; return 1; }
@@ -1460,19 +1490,32 @@ disk-dump() {
     sudo parted "${path}" print free >| parted-print-free.txt
     sudo blkid -o full "${path}"* >| blkid.txt
     sudo udevadm info --query=all --name="${path}" >| udevadm-info.txt
-    sudo /usr/bin/df >| df.txt
-    sudo /usr/bin/df -h >| df-h.txt
+    sudo /usr/bin/df >| df.txt # TODO: maybe use with "${path}"
+    sudo /usr/bin/df -h >| df-h.txt # TODO: maybe use with "${path}"
 
     # for each partition, do a find
     while IFS= read -r line; do
-        name=$(echo "${line}" | cut -d' ' -f1)
-        mountpoint_hex_escaped=$(echo "${line}" | cut -d' ' -f3) # hex-escaped due to lsblk -r
-        mountpoint="$(echo -e "${mountpoint_hex_escaped}")"
+        echo
+        echo
+        echo "[$(fdatei)] at partition for line $line"
+        partition_path=$(echo "${line}" | cut -d' ' -f1)
+        partition_name="${partition_path##*/}"
+
+        mountpoint="$(mount-partition "${partition_path}")" || {
+            echo "Mount failed"; continue;
+        }
         mountpoint_escaped="${mountpoint//\//／}" # replace forward-slash (/) with Fullwidth Solidus (U+FF0F)(／)
-        filename="find_${name}_${mountpoint_escaped}"
-        echo "Running find for: $filename"
-        sudo find "$mountpoint" | sudo tee "$filename" > /dev/null
-    done < <(lsblk -rno NAME,TYPE,MOUNTPOINTS "$path" | grep "part /")
+        filename="find_${partition_name}_${mountpoint_escaped}"
+
+        echo "[$(fdatei)] find start - ${mountpoint} -> ${filename}"
+        sudo find "${mountpoint}" | sudo tee "${filename}" > /dev/null
+        echo "[$(fdatei)] find end"
+
+        filename="tree_${partition_name}_${mountpoint_escaped}.txt"
+        echo "[$(fdatei)] tree start - ${mountpoint} -> ${filename}"
+        sudo /usr/bin/tree -n "${mountpoint}" | sudo tee "${filename}" > /dev/null
+        echo "[$(fdatei)] tree end"
+    done < <(lsblk -rnpo NAME,TYPE,MOUNTPOINTS "$path" | grep "part" | \grep -vF "part [SWAP]")
 }
 
 install-system-service() {
